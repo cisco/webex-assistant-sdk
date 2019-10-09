@@ -21,6 +21,11 @@ class AssistantDialogueResponder(DialogueResponder):
     DirectiveNames = AssistantDirectiveNames
 
     def display_web_view(self, url=None):
+        """Displays a web view
+
+        Args:
+            url (str): The url of the web view
+        """
         if url:
             self.act(self.DirectiveNames.DISPLAY_WEB_VIEW, payload={'url': url})
         else:
@@ -60,4 +65,5 @@ class AssistantDialogueResponder(DialogueResponder):
         self.act(self.Directives.ASR_HINT, payload=payload)  # pylint: disable=no-member
 
     def go_home(self):
+        """Dismisses the web view."""
         self.act(self.DirectiveNames.GO_HOME)
