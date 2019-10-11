@@ -30,7 +30,7 @@ class AssistantDialogueResponder(DialogueResponder):
     DirectiveNames = AssistantDirectiveNames
 
     def display_web_view(self, url=None):
-        """Displays a web view
+        """Displays a web view.
 
         Args:
             url (str): The url of the web view
@@ -44,8 +44,8 @@ class AssistantDialogueResponder(DialogueResponder):
         """Sends a 'hint' view'
 
         Args:
-            templates (list): The list of hint templates
-            prompt (string): An optional prompt to precede the hints
+            templates (list): The list of hint templates.
+            prompt (string): An optional prompt to precede the hints.
             display_immediately (boolean): Show hints as soon as possible?
         """
         texts = []
@@ -87,9 +87,9 @@ class AssistantDialogueResponder(DialogueResponder):
         """Sends a 'reply' view and a 'speak' directive.
 
         Args:
-            response_strings (ResponseStrings): A list of reply templates
-            increment_group (bool): Should text belong to next group
-            is_spoken (bool): Should the text be spoken
+            response_strings (ResponseStrings): A list of reply templates.
+            increment_group (bool): Should text belong to next group.
+            is_spoken (bool): Should the text be spoken.
             remove_hyphens (bool): Should hyphens in the text be removed in speak directives.
         """
         template = self._choose(response_strings)
@@ -105,16 +105,16 @@ class AssistantDialogueResponder(DialogueResponder):
             except DirectiveNotSupportedError:
                 pass
 
-        # if we sent neither reply or speak, raise error
+        # If we sent neither reply or speak, raise error
         if not success:
             raise DirectiveNotSupportedError
 
     def _reply(self, text, increment_group=False):
-        """Sends a 'reply' view directive
+        """Sends a 'reply' view directive.
 
         Args:
-            text (str): Reply that should be displayed
-            increment_group (bool, optional): Should text belong to next group
+            text (str): Reply that should be displayed.
+            increment_group (bool, optional): Should text belong to next group.
 
         Returns:
             (bool): If the 'reply' view was successfully added
@@ -143,8 +143,8 @@ class AssistantDialogueResponder(DialogueResponder):
         formatted appropriately.
 
         Args:
-            response_strings (list): A list of reply templates
-            is_spoken (bool): Should the text be spoken
+            response_strings (list): A list of reply templates.
+            is_spoken (bool): Should the text be spoken.
             remove_hyphens (bool): Should hyphens in the text be removed in speak directives.
         """
         template = self._choose(response_strings)
@@ -165,15 +165,16 @@ class AssistantDialogueResponder(DialogueResponder):
                 success = True
             except DirectiveNotSupportedError:
                 pass
-        # if we sent neither long reply or speak, raise error
+
+        # If we sent neither long reply or speak, raise error.
         if not success:
             raise DirectiveNotSupportedError
 
     def speak(self, text, remove_hyphens=False):  # pylint: disable=arguments-differ
-        """Adds a 'speak' directive
+        """Adds a 'speak' directive.
 
         Args:
-            text (str): The text to speak aloud
+            text (str): The text to speak aloud.
             remove_hyphens (bool): Should hyphens in the text be removed.
         """
         text = self._process_template(text)
@@ -189,28 +190,28 @@ class AssistantDialogueResponder(DialogueResponder):
         self.act(DirectiveNames.LISTEN, payload=payload)  # pylint: disable=no-member
 
     def display(self, name, payload=None):
-        """Adds an arbitrary directive of type 'view' and return it
+        """Adds an arbitrary directive of type 'view' and return it.
 
         Args:
-            name (str): The name of the directive
-            payload (dict, optional): The payload for the view
+            name (str): The name of the directive.
+            payload (dict, optional): The payload for the view.
 
         Returns:
-            (dict): added directive of type view
+            (dict): added directive of type view.
         """
         return self.direct(name, self.DirectiveTypes.VIEW, payload=payload, did=str(uuid.uuid4()))
 
     def direct(self, name, dtype, payload=None, did=None):  # pylint: disable=arguments-differ
-        """Adds an arbitrary directive and return it
+        """Adds an arbitrary directive and return it.
 
         Args:
-            name (str): The name of the directive
-            dtype (str): The type of the directive
-            payload (dict, optional): The payload for the directive
-            did (str): Directive id, for logging purpose
+            name (str): The name of the directive.
+            dtype (str): The type of the directive.
+            payload (dict, optional): The payload for the directive.
+            did (str): Directive id, for logging purpose.
 
         Returns:
-            (dict): added directive
+            (dict): Added directive.
         """
         if not self.is_directive_supported(name):
             raise DirectiveNotSupportedError
