@@ -180,14 +180,14 @@ class AssistantDialogueResponder(DialogueResponder):
         text = self._process_template(text)
         if remove_hyphens:
             text = text.replace('-', ' ')
-        self.act(self.DirectiveNames.SPEAK, payload={'text': text})  # pylint: disable=no-member
+        self.act(self.DirectiveNames.SPEAK, payload={'text': text})
 
     def listen(self, payload=None, retry=True):  # pylint: disable=arguments-differ
         if retry:
             payload = payload or {}
             if self.listen_timeout_handler and 'timeout_dialogue_state' not in payload:
                 payload['timeout_dialogue_state'] = self.listen_timeout_handler
-        self.act(DirectiveNames.LISTEN, payload=payload)  # pylint: disable=no-member
+        self.act(DirectiveNames.LISTEN, payload=payload)
 
     def display(self, name, payload=None):
         """Adds an arbitrary directive of type 'view' and return it.
