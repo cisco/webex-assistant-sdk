@@ -8,7 +8,7 @@ with open('README.md') as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    'mindmeld~=4.2.0'
+    'mindmeld~=4.2'
 ]
 
 setup_requirements = [

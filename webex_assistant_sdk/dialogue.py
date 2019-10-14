@@ -30,6 +30,56 @@ class AssistantDialogueResponder(DialogueResponder):
     DirectiveNames = AssistantDirectiveNames
     group_counter = 1
 
+    def direct(self, name, dtype, payload=None, did=None):  # pylint: disable=arguments-differ
+        """Adds an arbitrary directive and return it.
+
+        Args:
+            name (str): The name of the directive.
+            dtype (str): The type of the directive.
+            payload (dict, optional): The payload for the directive.
+            did (str): Directive id, for logging purpose.
+
+        Returns:
+            (dict): Added directive.
+        """
+        if not self.is_directive_supported(name):
+            raise DirectiveNotSupportedError
+
+        directive = {'name': name, 'type': dtype}
+
+        if payload:
+            directive['payload'] = payload
+
+        if did:
+            directive['id'] = did
+
+        self.directives.append(directive)
+        return directive
+
+    def speak(self, text, remove_hyphens=False):  # pylint: disable=arguments-differ
+        """Adds a 'speak' directive.
+
+        Args:
+            text (str): The text to speak aloud.
+            remove_hyphens (bool): Should hyphens in the text be removed.
+        """
+        text = self._process_template(text)
+        if remove_hyphens:
+            text = text.replace('-', ' ')
+        self.act(self.DirectiveNames.SPEAK, payload={'text': text})
+
+    def display(self, name, payload=None):
+        """Adds an arbitrary directive of type 'view' and return it.
+
+        Args:
+            name (str): The name of the directive.
+            payload (dict, optional): The payload for the view.
+
+        Returns:
+            (dict): added directive of type view.
+        """
+        return self.direct(name, self.DirectiveTypes.VIEW, payload=payload, did=str(uuid.uuid4()))
+
     def display_web_view(self, url=None):
         """Displays a web view.
 
@@ -170,56 +220,6 @@ class AssistantDialogueResponder(DialogueResponder):
         # If we sent neither long reply or speak, raise error.
         if not success:
             raise DirectiveNotSupportedError
-
-    def speak(self, text, remove_hyphens=False):  # pylint: disable=arguments-differ
-        """Adds a 'speak' directive.
-
-        Args:
-            text (str): The text to speak aloud.
-            remove_hyphens (bool): Should hyphens in the text be removed.
-        """
-        text = self._process_template(text)
-        if remove_hyphens:
-            text = text.replace('-', ' ')
-        self.act(self.DirectiveNames.SPEAK, payload={'text': text})
-
-    def display(self, name, payload=None):
-        """Adds an arbitrary directive of type 'view' and return it.
-
-        Args:
-            name (str): The name of the directive.
-            payload (dict, optional): The payload for the view.
-
-        Returns:
-            (dict): added directive of type view.
-        """
-        return self.direct(name, self.DirectiveTypes.VIEW, payload=payload, did=str(uuid.uuid4()))
-
-    def direct(self, name, dtype, payload=None, did=None):  # pylint: disable=arguments-differ
-        """Adds an arbitrary directive and return it.
-
-        Args:
-            name (str): The name of the directive.
-            dtype (str): The type of the directive.
-            payload (dict, optional): The payload for the directive.
-            did (str): Directive id, for logging purpose.
-
-        Returns:
-            (dict): Added directive.
-        """
-        if not self.is_directive_supported(name):
-            raise DirectiveNotSupportedError
-
-        directive = {'name': name, 'type': dtype}
-
-        if payload:
-            directive['payload'] = payload
-
-        if did:
-            directive['id'] = did
-
-        self.directives.append(directive)
-        return directive
 
     @property
     def supported_directives(self):
