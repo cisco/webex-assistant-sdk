@@ -28,6 +28,7 @@ class DirectiveNotSupportedError(Exception):
 
 class AssistantDialogueResponder(DialogueResponder):
     DirectiveNames = AssistantDirectiveNames
+    group_counter = 1
 
     def display_web_view(self, url=None):
         """Displays a web view.
@@ -96,7 +97,7 @@ class AssistantDialogueResponder(DialogueResponder):
         text = template.format(**self.slots)
 
         # Send reply
-        success = self._reply(text, response_strings.name, increment_group=increment_group)
+        success = self._reply(text, increment_group=increment_group)
 
         if is_spoken:
             try:
@@ -182,13 +183,6 @@ class AssistantDialogueResponder(DialogueResponder):
             text = text.replace('-', ' ')
         self.act(self.DirectiveNames.SPEAK, payload={'text': text})
 
-    def listen(self, payload=None, retry=True):  # pylint: disable=arguments-differ
-        if retry:
-            payload = payload or {}
-            if self.listen_timeout_handler and 'timeout_dialogue_state' not in payload:
-                payload['timeout_dialogue_state'] = self.listen_timeout_handler
-        self.act(DirectiveNames.LISTEN, payload=payload)
-
     def display(self, name, payload=None):
         """Adds an arbitrary directive of type 'view' and return it.
 
@@ -227,5 +221,9 @@ class AssistantDialogueResponder(DialogueResponder):
         self.directives.append(directive)
         return directive
 
+    @property
+    def supported_directives(self):
+        return [at for at in dir(AssistantDirectiveNames) if at[:2] != '__']
+
     def is_directive_supported(self, directive):
-        return directive in self.DirectiveNames
+        return directive in self.supported_directives

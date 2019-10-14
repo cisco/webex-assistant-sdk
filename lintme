@@ -8,5 +8,4 @@ if [[ -z "$EXCLUDE_ASYNC" ]]; then
 fi
 
 flake8 webex_assistant_sdk tests $OPTIONS
-cd webex_assistant_sdk
 pylint webex_assistant_sdk
