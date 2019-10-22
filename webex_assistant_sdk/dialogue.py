@@ -21,14 +21,21 @@ class AssistantDirectiveNames(DirectiveNames):
     LONG_REPLY = 'long-reply'
     """A directive to display long replies."""
 
+    DISPLAY = 'display'
+    """A generic display directive."""
+
 
 class DirectiveNotSupportedError(Exception):
     pass
 
 
+class DirectiveFormatError(Exception):
+    pass
+
+
 class AssistantDialogueResponder(DialogueResponder):
     DirectiveNames = AssistantDirectiveNames
-    group_counter = 1
+    group_counter = 0
 
     def direct(self, name, dtype, payload=None, did=None):  # pylint: disable=arguments-differ
         """Adds an arbitrary directive and return it.
@@ -173,6 +180,9 @@ class AssistantDialogueResponder(DialogueResponder):
         if increment_group:
             self.group_counter += 1
 
+        if self.group_counter > 2:
+            raise DirectiveFormatError('reply directive can only support two groups.')
+
         payload = {'text': text, 'group': self.group_counter}
         success = False
         try:
@@ -200,7 +210,7 @@ class AssistantDialogueResponder(DialogueResponder):
         """
         template = self._choose(response_strings)
         text = template.format(**self.slots)
-        payload = {'text': text, 'state': response_strings.name}
+        payload = {'text': text}
         success = False
 
         try:
@@ -223,7 +233,8 @@ class AssistantDialogueResponder(DialogueResponder):
 
     @property
     def supported_directives(self):
-        return [at for at in dir(AssistantDirectiveNames) if at[:2] != '__']
+        return [getattr(self.DirectiveNames, at) for at in dir(self.DirectiveNames)
+                if not at.startswith('__')]
 
     def is_directive_supported(self, directive):
         return directive in self.supported_directives
