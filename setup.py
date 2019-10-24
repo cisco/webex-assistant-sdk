@@ -8,6 +8,7 @@ with open('README.md') as readme_file:
     readme = readme_file.read()
 
 requirements = [
+    'cryptography>=2.8,<3.1',
     'mindmeld~=4.2'
 ]
 
