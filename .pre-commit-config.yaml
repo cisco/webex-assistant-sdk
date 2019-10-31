@@ -1,0 +1,25 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v1.4.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: flake8
+  - repo: https://github.com/timothycrosley/isort
+    rev: 4.3.20
+    hooks:
+      - id: isort
+        additional_dependencies:
+          - toml
+  - repo: https://github.com/ambv/black
+    rev: 19.3b0
+    hooks:
+      - id: black
+        language_version: python
+  - repo: local
+    hooks:
+    -   id: pylint
+        name: pylint
+        entry: poetry run pylint.__main__
+        language: system
+        types: [python]

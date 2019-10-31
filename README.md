@@ -1,2 +1,3 @@
-# assistant-sdk
-SDK for developing Webex Assistant extensions
+# Webex Assistant SDK
+
+An SDK for developing Webex Assistant extensions
