@@ -1,6 +1,6 @@
 import uuid
 
-from mindmeld.components.dialogue import DirectiveNames, DialogueResponder
+from mindmeld.components.dialogue import DialogueResponder, DirectiveNames
 
 
 class AssistantDirectiveNames(DirectiveNames):
@@ -136,11 +136,7 @@ class AssistantDialogueResponder(DialogueResponder):
         self.act(self.DirectiveNames.GO_HOME)
 
     def reply(  # pylint: disable=arguments-differ
-        self,
-        response_strings,
-        increment_group=False,
-        is_spoken=True,
-        remove_hyphens=False,
+        self, response_strings, increment_group=False, is_spoken=True, remove_hyphens=False
     ):
         """Sends a 'reply' view and a 'speak' directive.
 
@@ -194,10 +190,7 @@ class AssistantDialogueResponder(DialogueResponder):
         return success
 
     def long_reply(
-        self,
-        response_strings: list,
-        is_spoken: bool = True,
-        remove_hyphens: bool = False,
+        self, response_strings: list, is_spoken: bool = True, remove_hyphens: bool = False
     ):
         """Sends a 'long-reply' view and a 'speak' directive. Used for replies
         are too long to be sent as a normal 'reply' and which should be
@@ -233,8 +226,11 @@ class AssistantDialogueResponder(DialogueResponder):
 
     @property
     def supported_directives(self):
-        return [getattr(self.DirectiveNames, at) for at in dir(self.DirectiveNames)
-                if not at.startswith('__')]
+        return [
+            getattr(self.DirectiveNames, at)
+            for at in dir(self.DirectiveNames)
+            if not at.startswith('__')
+        ]
 
     def is_directive_supported(self, directive):
         return directive in self.supported_directives

@@ -7,19 +7,11 @@ from webex_assistant_sdk.dialogue import DirectiveFormatError
 @pytest.mark.parametrize(
     "query, remove_hyphens, text",
     [
-        ("is this room open for an hour",
-         False,
-         "is this room open for an hour"),
-        ("spark-assistant",
-         True,
-         "spark assistant"),
-        ("spark-assistant",
-         False,
-         "spark-assistant"),
-        ("speak-to webex-assistant",
-         True,
-         "speak to webex assistant"),
-    ]
+        ("is this room open for an hour", False, "is this room open for an hour"),
+        ("spark-assistant", True, "spark assistant"),
+        ("spark-assistant", False, "spark-assistant"),
+        ("speak-to webex-assistant", True, "speak to webex assistant"),
+    ],
 )
 def test_speak(responder: AssistantDialogueResponder, query: str, remove_hyphens: bool, text: str):
     responder.speak(text=query, remove_hyphens=remove_hyphens)
@@ -27,14 +19,10 @@ def test_speak(responder: AssistantDialogueResponder, query: str, remove_hyphens
     assert responder.directives[0]['name'] == 'speak'
     assert responder.directives[0]['type'] == 'action'
 
+
 @pytest.mark.parametrize(
     "key, value",
-    [
-        ('pload', 'view'),
-        ('url', 'www.google.com'),
-        (1, 2),
-        ('texts', ['hello', 'world'])
-    ]
+    [('pload', 'view'), ('url', 'www.google.com'), (1, 2), ('texts', ['hello', 'world'])],
 )
 def test_display(responder: AssistantDialogueResponder, key, value):
     responder.display('display', {key: value})
@@ -69,19 +57,11 @@ def test_asr_hints(responder: AssistantDialogueResponder):
 @pytest.mark.parametrize(
     "query, remove_hyphens, text",
     [
-        ("is this room open for an hour",
-         False,
-         "is this room open for an hour"),
-        ("spark-assistant",
-         True,
-         "spark assistant"),
-        ("spark-assistant",
-         False,
-         "spark-assistant"),
-        ("speak-to webex-assistant",
-         True,
-         "speak to webex assistant"),
-    ]
+        ("is this room open for an hour", False, "is this room open for an hour"),
+        ("spark-assistant", True, "spark assistant"),
+        ("spark-assistant", False, "spark-assistant"),
+        ("speak-to webex-assistant", True, "speak to webex assistant"),
+    ],
 )
 def test_reply(responder: AssistantDialogueResponder, query: str, remove_hyphens: bool, text: str):
     responder.reply(query, is_spoken=True, remove_hyphens=remove_hyphens)
@@ -112,22 +92,15 @@ def test_reply_incrementing_group(responder: AssistantDialogueResponder):
 @pytest.mark.parametrize(
     "query, remove_hyphens, text",
     [
-        ("is this room open for an hour",
-         False,
-         "is this room open for an hour"),
-        ("spark-assistant",
-         True,
-         "spark assistant"),
-        ("spark-assistant",
-         False,
-         "spark-assistant"),
-        ("speak-to webex-assistant",
-         True,
-         "speak to webex assistant"),
-    ]
+        ("is this room open for an hour", False, "is this room open for an hour"),
+        ("spark-assistant", True, "spark assistant"),
+        ("spark-assistant", False, "spark-assistant"),
+        ("speak-to webex-assistant", True, "speak to webex assistant"),
+    ],
 )
-def test_long_reply(responder: AssistantDialogueResponder, query: str, remove_hyphens: bool,
-                    text: str):
+def test_long_reply(
+    responder: AssistantDialogueResponder, query: str, remove_hyphens: bool, text: str
+):
     responder.long_reply(query, is_spoken=True, remove_hyphens=remove_hyphens)
     assert responder.directives[0]['payload']['text'] == query
     assert responder.directives[0]['name'] == 'long-reply'

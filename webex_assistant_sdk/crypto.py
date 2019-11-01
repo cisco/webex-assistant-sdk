@@ -1,6 +1,6 @@
 import binascii
 
-from cryptography.exceptions import UnsupportedAlgorithm, InvalidSignature
+from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, hmac, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -83,4 +83,3 @@ def verify_signature(secret: str, message: str, signature: str) -> bool:
         return False
 
     return True
-

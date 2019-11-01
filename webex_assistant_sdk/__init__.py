@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from .dialogue import AssistantDirectiveNames, AssistantDialogueResponder
-
+from .dialogue import AssistantDialogueResponder, AssistantDirectiveNames
 
 __all__ = ['AssistantDirectiveNames', 'AssistantDialogueResponder']
