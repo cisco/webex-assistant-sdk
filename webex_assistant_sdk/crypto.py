@@ -1,4 +1,5 @@
 import binascii
+import os
 
 from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
 from cryptography.hazmat.backends import default_backend
@@ -7,6 +8,10 @@ from cryptography.hazmat.primitives.asymmetric import padding
 
 
 class EncryptionKeyError(Exception):
+    pass
+
+
+class SignatureGenerationError(Exception):
     pass
 
 
@@ -41,6 +46,18 @@ def load_private_key(data, password=None):
         raise EncryptionKeyError('Unable to load private key') from ex
 
 
+def get_file_contents(filename):
+    with open(filename, 'rb') as f:
+        data = f.read()
+    return data
+
+
+def load_private_key_from_directory(keys_dir: str, password=None, filename='id_rsa'):
+    key_data = get_file_contents(os.path.join(keys_dir, filename))
+    private_key = load_private_key(key_data, password=password)
+    return private_key
+
+
 def load_public_key(data):
     """Loads a public key in OpenSSH format"""
     try:
@@ -58,11 +75,14 @@ def _generate_hmac(secret: str, message: str) -> hmac.HMAC:
 def generate_signature(secret: str, message: str) -> str:
     """Generates a message authentication code
     Args:
-        secret (str): The secret used to sign the message
-        message (str): The message to be signed
+        secret (str): The secret used to sign the message.
+        message (str): The message to be signed.
     Returns:
-        str: the signature
+        str: The signature. If the secret or message is None return None.
     """
+    if not (secret and message):
+        raise SignatureGenerationError('The secret or message is not valid.')
+
     h: hmac.HMAC = _generate_hmac(secret, message)
     return h.finalize().hex()
 
@@ -70,12 +90,15 @@ def generate_signature(secret: str, message: str) -> str:
 def verify_signature(secret: str, message: str, signature: str) -> bool:
     """Verifies a message authentication code
     Args:
-        secret (str): The secret used to verify the signature
-        message (str): The message which was signed
-        signature (str): The signature to verify
+        secret (str): The secret used to verify the signature.
+        message (str): The message which was signed.
+        signature (str): The signature to verify.
     Returns:
-        bool: True if the signature is valid
+        bool: True if the signature is valid and not None, False otherwise
     """
+    if not signature:
+        return False
+
     h: hmac.HMAC = _generate_hmac(secret, message)
     try:
         h.verify(bytes.fromhex(signature))

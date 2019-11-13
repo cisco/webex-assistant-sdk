@@ -8,16 +8,15 @@ import pytest
 
 from webex_assistant_sdk.crypto import (
     EncryptionKeyError,
+    SignatureGenerationError,
     decrypt,
     encrypt,
     generate_signature,
+    get_file_contents,
     load_private_key,
     load_public_key,
     verify_signature,
 )
-
-KEYS_DIR = os.path.join(os.path.realpath(os.path.dirname(__file__)), 'keys')
-PASSPHRASE = b'passphrase'
 
 KEYS = [
     'id_rsa',
@@ -29,24 +28,18 @@ KEYS = [
 ]
 
 
-def get_file_contents(filename):
-    with open(filename, 'rb') as f:
-        data = f.read()
-    return data
-
-
 @pytest.mark.parametrize('key_type', KEYS)
-def test_load_private_key(key_type):
-    key_data = get_file_contents(os.path.join(KEYS_DIR, key_type))
-    password = PASSPHRASE if key_type.endswith('.encrypted') else None
+def test_load_private_key(key_type, keys_dir, passphrase):
+    key_data = get_file_contents(os.path.join(keys_dir, key_type))
+    password = passphrase if key_type.endswith('.encrypted') else None
     private_key = load_private_key(key_data, password=password)
 
     assert private_key
 
 
 @pytest.mark.parametrize('key_type', KEYS)
-def test_load_public_key(key_type):
-    key_data = get_file_contents(os.path.join(KEYS_DIR, f'{key_type}.pub'))
+def test_load_public_key(key_type, keys_dir):
+    key_data = get_file_contents(os.path.join(keys_dir, f'{key_type}.pub'))
     public_key = load_public_key(key_data)
 
     assert public_key
@@ -73,15 +66,15 @@ def test_load_public_key_negative(exc_type):
 
 
 @pytest.fixture(name='private_key')
-def _private_key():
-    key_data = get_file_contents(os.path.join(KEYS_DIR, 'id_rsa'))
+def _private_key(keys_dir):
+    key_data = get_file_contents(os.path.join(keys_dir, 'id_rsa'))
     private_key = load_private_key(key_data)
     return private_key
 
 
 @pytest.fixture(name='public_key')
-def _public_key():
-    key_data = get_file_contents(os.path.join(KEYS_DIR, 'id_rsa.pub'))
+def _public_key(keys_dir):
+    key_data = get_file_contents(os.path.join(keys_dir, 'id_rsa.pub'))
     public_key = load_public_key(key_data)
     return public_key
 
@@ -104,3 +97,9 @@ def test_signatures():
 
     signature = generate_signature(secret, message)
     assert verify_signature(secret, message, signature)
+
+    with pytest.raises(SignatureGenerationError):
+        generate_signature('', message)
+
+    with pytest.raises(SignatureGenerationError):
+        generate_signature(secret, '')

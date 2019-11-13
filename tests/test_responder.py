@@ -86,7 +86,7 @@ def test_reply_incrementing_group(responder: AssistantDialogueResponder):
     assert responder.directives[1]['type'] == 'view'
     with pytest.raises(DirectiveFormatError) as ex:
         responder.reply('again', increment_group=True, is_spoken=False)
-    assert 'reply directive can only support two groups.' in str(ex)
+    assert 'reply directive can only support two groups.' in str(ex.value)
 
 
 @pytest.mark.parametrize(

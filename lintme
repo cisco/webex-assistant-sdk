@@ -1,6 +1,6 @@
 #!/bin/bash
 
-poetry run black -- --check .
-poetry run isort -- --check
+poetry run black --check .
+poetry run isort --check
 poetry run flake8 -- webex_assistant_sdk tests
 poetry run pylint -- webex_assistant_sdk tests
