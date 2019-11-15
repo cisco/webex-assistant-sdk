@@ -1,7 +1,6 @@
 import base64
 import binascii
-import os
-from typing import Sequence
+from typing import Optional, Sequence
 
 from cryptography import fernet
 from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
@@ -74,8 +73,8 @@ def get_file_contents(filename):
     return data
 
 
-def load_private_key_from_directory(keys_dir: str, password=None, filename='id_rsa'):
-    key_data = get_file_contents(os.path.join(keys_dir, filename))
+def load_private_key_from_file(filename: str, password: Optional[str] = None):
+    key_data = get_file_contents(filename)
     private_key = load_private_key(key_data, password=password)
     return private_key
 
