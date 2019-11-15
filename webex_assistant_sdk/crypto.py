@@ -1,6 +1,9 @@
+import base64
 import binascii
 import os
+from typing import Sequence
 
+from cryptography import fernet
 from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, hmac, serialization
@@ -15,24 +18,43 @@ class SignatureGenerationError(Exception):
     pass
 
 
-def encrypt(message: str, public_key) -> str:
+def encrypt(public_key, message: str) -> str:
     """Encrypts a message using the given public key"""
-    return public_key.encrypt(
-        message.encode('utf-8'),
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None
-        ),
-    ).hex()
-
-
-def decrypt(cipher_hex: str, private_key) -> str:
-    """Decrypes a cypher using the given private key"""
-    return private_key.decrypt(
-        bytes.fromhex(cipher_hex),
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None
-        ),
+    temp_key: bytes = fernet.Fernet.generate_key()
+    cipher: fernet.Fernet = fernet.Fernet(temp_key)
+    encrypted_temp_key: str = base64.b64encode(
+        public_key.encrypt(
+            temp_key,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None
+            ),
+        )
     ).decode('utf-8')
+
+    encrypted_message: str = cipher.encrypt(message.encode('utf-8')).decode('utf-8')
+    return f'{encrypted_temp_key}.{encrypted_message}'
+
+
+def decrypt(private_key, cipher_string: str) -> str:
+    """Decrypes a cypher using the given private key"""
+    encrypted_components: Sequence[str] = cipher_string.split('.')
+    encrypted_temp_key: str = encrypted_components[0]
+    # only the first '.' character is special -- we should treat the remainder as the content
+    encrypted_message: str = '.'.join(encrypted_components[1:])
+
+    temp_key: bytes = private_key.decrypt(
+        base64.b64decode(encrypted_temp_key.encode('utf-8')),
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None
+        ),
+    )
+
+    cipher: fernet.Fernet
+    try:
+        cipher = fernet.Fernet(temp_key)
+    except (binascii.Error, ValueError) as exc:
+        raise EncryptionKeyError('Invalid key') from exc
+    return cipher.decrypt(encrypted_message.encode('utf-8')).decode('utf-8')
 
 
 def load_private_key(data, password=None):

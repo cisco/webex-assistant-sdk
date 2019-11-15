@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
-from ._version import current as version
+from ._version import current as __version__
 from .app import AgentApplication
 from .dialogue import AssistantDialogueResponder, AssistantDirectiveNames
 
-__all__ = ['AssistantDirectiveNames', 'AssistantDialogueResponder', 'AgentApplication', 'version']
+__all__ = [
+    'AssistantDirectiveNames',
+    'AssistantDialogueResponder',
+    'AgentApplication',
+    '__version__',
+]
