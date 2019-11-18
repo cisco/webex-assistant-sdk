@@ -34,6 +34,9 @@ pytest = '^5.1'
 pytest-cov = "^2.8.1"
 tox = "^3.14.0"
 
+[tool.poetry.scripts]
+wxa_sdk = 'webex_assistant_sdk.__main__:main'
+
 [tool.isort]
 force_sort_within_sections = true
 include_trailing_comma = true
@@ -49,6 +52,7 @@ skip_glob = ['scripts', 'venv*']
 line-length = 100
 skip-string-normalization = true
 target-version = ['py36']
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"

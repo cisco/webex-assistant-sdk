@@ -1,12 +1,13 @@
 import base64
 import binascii
+import os
 from typing import Optional, Sequence
 
 from cryptography import fernet
 from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, hmac, serialization
-from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.asymmetric import ed25519, padding, rsa
 
 
 class EncryptionKeyError(Exception):
@@ -127,3 +128,35 @@ def verify_signature(secret: str, message: str, signature: str) -> bool:
         return False
 
     return True
+
+
+def generate_keys(filename: str, key_type: str, password: Optional[str] = None):
+    if key_type not in {'rsa', 'ed25519'}:
+        raise ValueError(f"Invalid key type: {key_type}")
+
+    if key_type == 'rsa':
+        private_key = rsa.generate_private_key(65537, 4096, default_backend())
+    else:
+        private_key = ed25519.Ed25519PrivateKey.generate()
+
+    if password:
+        encryption = serialization.BestAvailableEncryption(password)
+    else:
+        encryption = serialization.NoEncryption()
+
+    with open(filename, 'wb') as key_file:
+        key_file.write(
+            private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=encryption,
+            )
+        )
+
+    public_key = private_key.public_key()
+    with open(f'{filename}.pub', 'wb') as key_file:
+        key_file.write(
+            public_key.public_bytes(
+                encoding=serialization.Encoding.OpenSSH, format=serialization.PublicFormat.OpenSSH
+            )
+        )
