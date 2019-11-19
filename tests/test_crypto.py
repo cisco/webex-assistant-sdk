@@ -79,13 +79,15 @@ def _public_key(keys_dir):
     return public_key
 
 
-def test_asymmetric_encryption(public_key, private_key):
-    message = 'hello'
-    cipher_text = encrypt(message, public_key)
+@pytest.mark.parametrize(
+    'message', ('', 'hello', 'hello there friend ' * 10, 'hello there friend ' * 1000)
+)
+def test_asymmetric_encryption(public_key, private_key, message):
+    cipher_text = encrypt(public_key, message)
 
     assert isinstance(cipher_text, str)
 
-    decrypted = decrypt(cipher_text, private_key)
+    decrypted = decrypt(private_key, cipher_text)
 
     assert message != cipher_text
     assert message == decrypted

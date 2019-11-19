@@ -4,10 +4,12 @@
 import os
 
 from webex_assistant_sdk import AgentApplication
-from webex_assistant_sdk.crypto import load_private_key_from_directory
+from webex_assistant_sdk.crypto import load_private_key_from_file
 
 secret = 'some secret'
-key = load_private_key_from_directory(os.path.realpath(os.path.dirname(__file__)), password=None)
+key = load_private_key_from_file(
+    os.path.join(os.path.realpath(os.path.dirname(__file__)), 'id_rsa'), password=None
+)
 app = AgentApplication(__name__, secret=secret, private_key=key)
 
 __all__ = ['app']

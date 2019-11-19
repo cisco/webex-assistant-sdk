@@ -38,7 +38,7 @@ def create_agent_server(
             msg = "Invalid Request Signature or Data"
             raise BadMindMeldRequestError(msg, status_code=403)
 
-        json_str = decrypt(data, private_key)
+        json_str = decrypt(private_key, data)
         if not verify_signature(secret, json_str, signature):
             msg = "Invalid Request Signature"
             raise BadMindMeldRequestError(msg, status_code=403)

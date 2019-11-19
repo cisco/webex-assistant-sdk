@@ -64,7 +64,4 @@ def test_parse_endpoint_success(client, agent_dir):
 def test_health_endpoint(client):
     response = client.get('/health')
     assert response.status_code == 200
-    assert set(json.loads(response.data.decode('utf8')).keys()) == {
-        'package_version',
-        'status',
-    }
+    assert set(json.loads(response.data.decode('utf8')).keys()) == {'package_version', 'status'}
