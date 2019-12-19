@@ -12,7 +12,12 @@ from mindmeld.exceptions import BadMindMeldRequestError
 from mindmeld.server import MindMeldRequest
 
 from ._version import current as __version__
-from .crypto import decrypt, verify_signature
+from .exceptions import (
+    RequestValidationError,
+    ServerChallengeValidationError,
+    SignatureValidationError,
+)
+from .helpers import validate_request
 
 logger = logging.getLogger(__name__)
 
@@ -32,26 +37,14 @@ def create_agent_server(
     def parse():
         """The main endpoint for the MindMeld API"""
         start_time = time.time()
-        signature = request.headers.get('X-Webex-Assistant-Signature')
-        data = request.get_data().decode('utf-8')
-        if not (signature and data):
-            msg = "Invalid Request Signature or Data"
-            raise BadMindMeldRequestError(msg, status_code=403)
-
-        json_str = decrypt(private_key, data)
-        if not verify_signature(secret, json_str, signature):
-            msg = "Invalid Request Signature"
-            raise BadMindMeldRequestError(msg, status_code=403)
-
-        request_json = json.loads(json_str)
-        if request_json is None:
-            msg = "Invalid Content."
-            raise BadMindMeldRequestError(msg, status_code=415)
-
-        challenge = request_json.get('challenge')
-        if not challenge:
-            msg = 'Bad Request'
-            raise BadMindMeldRequestError(msg, status_code=400)
+        try:
+            request_json, challenge = validate_request(
+                secret, private_key, request.headers, request.get_data().decode('utf-8')
+            )
+        except SignatureValidationError as exc:
+            raise BadMindMeldRequestError(exc.args[0], status_code=403)
+        except (RequestValidationError, ServerChallengeValidationError) as exc:
+            raise BadMindMeldRequestError(exc.args[0], status_code=400)
 
         safe_request = {}
         for key in ['text', 'params', 'context', 'frame', 'history', 'verbose']:

@@ -1,6 +1,5 @@
 import base64
 import binascii
-import os
 from typing import Optional, Sequence
 
 from cryptography import fernet
@@ -9,13 +8,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, hmac, serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519, padding, rsa
 
-
-class EncryptionKeyError(Exception):
-    pass
-
-
-class SignatureGenerationError(Exception):
-    pass
+from .exceptions import EncryptionKeyError, SignatureGenerationError
 
 
 def encrypt(public_key, message: str) -> str:
