@@ -14,10 +14,10 @@ def get_parser():
 
     subparsers = parser.add_subparsers(dest='command')
 
-    new_parser = subparsers.add_parser('new', help='create a new agent project')
-    new_parser.add_argument('name', help='the name of the agent', metavar='agent-name')
+    new_parser = subparsers.add_parser('new', help='create a new skill project')
+    new_parser.add_argument('name', help='the name of the skill', metavar='skill-name')
     keys_parser = subparsers.add_parser(
-        'generate-keys', help='generate keys for use with a Webex Assistant Agent'
+        'generate-keys', help='generate keys for use with a Webex Assistant Skill'
     )
     keys_parser.add_argument('filename', help='the name of the private key')
     keys_parser.add_argument(

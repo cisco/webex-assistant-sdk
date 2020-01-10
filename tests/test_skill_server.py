@@ -1,7 +1,7 @@
 import json
 import os
 
-from webex_assistant_sdk import AgentApplication
+from webex_assistant_sdk import SkillApplication
 from webex_assistant_sdk.crypto import (
     encrypt,
     generate_signature,
@@ -10,9 +10,9 @@ from webex_assistant_sdk.crypto import (
 )
 
 
-def test_agent_key(agent_app: AgentApplication):
-    assert agent_app.private_key
-    assert agent_app._server._private_key
+def test_skill_key(skill_app: SkillApplication):
+    assert skill_app.private_key
+    assert skill_app._server._private_key
 
 
 def test_parse_endpoint_fail(client):
@@ -29,10 +29,10 @@ def test_parse_endpoint_fail(client):
     assert response.status_code == 403
 
 
-def test_parse_endpoint_success(client, agent_dir):
+def test_parse_endpoint_success(client, skill_dir):
     test_request = {'text': 'hi', 'challenge': 'a challenge'}
 
-    key = load_public_key(get_file_contents(os.path.join(agent_dir, 'id_rsa.pub')))
+    key = load_public_key(get_file_contents(os.path.join(skill_dir, 'id_rsa.pub')))
     secret = 'some secret'
     encrypted_msg = encrypt(message=json.dumps(test_request), public_key=key)
     signature = generate_signature(secret, json.dumps(test_request))

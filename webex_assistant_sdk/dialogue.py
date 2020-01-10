@@ -33,7 +33,7 @@ class DirectiveFormatError(Exception):
     pass
 
 
-class AssistantDialogueResponder(DialogueResponder):
+class SkillResponder(DialogueResponder):
     DirectiveNames = AssistantDirectiveNames
     group_counter = 0
 

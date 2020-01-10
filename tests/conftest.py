@@ -3,19 +3,19 @@ import os
 from mindmeld import NaturalLanguageProcessor
 import pytest
 
-from webex_assistant_sdk import AgentApplication, AssistantDialogueResponder
+from webex_assistant_sdk import SkillApplication, SkillResponder
 
-from .agent import app
-
-
-@pytest.fixture
-def agent_dir():
-    return os.path.join(os.path.realpath(os.path.dirname(__file__)), 'agent')
+from .skill import app
 
 
 @pytest.fixture
-def keys_dir(agent_dir: str):  # pylint: disable=redefined-outer-name
-    return agent_dir
+def skill_dir():
+    return os.path.join(os.path.realpath(os.path.dirname(__file__)), 'skill')
+
+
+@pytest.fixture
+def keys_dir(skill_dir):  # pylint: disable=redefined-outer-name
+    return skill_dir
 
 
 @pytest.fixture
@@ -25,13 +25,13 @@ def passphrase():
 
 @pytest.fixture
 def responder():
-    return AssistantDialogueResponder()
+    return SkillResponder()
 
 
 @pytest.fixture
-def agent_nlp(agent_dir: str) -> NaturalLanguageProcessor:  # pylint: disable=redefined-outer-name
+def skill_nlp(skill_dir) -> NaturalLanguageProcessor:  # pylint: disable=redefined-outer-name
     """Provides a built processor instance"""
-    nlp = NaturalLanguageProcessor(app_path=agent_dir)
+    nlp = NaturalLanguageProcessor(app_path=skill_dir)
     nlp.build()
     nlp.dump()
     return nlp
@@ -39,12 +39,12 @@ def agent_nlp(agent_dir: str) -> NaturalLanguageProcessor:  # pylint: disable=re
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture
-def agent_app(agent_nlp: NaturalLanguageProcessor) -> AgentApplication:
-    app.lazy_init(nlp=agent_nlp)
+def skill_app(skill_nlp) -> SkillApplication:
+    app.lazy_init(nlp=skill_nlp)
     return app
 
 
 @pytest.fixture
-def client(agent_app: AgentApplication):  # pylint: disable=redefined-outer-name
-    server = agent_app._server.test_client()
+def client(skill_app: SkillApplication):  # pylint: disable=redefined-outer-name
+    server = skill_app._server.test_client()
     yield server

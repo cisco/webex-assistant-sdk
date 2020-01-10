@@ -1,6 +1,6 @@
 # Webex Assistant SDK
 
-An SDK for developing Webex Assistant extensions based on the [MindMeld](www.mindmeld.com) platform.
+An SDK for developing Webex Assistant Skills based on the [MindMeld](www.mindmeld.com) platform.
 
 ## Install the SDK
 
@@ -8,19 +8,19 @@ An SDK for developing Webex Assistant extensions based on the [MindMeld](www.min
 
 ## Using the SDK
 
-To use the SDK we just need to import AgentApplication and pass in the RSA private key as well as the secret for verifying the request's header.
+To use the SDK we just need to import SkillApplication and pass in the RSA private key as well as the secret for verifying the request's header.
 
 Here is an example implementation which is found in the `tests` folder:
 
 ```
 import os
 
-from webex_assistant_sdk import AgentApplication
+from webex_assistant_sdk import SkillApplication
 from webex_assistant_sdk.crypto import load_private_key_from_dir
 
 secret = 'some secret'
 key = load_private_key_from_dir(os.path.realpath(os.path.dirname(__file__)), password=None)
-app = AgentApplication(__name__, secret=secret, private_key=key)
+app = SkillApplication(__name__, secret=secret, private_key=key)
 
 __all__ = ['app']
 ```

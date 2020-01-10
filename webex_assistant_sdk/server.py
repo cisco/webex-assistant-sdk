@@ -22,7 +22,7 @@ from .helpers import validate_request
 logger = logging.getLogger(__name__)
 
 
-def create_agent_server(
+def create_skill_server(
     app_manager: ApplicationManager, secret: str, private_key: RSAPrivateKey
 ) -> Flask:
     server = Flask('mindmeld')

@@ -1,6 +1,6 @@
 import pytest
 
-from webex_assistant_sdk import AssistantDialogueResponder
+from webex_assistant_sdk import SkillResponder
 from webex_assistant_sdk.dialogue import DirectiveFormatError
 
 
@@ -13,7 +13,7 @@ from webex_assistant_sdk.dialogue import DirectiveFormatError
         ("speak-to webex-assistant", True, "speak to webex assistant"),
     ],
 )
-def test_speak(responder: AssistantDialogueResponder, query: str, remove_hyphens: bool, text: str):
+def test_speak(responder: SkillResponder, query: str, remove_hyphens: bool, text: str):
     responder.speak(text=query, remove_hyphens=remove_hyphens)
     assert responder.directives[0]['payload']['text'] == text
     assert responder.directives[0]['name'] == 'speak'
@@ -24,21 +24,21 @@ def test_speak(responder: AssistantDialogueResponder, query: str, remove_hyphens
     "key, value",
     [('pload', 'view'), ('url', 'www.google.com'), (1, 2), ('texts', ['hello', 'world'])],
 )
-def test_display(responder: AssistantDialogueResponder, key, value):
+def test_display(responder: SkillResponder, key, value):
     responder.display('display', {key: value})
     assert responder.directives[0]['payload'][key] == value
     assert responder.directives[0]['name'] == 'display'
     assert responder.directives[0]['type'] == 'view'
 
 
-def test_display_web_view(responder: AssistantDialogueResponder):
+def test_display_web_view(responder: SkillResponder):
     responder.display_web_view(url='some-url')
     assert responder.directives[0]['name'] == 'display-web-view'
     assert responder.directives[0]['payload']['url'] == 'some-url'
     assert responder.directives[0]['type'] == 'action'
 
 
-def test_ui_hints(responder: AssistantDialogueResponder):
+def test_ui_hints(responder: SkillResponder):
     responder.ui_hints(['go back', 'see more'], prompt='speak carefully', display_immediately=True)
     assert responder.directives[0]['name'] == 'ui-hint'
     assert responder.directives[0]['payload']['text'] == ['go back', 'see more']
@@ -47,7 +47,7 @@ def test_ui_hints(responder: AssistantDialogueResponder):
     assert responder.directives[0]['type'] == 'view'
 
 
-def test_asr_hints(responder: AssistantDialogueResponder):
+def test_asr_hints(responder: SkillResponder):
     responder.asr_hints(['go back', 'see more'])
     assert responder.directives[0]['name'] == 'asr-hint'
     assert responder.directives[0]['payload']['text'] == ['go back', 'see more']
@@ -63,7 +63,7 @@ def test_asr_hints(responder: AssistantDialogueResponder):
         ("speak-to webex-assistant", True, "speak to webex assistant"),
     ],
 )
-def test_reply(responder: AssistantDialogueResponder, query: str, remove_hyphens: bool, text: str):
+def test_reply(responder: SkillResponder, query: str, remove_hyphens: bool, text: str):
     responder.reply(query, is_spoken=True, remove_hyphens=remove_hyphens)
     assert responder.directives[0]['payload']['text'] == query
     assert responder.directives[0]['name'] == 'reply'
@@ -73,7 +73,7 @@ def test_reply(responder: AssistantDialogueResponder, query: str, remove_hyphens
     assert responder.directives[1]['type'] == 'action'
 
 
-def test_reply_incrementing_group(responder: AssistantDialogueResponder):
+def test_reply_incrementing_group(responder: SkillResponder):
     responder.reply('hello', increment_group=True, is_spoken=False)
     responder.reply('world', increment_group=True, is_spoken=False)
     assert responder.directives[0]['payload']['text'] == 'hello'
@@ -98,9 +98,7 @@ def test_reply_incrementing_group(responder: AssistantDialogueResponder):
         ("speak-to webex-assistant", True, "speak to webex assistant"),
     ],
 )
-def test_long_reply(
-    responder: AssistantDialogueResponder, query: str, remove_hyphens: bool, text: str
-):
+def test_long_reply(responder: SkillResponder, query: str, remove_hyphens: bool, text: str):
     responder.long_reply(query, is_spoken=True, remove_hyphens=remove_hyphens)
     assert responder.directives[0]['payload']['text'] == query
     assert responder.directives[0]['name'] == 'long-reply'
