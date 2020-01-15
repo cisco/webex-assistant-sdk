@@ -21,7 +21,6 @@ python = "^3.6"
 # and each 10th minor release is major (2.8 -> 2.9 -> 3.0 ...)
 cryptography = ">=2.8,<3.1"
 mindmeld = "^4.2.3"
-# tensorflow 1.15.0 has a bug which prevents it from installing on python 3.6 or highers
 requests = "^2.22.0"
 
 [tool.poetry.dev-dependencies]
