@@ -34,13 +34,15 @@ def decrypt(private_key, cipher_string: str) -> str:
     encrypted_temp_key: str = encrypted_components[0]
     # only the first '.' character is special -- we should treat the remainder as the content
     encrypted_message: str = '.'.join(encrypted_components[1:])
-
-    temp_key: bytes = private_key.decrypt(
-        base64.b64decode(encrypted_temp_key.encode('utf-8')),
-        padding.OAEP(
-            mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None
-        ),
+    decoded_temp_key = base64.b64decode(encrypted_temp_key.encode('utf-8'))
+    pad = padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None
     )
+
+    try:
+        temp_key: bytes = private_key.decrypt(decoded_temp_key, pad)
+    except ValueError as exc:
+        raise EncryptionKeyError('Invalid key') from exc
 
     cipher: fernet.Fernet
     try:
@@ -79,6 +81,12 @@ def load_public_key(data):
         return serialization.load_ssh_public_key(data, backend=default_backend())
     except (binascii.Error, ValueError, UnsupportedAlgorithm) as ex:
         raise EncryptionKeyError('Unable to load public key') from ex
+
+
+def load_public_key_from_file(filename: str):
+    key_data = get_file_contents(filename)
+    public_key = load_public_key(key_data)
+    return public_key
 
 
 def _generate_hmac(secret: str, message: str) -> hmac.HMAC:

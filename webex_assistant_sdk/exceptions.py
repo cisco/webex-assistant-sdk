@@ -20,7 +20,7 @@ class SignatureValidationError(RequestValidationError):
     pass
 
 
-class ServerChallengeValidationError(WebexAssistantSDKException):
+class ServerChallengeValidationError(RequestValidationError):
     pass
 
 
