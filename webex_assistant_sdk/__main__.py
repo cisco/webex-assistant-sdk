@@ -1,8 +1,10 @@
 import argparse
 import getpass
+import json
 import os
 import pprint
 import shutil
+import sys
 
 
 class PasswordPromptAction(argparse.Action):
@@ -70,7 +72,6 @@ def get_parser():
     invoke_parser = subparsers.add_parser(
         'invoke', help='invoke a skill simulating a request from Webex Assistant'
     )
-    invoke_parser.add_argument('text', help='the message for the skill')
     invoke_parser.add_argument(
         '-s',
         '--secret',
@@ -78,7 +79,7 @@ def get_parser():
         action=PasswordPromptAction,
         help="the skill's secret",
         required=True,
-        prompt='Skill Secret: ',
+        prompt='Enter skill secret: ',
     )
     invoke_parser.add_argument(
         '-k', '--key-file', help="the path to the skill's public key file on disk", required=True
@@ -89,7 +90,12 @@ def get_parser():
         default='http://localhost:7150/parse',
         help='the URL where the skill is served',
     )
-
+    invoke_parser.add_argument(
+        '-c', '--context', default=None, help='the JSON context to use in the invocation'
+    )
+    invoke_parser.add_argument(
+        '-f', '--frame', default=None, help='the JSON frame to use in the invocation'
+    )
     return parser
 
 
@@ -103,23 +109,41 @@ def generate_keys(filename, key_type, password=None):
     print('done')
 
 
-def invoke_agent(secret, key_file, text, url):
+def invoke_agent(secret, key_file, url, context=None, frame=None):
     from . import crypto, helpers  # pylint: disable=import-outside-toplevel
 
     public_key = crypto.load_public_key_from_file(key_file)
+    history = []
+    first = True
+    while True:
+        try:
+            prompt = 'Enter command for skill\n' if first else ''
+            first = False
+            text = input(f'{prompt}>>> ')
+            res = helpers.make_request(
+                secret, public_key, text, context=context, frame=frame, history=history, url=url
+            )
+            directives = res.get('directives')
+            context = res.get('context')
+            frame = res.get('frame')
+            history = res.get('history', [])
+        except Exception:  # pylint: disable=broad-except
+            print(f'Failed to invoke skill at {url}')
+            return
+        except KeyboardInterrupt:
+            return
 
+        width = shutil.get_terminal_size((80, 20))[0]
+        print('Response: ')
+        pprint.pprint(directives, indent=2, width=width)
+
+
+def parse_json_argument(name, arg):
     try:
-        res = helpers.make_request(secret, public_key, text, url=url)
-        directives = res.get('directives')
-    except Exception:  # pylint: disable=broad-except
-        print(f'Failed to invoke skill at {url}')
-        return
-
-    print(f'Successfully invoked skill at {url}')
-
-    width = shutil.get_terminal_size((80, 20))[0]
-    print('Response: ')
-    pprint.pprint(directives, indent=2, width=width)
+        return json.loads(arg)
+    except json.JSONDecodeError:
+        print(f'Unable to decode {name!r} argument JSON')
+        sys.exit(1)
 
 
 def main():
@@ -135,7 +159,9 @@ def main():
         return
 
     if args.command == 'invoke':
-        invoke_agent(args.secret, args.key_file, args.text, url=args.url)
+        context = parse_json_argument('context', args.context) if args.context else None
+        frame = parse_json_argument('frame', args.frame) if args.frame else None
+        invoke_agent(args.secret, args.key_file, url=args.url, context=context, frame=frame)
         return
 
     parser.print_help()
