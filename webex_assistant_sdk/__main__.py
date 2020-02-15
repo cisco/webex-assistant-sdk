@@ -12,7 +12,7 @@ class PasswordPromptAction(argparse.Action):
         self,
         option_strings,
         dest=None,
-        nargs=0,
+        nargs='?',
         const=None,
         default=None,
         type=None,
@@ -37,7 +37,11 @@ class PasswordPromptAction(argparse.Action):
         self.prompt = prompt or f'{self.dest.capitalize()}: '
 
     def __call__(self, parser, args, values, option_string=None):
-        password = getpass.getpass(self.prompt)
+        if values:
+            password = values
+        else:
+            password = getpass.getpass(self.prompt)
+
         setattr(args, self.dest, password)
 
 
@@ -78,7 +82,6 @@ def get_parser():
         type=str,
         action=PasswordPromptAction,
         help="the skill's secret",
-        required=True,
         prompt='Enter skill secret: ',
     )
     invoke_parser.add_argument(
@@ -159,6 +162,11 @@ def main():
         return
 
     if args.command == 'invoke':
+        if not args.secret:
+            # reparse with added '-s'
+            # Note: for some reason we have to pop off the first arg when reparsing
+            args = parser.parse_args(args=sys.argv[1:] + ['-s'])
+
         context = parse_json_argument('context', args.context) if args.context else None
         frame = parse_json_argument('frame', args.frame) if args.frame else None
         invoke_agent(args.secret, args.key_file, url=args.url, context=context, frame=frame)
