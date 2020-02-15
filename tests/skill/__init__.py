@@ -15,10 +15,11 @@ app = SkillApplication(__name__, secret=secret, private_key=key)
 __all__ = ['app']
 
 
+@app.introduce
 @app.handle(intent='greet')
 def welcome(request, responder):
     del request
-    responder.reply('Hello. I am agent who can help you.')
+    responder.reply('Hello. I am a third party skill. What would you like to do?')
     responder.listen()
 
 

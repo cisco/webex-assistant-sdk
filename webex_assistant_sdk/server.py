@@ -11,7 +11,7 @@ from mindmeld.app_manager import ApplicationManager
 from mindmeld.exceptions import BadMindMeldRequestError
 from mindmeld.server import MindMeldRequest
 
-from ._version import current as __version__
+from ._version import __version__
 from .exceptions import (
     RequestValidationError,
     ServerChallengeValidationError,
@@ -78,7 +78,7 @@ def create_skill_server(
 
     @server.route('/health', methods=['GET'])
     def status_check():
-        body = {'status': 'OK', 'package_version': __version__}
+        body = {'status': 'OK', 'sdk_version': __version__}
         return jsonify(body)
 
     return server

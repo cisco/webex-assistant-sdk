@@ -52,7 +52,7 @@ def decrypt(private_key, cipher_string: str) -> str:
     return cipher.decrypt(encrypted_message.encode('utf-8')).decode('utf-8')
 
 
-def load_private_key(data, password=None):
+def load_private_key(data: bytes, password=None):
     """Loads a private key in PEM format"""
     try:
         private_key = serialization.load_pem_private_key(
@@ -63,7 +63,7 @@ def load_private_key(data, password=None):
         raise EncryptionKeyError('Unable to load private key') from ex
 
 
-def get_file_contents(filename):
+def get_file_contents(filename: str) -> bytes:
     with open(filename, 'rb') as f:
         data = f.read()
     return data
@@ -75,7 +75,7 @@ def load_private_key_from_file(filename: str, password: Optional[str] = None):
     return private_key
 
 
-def load_public_key(data):
+def load_public_key(data: bytes):
     """Loads a public key in OpenSSH format"""
     try:
         return serialization.load_ssh_public_key(data, backend=default_backend())
@@ -84,7 +84,7 @@ def load_public_key(data):
 
 
 def load_public_key_from_file(filename: str):
-    key_data = get_file_contents(filename)
+    key_data: bytes = get_file_contents(filename)
     public_key = load_public_key(key_data)
     return public_key
 

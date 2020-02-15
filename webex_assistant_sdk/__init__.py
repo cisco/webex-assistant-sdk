@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-from ._version import current as __version__
+from ._version import __version__
 from .app import SkillApplication
 from .dialogue import AssistantDirectiveNames, SkillResponder
 
-__all__ = [
-    'AssistantDirectiveNames',
-    'SkillResponder',
-    'SkillApplication',
-    '__version__',
-]
+__all__ = ['AssistantDirectiveNames', 'SkillResponder', 'SkillApplication', '__version__']

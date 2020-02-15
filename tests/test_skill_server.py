@@ -15,6 +15,11 @@ def test_skill_key(skill_app: SkillApplication):
     assert skill_app._server._private_key
 
 
+def test_skill_intro(skill_app: SkillApplication):
+    response = skill_app.app_manager.parse('', params={'target_dialogue_state': 'skill_intro'})
+    assert response.dialogue_state == 'skill_intro'
+
+
 def test_parse_endpoint_fail(client):
     test_request = {'text': 'hi'}
     response = client.post(
@@ -64,4 +69,4 @@ def test_parse_endpoint_success(client, skill_dir):
 def test_health_endpoint(client):
     response = client.get('/health')
     assert response.status_code == 200
-    assert set(json.loads(response.data.decode('utf8')).keys()) == {'package_version', 'status'}
+    assert set(json.loads(response.data.decode('utf8')).keys()) == {'sdk_version', 'status'}
