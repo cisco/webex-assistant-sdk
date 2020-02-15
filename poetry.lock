@@ -377,7 +377,7 @@ description = "A Conversational AI platform."
 name = "mindmeld"
 optional = false
 python-versions = "*"
-version = "4.2.4"
+version = "4.2.6"
 
 [package.dependencies]
 Click = ">=6.0,<7.0"
@@ -402,6 +402,7 @@ requests = ">=2.20.1,<3.0"
 scipy = ">=0.9,<2.0"
 sklearn-crfsuite = ">=0.3.6,<1.0"
 tqdm = ">=4.15,<5.0"
+werkzeug = "<1.0"
 
 [[package.dependencies.python-crfsuite]]
 python = "<3.7"
@@ -1158,6 +1159,11 @@ markupsafe = [
     {file = "MarkupSafe-1.1.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:ba59edeaa2fc6114428f1637ffff42da1e311e29382d81b339c1817d37ec93c6"},
     {file = "MarkupSafe-1.1.1-cp37-cp37m-win32.whl", hash = "sha256:b00c1de48212e4cc9603895652c5c410df699856a2853135b3967591e4beebc2"},
     {file = "MarkupSafe-1.1.1-cp37-cp37m-win_amd64.whl", hash = "sha256:9bf40443012702a1d2070043cb6291650a0841ece432556f784f004937f0f32c"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:6788b695d50a51edb699cb55e35487e430fa21f1ed838122d722e0ff0ac5ba15"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-manylinux1_i686.whl", hash = "sha256:cdb132fc825c38e1aeec2c8aa9338310d29d337bebbd7baa06889d09a60a1fa2"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:13d3144e1e340870b25e7b10b98d779608c02016d5184cfb9927a9f10c689f42"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-win32.whl", hash = "sha256:596510de112c685489095da617b5bcbbac7dd6384aeebeda4df6025d0256a81b"},
+    {file = "MarkupSafe-1.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:e8313f01ba26fbbe36c7be1966a7b7424942f670f38e666995b88d012765b9be"},
     {file = "MarkupSafe-1.1.1.tar.gz", hash = "sha256:29872e92839765e546828bb7754a68c418d927cd064fd4708fab9fe9c8bb116b"},
 ]
 mccabe = [
@@ -1165,7 +1171,7 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 mindmeld = [
-    {file = "mindmeld-4.2.4-py2.py3-none-any.whl", hash = "sha256:58b28ac63c45d20cc388ac70d81d68d4e354a390d15973f29734af3e1ef1895f"},
+    {file = "mindmeld-4.2.6-py2.py3-none-any.whl", hash = "sha256:a9811af59e61d1d60e31d5f1fb4abee5e60a258eeb5558b29cf83de27f723a8f"},
 ]
 more-itertools = [
     {file = "more-itertools-8.1.0.tar.gz", hash = "sha256:c468adec578380b6281a114cb8a5db34eb1116277da92d7c46f904f0b52d3288"},
