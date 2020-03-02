@@ -1,0 +1,22 @@
+dist: xenial
+language: python
+python:
+  - "3.5"
+  - "3.6"
+jdk:
+  - openjdk8
+# command to install services
+services:
+  - elasticsearch
+# command to install dependencies
+before_install:
+  - pip install poetry
+install:
+  - poetry install
+before_script:
+  - sleep 10
+# command to run tests
+script:
+  - ./lintme
+  - mkdir ~/test-reports
+  - travis_wait 30 poetry run pytest --junitxml=~/test-reports/junit.xml --cov-report html --cov=webex_assistant_sdk
