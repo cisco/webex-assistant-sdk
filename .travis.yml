@@ -19,5 +19,6 @@ before_script:
 # command to run tests
 script:
   - ./lintme
+  - poetry run mindmeld num-start
   - mkdir ~/test-reports
   - travis_wait 30 poetry run pytest --junitxml=~/test-reports/junit.xml --cov-report html --cov=webex_assistant_sdk
