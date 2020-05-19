@@ -23,7 +23,10 @@ logger = logging.getLogger(__name__)
 
 
 def create_skill_server(
-    app_manager: ApplicationManager, secret: str, private_key: RSAPrivateKey
+    app_manager: ApplicationManager,
+    secret: str,
+    private_key: RSAPrivateKey,
+    use_encryption: bool = True,
 ) -> Flask:
     server = Flask('mindmeld')
     CORS(server)
@@ -38,9 +41,13 @@ def create_skill_server(
         """The main endpoint for the MindMeld API"""
         start_time = time.time()
         try:
-            request_json, challenge = validate_request(
-                secret, private_key, request.headers, request.get_data().decode('utf-8')
-            )
+            if use_encryption:
+                request_json, challenge = validate_request(
+                    secret, private_key, request.headers, request.get_data().decode('utf-8')
+                )
+            else:
+                request_json = json.loads(request.data)
+                challenge = None
         except SignatureValidationError as exc:
             raise BadMindMeldRequestError(exc.args[0], status_code=403)
         except (RequestValidationError, ServerChallengeValidationError) as exc:

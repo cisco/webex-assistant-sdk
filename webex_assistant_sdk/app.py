@@ -11,12 +11,20 @@ class SkillApplication(Application):
     """
 
     def __init__(
-        self, import_name, *, secret, private_key, responder_class=SkillResponder, **kwargs
+        self,
+        import_name,
+        *,
+        secret,
+        private_key,
+        responder_class=SkillResponder,
+        use_encryption=True,
+        **kwargs,
     ):
 
         super().__init__(import_name, responder_class=responder_class, **kwargs)
         self.secret = secret
         self.private_key = private_key
+        self._use_encryption = use_encryption
 
     def introduce(self, handler=None):
         """Decorator for skill introduction states. If a skill is
@@ -37,7 +45,9 @@ class SkillApplication(Application):
 
     def lazy_init(self, nlp=None):
         Application.lazy_init(self, nlp)
-        self._server = create_skill_server(self.app_manager, self.secret, self.private_key)
+        self._server = create_skill_server(
+            self.app_manager, self.secret, self.private_key, use_encryption=self._use_encryption
+        )
 
     @property
     def web_app(self) -> Flask:
