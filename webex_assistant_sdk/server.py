@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import time
 import uuid
 
@@ -38,9 +39,14 @@ def create_skill_server(
         """The main endpoint for the MindMeld API"""
         start_time = time.time()
         try:
-            request_json, challenge = validate_request(
-                secret, private_key, request.headers, request.get_data().decode('utf-8')
-            )
+            use_encryption = not os.environ.get('WXA_SKILL_DEBUG', False)
+            if use_encryption:
+                request_json, challenge = validate_request(
+                    secret, private_key, request.headers, request.get_data().decode('utf-8')
+                )
+            else:
+                request_json = json.loads(request.data)
+                challenge = None
         except SignatureValidationError as exc:
             raise BadMindMeldRequestError(exc.args[0], status_code=403)
         except (RequestValidationError, ServerChallengeValidationError) as exc:
