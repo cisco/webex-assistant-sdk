@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import time
 import uuid
 
@@ -23,10 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_skill_server(
-    app_manager: ApplicationManager,
-    secret: str,
-    private_key: RSAPrivateKey,
-    use_encryption: bool = True,
+    app_manager: ApplicationManager, secret: str, private_key: RSAPrivateKey
 ) -> Flask:
     server = Flask('mindmeld')
     CORS(server)
@@ -41,6 +39,7 @@ def create_skill_server(
         """The main endpoint for the MindMeld API"""
         start_time = time.time()
         try:
+            use_encryption = not os.environ.get('WXA_SKILL_DEBUG', False)
             if use_encryption:
                 request_json, challenge = validate_request(
                     secret, private_key, request.headers, request.get_data().decode('utf-8')

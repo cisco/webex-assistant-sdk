@@ -1,5 +1,3 @@
-import os
-
 from flask import Flask
 from mindmeld import Application
 
@@ -19,7 +17,6 @@ class SkillApplication(Application):
         super().__init__(import_name, responder_class=responder_class, **kwargs)
         self.secret = secret
         self.private_key = private_key
-        self._use_encryption = not os.environ.get('WXA_SKILL_DEBUG', False)
 
     def introduce(self, handler=None):
         """Decorator for skill introduction states. If a skill is
@@ -40,9 +37,7 @@ class SkillApplication(Application):
 
     def lazy_init(self, nlp=None):
         Application.lazy_init(self, nlp)
-        self._server = create_skill_server(
-            self.app_manager, self.secret, self.private_key, use_encryption=self._use_encryption
-        )
+        self._server = create_skill_server(self.app_manager, self.secret, self.private_key)
 
     @property
     def web_app(self) -> Flask:
