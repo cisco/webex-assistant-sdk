@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from mindmeld import Application
 
@@ -11,20 +13,13 @@ class SkillApplication(Application):
     """
 
     def __init__(
-        self,
-        import_name,
-        *,
-        secret,
-        private_key,
-        responder_class=SkillResponder,
-        use_encryption=True,
-        **kwargs,
+        self, import_name, *, secret, private_key, responder_class=SkillResponder, **kwargs
     ):
 
         super().__init__(import_name, responder_class=responder_class, **kwargs)
         self.secret = secret
         self.private_key = private_key
-        self._use_encryption = use_encryption
+        self._use_encryption = not os.environ.get('WXA_SKILL_DEBUG', False)
 
     def introduce(self, handler=None):
         """Decorator for skill introduction states. If a skill is

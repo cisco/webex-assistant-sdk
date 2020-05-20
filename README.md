@@ -43,6 +43,10 @@ def introduction(request, responder):
     pass
 ```
 
+### Debugging
+
+To debug the server and turn off encryption/decryption, you can set the environment variable `WXA_SKILL_DEBUG` to be `True`.
+
 ### Command Line
 
 Installing the webex_assistant_sdk package adds a wxa_sdk command line application. Use the `-h` argument for help.
