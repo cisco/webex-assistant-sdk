@@ -11,7 +11,14 @@ class SkillApplication(Application):
     """
 
     def __init__(
-        self, import_name, *, secret, private_key, responder_class=SkillResponder, add_sleep=True, **kwargs
+        self,
+        import_name,
+        *,
+        secret,
+        private_key,
+        responder_class=SkillResponder,
+        add_sleep=True,
+        **kwargs,
     ):
 
         super().__init__(import_name, responder_class=responder_class, **kwargs)
@@ -19,6 +26,7 @@ class SkillApplication(Application):
         self.private_key = private_key
 
         if add_sleep:
+
             @self.middleware
             def add_sleep(request, responder, handler):
                 handler(request, responder)
