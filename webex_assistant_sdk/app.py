@@ -11,12 +11,20 @@ class SkillApplication(Application):
     """
 
     def __init__(
-        self, import_name, *, secret, private_key, responder_class=SkillResponder, **kwargs
+        self, import_name, *, secret, private_key, responder_class=SkillResponder, add_sleep=True, **kwargs
     ):
 
         super().__init__(import_name, responder_class=responder_class, **kwargs)
         self.secret = secret
         self.private_key = private_key
+
+        if add_sleep:
+            @self.middleware
+            def add_sleep(request, responder, handler):
+                handler(request, responder)
+                # ensure respondse ends with `listen` or `sleep`
+                if responder.directives[-1]['name'] not in {'sleep', 'listen'}:
+                    responder.sleep()
 
     def introduce(self, handler=None):
         """Decorator for skill introduction states. If a skill is
