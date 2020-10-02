@@ -1,6 +1,6 @@
 # Webex Assistant SDK
 
-An SDK for developing Webex Assistant Skills based on the [MindMeld](www.mindmeld.com) platform.
+An SDK for developing Webex Assistant Skills based on the [MindMeld](https://www.mindmeld.com) platform.
 
 ## Install the SDK
 
