@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 """This module contains the SkillApplication demo application"""
 
-import os
+from pathlib import Path
 
 from webex_assistant_sdk import SkillApplication
 from webex_assistant_sdk.crypto import load_private_key_from_file
 
 secret = 'some secret'
-key = load_private_key_from_file(
-    os.path.join(os.path.realpath(os.path.dirname(__file__)), 'id_rsa'), password=None
-)
+key = load_private_key_from_file(Path(__file__).resolve().parent / 'id_rsa', password=None)
 app = SkillApplication(__name__, secret=secret, private_key=key)
 
 __all__ = ['app']
@@ -27,6 +25,7 @@ def welcome(request, responder):
 def say_goodbye(request, responder):
     del request
     responder.reply(['Bye', 'Goodbye', 'Have a nice day.'])
+    responder.sleep()
 
 
 @app.handle(intent='help')

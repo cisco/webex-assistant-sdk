@@ -13,13 +13,13 @@ To use the SDK we just need to import SkillApplication and pass in the RSA priva
 Here is an example implementation which is found in the `tests` folder:
 
 ```python
-import os
+from pathlib import Path
 
 from webex_assistant_sdk import SkillApplication
-from webex_assistant_sdk.crypto import load_private_key_from_dir
+from webex_assistant_sdk.crypto import load_private_key_from_file
 
 secret = 'some secret'
-key = load_private_key_from_dir(os.path.realpath(os.path.dirname(__file__)), password=None)
+key = load_private_key_from_file(Path(__file__).resolve().parent / 'id_rsa'), password=None)
 app = SkillApplication(__name__, secret=secret, private_key=key)
 
 __all__ = ['app']
