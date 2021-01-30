@@ -99,6 +99,27 @@ def get_parser():
     invoke_parser.add_argument(
         '-f', '--frame', default=None, help='the JSON frame to use in the invocation'
     )
+
+    check_parser = subparsers.add_parser(
+        'check', help='check the health and configuration of a Webex Assistant Skill'
+    )
+    check_parser.add_argument(
+        '-s',
+        '--secret',
+        type=str,
+        action=PasswordPromptAction,
+        help="the skill's secret",
+        prompt='Enter skill secret: ',
+    )
+    check_parser.add_argument(
+        '-k', '--key-file', help="the path to the skill's public key file on disk", required=True
+    )
+    check_parser.add_argument(
+        '-U',
+        '--url',
+        default='http://localhost:7150/parse',
+        help='the URL where the skill is served',
+    )
     return parser
 
 
@@ -112,7 +133,7 @@ def generate_keys(filename, key_type, password=None):
     print('done')
 
 
-def invoke_agent(secret, key_file, url, context=None, frame=None):
+def invoke_skill(secret, key_file, url, context=None, frame=None):
     from . import crypto, helpers  # pylint: disable=import-outside-toplevel
 
     public_key = crypto.load_public_key_from_file(key_file)
@@ -139,6 +160,15 @@ def invoke_agent(secret, key_file, url, context=None, frame=None):
         width = shutil.get_terminal_size((80, 20))[0]
         print('Response: ')
         pprint.pprint(directives, indent=2, width=width)
+
+
+def check_skill(secret, key_file, url):
+    from . import crypto, helpers  # pylint: disable=import-outside-toplevel
+
+    public_key = crypto.load_public_key_from_file(key_file)
+    res = helpers.make_health_check(secret, public_key, url)
+
+    print(res)
 
 
 def parse_json_argument(name, arg):
@@ -169,7 +199,15 @@ def main():
 
         context = parse_json_argument('context', args.context) if args.context else None
         frame = parse_json_argument('frame', args.frame) if args.frame else None
-        invoke_agent(args.secret, args.key_file, url=args.url, context=context, frame=frame)
+        invoke_skill(args.secret, args.key_file, url=args.url, context=context, frame=frame)
+        return
+
+    if args.command == 'check':
+        if not args.secret:
+            # reparse with added '-s'
+            # Note: for some reason we have to pop off the first arg when reparsing
+            args = parser.parse_args(args=sys.argv[1:] + ['-s'])
+        check_skill(args.secret, args.key_file, url=args.url)
         return
 
     parser.print_help()

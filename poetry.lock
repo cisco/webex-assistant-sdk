@@ -261,7 +261,7 @@ python-versions = "*"
 
 [[package]]
 name = "dataclasses"
-version = "0.8"
+version = "0.7"
 description = "A backport of the dataclasses module for Python 3.6"
 category = "main"
 optional = false
@@ -386,7 +386,7 @@ hdfs = ["pyarrow (>=2.0.0)"]
 oss = ["oss2 (==2.6.1)", "pycryptodome (<3.9.9)"]
 s3 = ["boto3 (>=1.9.201)"]
 ssh = ["paramiko[invoke] (>=2.7.0)"]
-ssh_gssapi = ["paramiko[invoke,gssapi] (>=2.7.0)"]
+ssh_gssapi = ["paramiko[gssapi,invoke] (>=2.7.0)"]
 tests = ["wheel (>=0.31.1)", "pytest (>=6.0.1)", "pytest-cov", "pytest-docker (>=0.7.2)", "pytest-timeout (>=1.3.3)", "pytest-cov (>=2.6.1)", "pytest-xdist (>=1.26.1)", "pytest-mock (==1.11.2)", "pytest-lazy-fixture", "pytest-tap", "flaky (>=3.5.3)", "mock (>=3.0.0)", "xmltodict (>=0.11.0)", "awscli (>=1.16.297)", "google-compute-engine (==2.8.13)", "pygments", "collective.checkdocs", "flake8 (==3.8.3)", "psutil", "flake8-docstrings", "pydocstyle (<4.0)", "jaraco.windows (==3.9.2)", "mock-ssh-server (>=0.8.2)", "moto (==1.3.16.dev110)", "aws-sam-translator (<1.29.0)", "urllib3 (<1.26.0)", "rangehttpserver (==1.2.0)", "beautifulsoup4 (==4.4.0)", "flake8-bugbear", "flake8-comprehensions (==3.3.0)", "flake8-string-format", "pylint (==2.5.3)", "pylint-pytest (>=0.3.0)", "pylint-plugin-utils", "wget", "filelock", "black (==19.10b0)", "wsgidav"]
 webdav = ["webdavclient3 (>=3.14.5)"]
 webhdfs = ["hdfs (==2.5.8)"]
@@ -506,11 +506,11 @@ python-versions = "*"
 
 [[package]]
 name = "future"
-version = "0.16.0"
+version = "0.18.2"
 description = "Clean single-source support for Python 3 and 2"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "gitdb"
@@ -700,6 +700,20 @@ optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 
 [[package]]
+name = "marshmallow"
+version = "3.7.1"
+description = "A lightweight library for converting complex datatypes to and from native Python datatypes."
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+dev = ["pytest", "pytz", "simplejson", "mypy (==0.782)", "flake8 (==3.8.3)", "flake8-bugbear (==20.1.4)", "pre-commit (>=2.4,<3.0)", "tox"]
+docs = ["sphinx (==3.1.2)", "sphinx-issues (==1.2.0)", "alabaster (==0.7.12)", "sphinx-version-warning (==1.1.2)", "autodocsumm (==0.1.13)"]
+lint = ["mypy (==0.782)", "flake8 (==3.8.3)", "flake8-bugbear (==20.1.4)", "pre-commit (>=2.4,<3.0)"]
+tests = ["pytest", "pytz", "simplejson"]
+
+[[package]]
 name = "mccabe"
 version = "0.6.1"
 description = "McCabe checker, plugin for flake8"
@@ -709,7 +723,7 @@ python-versions = "*"
 
 [[package]]
 name = "mindmeld"
-version = "4.3.3"
+version = "4.3.4rc3"
 description = "A Conversational AI platform."
 category = "main"
 optional = false
@@ -720,13 +734,15 @@ aiohttp = ">=3.6.2"
 attrs = ">=18.2"
 Click = ">=7.1,<8.0"
 click-log = "0.1.8"
+dataclasses = {version = ">=0.7,<0.8", markers = "python_version >= \"3.6\" and python_version < \"3.7\""}
 distro = ">=1.3,<2.0"
 dvc = ">=1.8.1"
 elasticsearch = ">=5.0"
 Flask = ">=1.0,<2.0"
 Flask-Cors = ">=3.0,<4.0"
-future = ">=0.16.0,<0.17.0"
+future = ">=0.17,<1.0"
 immutables = ">=0.9,<1.0"
+marshmallow = ">=3.7.1,<3.8.0"
 mypy = ">=0.782"
 nltk = ">=3.2,<4.0"
 numpy = ">=1.15,<2.0"
@@ -746,7 +762,7 @@ scikit-learn = [
 ]
 scipy = ">=0.13.3,<2.0"
 sklearn-crfsuite = ">=0.3.6,<1.0"
-spacy = ">=2.3.0"
+spacy = ">=2.3.1,<2.4.0"
 tqdm = ">=4.15,<5.0"
 
 [package.extras]
@@ -1629,7 +1645,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "14dc03ccdec870bd7191e7c911434b48f2071966c819b6647758143188158ac3"
+content-hash = "5d6d559984fa445ae6f2042ec73aa09f4eeac900e32f50493f5be8367f038e81"
 
 [metadata.files]
 aiohttp = [
@@ -1873,8 +1889,8 @@ cymem = [
     {file = "cymem-2.0.5.tar.gz", hash = "sha256:190e15d9cf2c3bde60ae37bddbae6568a36044dc4a326d84081a5fa08818eee0"},
 ]
 dataclasses = [
-    {file = "dataclasses-0.8-py3-none-any.whl", hash = "sha256:0201d89fa866f68c8ebd9d08ee6ff50c0b255f8ec63a71c16fda7af82bb887bf"},
-    {file = "dataclasses-0.8.tar.gz", hash = "sha256:8479067f342acf957dc82ec415d355ab5edb7e7646b90dc6e2fd1d96ad084c97"},
+    {file = "dataclasses-0.7-py3-none-any.whl", hash = "sha256:3459118f7ede7c8bea0fe795bff7c6c2ce287d01dd226202f7c9ebc0610a7836"},
+    {file = "dataclasses-0.7.tar.gz", hash = "sha256:494a6dcae3b8bcf80848eea2ef64c0cc5cd307ffc263e17cdf42f3e5420808e6"},
 ]
 decorator = [
     {file = "decorator-4.4.2-py2.py3-none-any.whl", hash = "sha256:41fa54c2a0cc4ba648be4fd43cff00aedf5b9465c9bf18d64325bc225f08f760"},
@@ -1953,7 +1969,7 @@ funcy = [
     {file = "funcy-1.15.tar.gz", hash = "sha256:65b746fed572b392d886810a98d56939c6e0d545abb750527a717c21ced21008"},
 ]
 future = [
-    {file = "future-0.16.0.tar.gz", hash = "sha256:e39ced1ab767b5936646cedba8bcce582398233d6a627067d4c6a454c90cfedb"},
+    {file = "future-0.18.2.tar.gz", hash = "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"},
 ]
 gitdb = [
     {file = "gitdb-4.0.5-py3-none-any.whl", hash = "sha256:91f36bfb1ab7949b3b40e23736db18231bf7593edada2ba5c3a174a7b23657ac"},
@@ -2084,12 +2100,16 @@ markupsafe = [
     {file = "MarkupSafe-1.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:e8313f01ba26fbbe36c7be1966a7b7424942f670f38e666995b88d012765b9be"},
     {file = "MarkupSafe-1.1.1.tar.gz", hash = "sha256:29872e92839765e546828bb7754a68c418d927cd064fd4708fab9fe9c8bb116b"},
 ]
+marshmallow = [
+    {file = "marshmallow-3.7.1-py2.py3-none-any.whl", hash = "sha256:67bf4cae9d3275b3fc74bd7ff88a7c98ee8c57c94b251a67b031dc293ecc4b76"},
+    {file = "marshmallow-3.7.1.tar.gz", hash = "sha256:a2a5eefb4b75a3b43f05be1cca0b6686adf56af7465c3ca629e5ad8d1e1fe13d"},
+]
 mccabe = [
     {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 mindmeld = [
-    {file = "mindmeld-4.3.3-py2.py3-none-any.whl", hash = "sha256:92590e71a48838cf7f67d1e26aad1ae75971ea1fa966c530787f56c3f7c29a7a"},
+    {file = "mindmeld-4.3.4rc3-py2.py3-none-any.whl", hash = "sha256:905c9cc447d2658df5448d5810dca1a7a60dd30b930c1fd14d625936f8383454"},
 ]
 more-itertools = [
     {file = "more-itertools-8.6.0.tar.gz", hash = "sha256:b3a9005928e5bed54076e6e549c792b306fddfe72b2d1d22dd63d42d5d3899cf"},

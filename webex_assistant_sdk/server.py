@@ -12,13 +12,13 @@ from mindmeld.app_manager import ApplicationManager
 from mindmeld.exceptions import BadMindMeldRequestError
 from mindmeld.server import MindMeldRequest
 
-from ._version import __version__
+from ._version import api_version
 from .exceptions import (
     RequestValidationError,
     ServerChallengeValidationError,
     SignatureValidationError,
 )
-from .helpers import validate_request
+from .helpers import validate_health_check, validate_request
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,8 @@ def create_skill_server(
     # pylint: disable=unused-variable
     @server.route('/parse', methods=['POST'])
     def parse():
-        """The main endpoint for the MindMeld API"""
+        """The main endpoint for the skill API"""
+
         start_time = time.time()
         try:
             use_encryption = not os.environ.get('WXA_SKILL_DEBUG', False)
@@ -66,6 +67,31 @@ def create_skill_server(
         response.challenge = challenge
         return jsonify(DialogueResponder.to_json(response))
 
+    @server.route('/parse', methods=['GET'])
+    def health_check():
+        encrypted_challenge: str = request.args.get('challenge')
+
+        response = {'status': 'up', 'api_version': '.'.join((str(i) for i in api_version))}
+        if not encrypted_challenge:
+            return jsonify(response)
+
+        try:
+            response['challenge'] = validate_health_check(
+                secret, private_key, request.headers, encrypted_challenge
+            )
+            response['validated'] = True
+            # except SignatureValidationError as exc:
+        except (
+            SignatureValidationError,
+            RequestValidationError,
+            ServerChallengeValidationError,
+        ) as exc:
+            response['status'] = 'error'
+            response['error'] = exc.args[0]
+            return jsonify(response), 400
+
+        return jsonify(response)
+
     # handle exceptions
     @server.errorhandler(BadMindMeldRequestError)
     def handle_bad_request(error):
@@ -81,10 +107,5 @@ def create_skill_server(
         response.status_code = 500
         logger.error(json.dumps(response_data))
         return response
-
-    @server.route('/health', methods=['GET'])
-    def status_check():
-        body = {'status': 'OK', 'sdk_version': __version__}
-        return jsonify(body)
 
     return server

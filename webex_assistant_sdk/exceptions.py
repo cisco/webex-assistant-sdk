@@ -17,6 +17,8 @@ class RequestValidationError(WebexAssistantSDKException):
 
 
 class SignatureValidationError(RequestValidationError):
+    """An exception raised when signature validation fails"""
+
     pass
 
 

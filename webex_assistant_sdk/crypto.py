@@ -34,7 +34,10 @@ def decrypt(private_key, cipher_string: str) -> str:
     encrypted_temp_key: str = encrypted_components[0]
     # only the first '.' character is special -- we should treat the remainder as the content
     encrypted_message: str = '.'.join(encrypted_components[1:])
-    decoded_temp_key = base64.b64decode(encrypted_temp_key.encode('utf-8'))
+    try:
+        decoded_temp_key = base64.b64decode(encrypted_temp_key.encode('utf-8'))
+    except binascii.Error as exc:
+        raise EncryptionKeyError('Message cannot be decoded') from exc
     pad = padding.OAEP(
         mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None
     )
