@@ -18,7 +18,7 @@ from .exceptions import (
     ServerChallengeValidationError,
     SignatureValidationError,
 )
-from .helpers import validate_request
+from .helpers import validate_health_check, validate_request
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,8 @@ def create_skill_server(
     # pylint: disable=unused-variable
     @server.route('/parse', methods=['POST'])
     def parse():
-        """The main endpoint for the MindMeld API"""
+        """The main endpoint for the skill API"""
+
         start_time = time.time()
         try:
             use_encryption = not os.environ.get('WXA_SKILL_DEBUG', False)
@@ -65,6 +66,28 @@ def create_skill_server(
         response.response_time = time.time() - start_time
         response.challenge = challenge
         return jsonify(DialogueResponder.to_json(response))
+
+    @server.route('/parse', methods=['GET'])
+    def health_check():
+        payload: str = request.args.get('payload')
+
+        response = {'status': 'okay', 'api_version': '1.1'}
+        if not payload:
+            return jsonify(response)
+
+        try:
+            response['challenge'] = validate_health_check(
+                secret, private_key, request.headers, payload
+            )
+            response['validated'] = True
+        except (
+            SignatureValidationError,
+            RequestValidationError,
+            ServerChallengeValidationError,
+        ) as exc:
+            raise BadMindMeldRequestError(exc.args[0], status_code=400)
+
+        return jsonify(response)
 
     # handle exceptions
     @server.errorhandler(BadMindMeldRequestError)
