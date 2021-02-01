@@ -48,9 +48,9 @@ def create_skill_server(
                 request_json = json.loads(request.data)
                 challenge = None
         except SignatureValidationError as exc:
-            raise BadMindMeldRequestError(exc.args[0], status_code=403)
+            raise BadMindMeldRequestError(exc.args[0], status_code=403) from exc
         except (RequestValidationError, ServerChallengeValidationError) as exc:
-            raise BadMindMeldRequestError(exc.args[0], status_code=400)
+            raise BadMindMeldRequestError(exc.args[0], status_code=400) from exc
 
         safe_request = {}
         for key in ['text', 'params', 'context', 'frame', 'history', 'verbose']:
