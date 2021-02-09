@@ -20,12 +20,12 @@ python = "^3.6"
 # cryptography maintains backward compatibility for 3 minor versions
 # and each 10th minor release is major (2.8 -> 2.9 -> 3.0 ...)
 cryptography = ">=2.8,<3.4"
-mindmeld = "^4.3.0"
+mindmeld = "^4.3.1"
 requests = "^2.22.0"
 spacy = "^2.3.0"
 
 [tool.poetry.dev-dependencies]
-black = '^20.8b1'
+black = '^20.8b0'
 flake8 = '^3.7.8'
 isort = {version = '^4.3', extras = ['toml']}
 pre-commit = '^1.18'

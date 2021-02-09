@@ -53,7 +53,8 @@ def test_parse_endpoint_success(client, skill_dir):
     response_data = json.loads(response.data.decode('utf8'))
     assert response_data['dialogue_state'] == 'welcome'
     assert response_data['challenge'] == 'a challenge'
-    assert set(response_data.keys()) == {
+    # Use >= set comparison as newer versions of mindmeld may add fields
+    assert set(response_data.keys()) >= {
         'history',
         'params',
         'frame',

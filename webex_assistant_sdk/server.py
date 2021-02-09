@@ -59,13 +59,21 @@ def create_skill_server(
                 safe_request[key] = request_json[key]
 
         response = app_manager.parse(**safe_request)
+        try:
+            res = DialogueResponder.to_json(response)
+        except AttributeError:
+            res = dict(response)
         # add request id to response
         # use the passed in id if any
         request_id = request_json.get('request_id', str(uuid.uuid4()))
-        response.request_id = request_id
-        response.response_time = time.time() - start_time
-        response.challenge = challenge
-        return jsonify(DialogueResponder.to_json(response))
+        res.update(
+            {
+                'request_id': request_id,
+                'response_time': time.time() - start_time,
+                'challenge': challenge,
+            }
+        )
+        return res
 
     @server.route('/parse', methods=['GET'])
     def health_check():
