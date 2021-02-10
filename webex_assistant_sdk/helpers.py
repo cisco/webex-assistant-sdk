@@ -33,9 +33,9 @@ def validate_request(
         Tuple[Mapping, str]: The decrypted request body and a challenge string
 
     Raises:
-        RequestValidationError: Description
-        ServerChallengeValidationError: Description
-        SignatureValidationError: Description
+        RequestValidationError: raised when request data cannot be decrypted or decoded
+        ServerChallengeValidationError: raised when request is missing challenge
+        SignatureValidationError: raised when signature cannot be validated
     """
     try:
         signature = headers.get('X-Webex-Assistant-Signature')
@@ -59,7 +59,7 @@ def validate_request(
 
         challenge = request_json.get('challenge')
         if not challenge:
-            raise ServerChallengeValidationError('Bad request')
+            raise ServerChallengeValidationError('Missing challenge')
 
     except RequestValidationError:
         raise
@@ -68,6 +68,33 @@ def validate_request(
         raise RequestValidationError('Cannot validate request') from exc
 
     return request_json, challenge
+
+
+def validate_health_check(
+    secret: str, private_key, headers: Mapping, encrypted_challenge: str
+) -> str:
+    try:
+        signature = headers.get('X-Webex-Assistant-Signature')
+        if encrypted_challenge and not signature:
+            raise SignatureValidationError('Missing signature')
+        if signature and not encrypted_challenge:
+            raise ServerChallengeValidationError('Missing challenge')
+
+        try:
+            challenge = crypto.decrypt(private_key, encrypted_challenge)
+        except EncryptionKeyError as exc:
+            raise RequestValidationError('Invalid payload encryption') from exc
+
+        if not crypto.verify_signature(secret, challenge, signature):
+            raise SignatureValidationError('Invalid signature')
+
+    except RequestValidationError:
+        raise
+    except Exception as exc:
+        logger.exception('Unexpected error validating health check')
+        raise RequestValidationError('Cannot validate health check') from exc
+
+    return challenge
 
 
 def make_request(
@@ -120,4 +147,24 @@ def make_request(
     if response_body.get('challenge') != challenge:
         raise ClientChallengeValidationError('Response failed challenge')
 
-    return res.json()
+    return response_body
+
+
+def make_health_check(secret, public_key, url='http://0.0.0.0:7150/parse'):
+    challenge = os.urandom(64).hex()
+    encrypted_challenge = crypto.encrypt(public_key, challenge)
+    headers = {
+        'X-Webex-Assistant-Signature': crypto.generate_signature(secret, challenge),
+        'Accept': 'application/json',
+    }
+    res = requests.get(url, headers=headers, params={'payload': encrypted_challenge})
+
+    if res.status_code != 200:
+        raise ResponseValidationError('Health check failed')
+
+    response_body = res.json()
+
+    if response_body.get('challenge') != challenge:
+        raise ClientChallengeValidationError('Response failed challenge')
+
+    return response_body

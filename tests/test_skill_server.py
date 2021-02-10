@@ -1,5 +1,6 @@
 import json
 import os
+from urllib.request import quote
 
 from webex_assistant_sdk import SkillApplication
 from webex_assistant_sdk.crypto import (
@@ -52,7 +53,8 @@ def test_parse_endpoint_success(client, skill_dir):
     response_data = json.loads(response.data.decode('utf8'))
     assert response_data['dialogue_state'] == 'welcome'
     assert response_data['challenge'] == 'a challenge'
-    assert set(response_data.keys()) == {
+    # Use >= set comparison as newer versions of mindmeld may add fields
+    assert set(response_data.keys()) >= {
         'history',
         'params',
         'frame',
@@ -67,6 +69,45 @@ def test_parse_endpoint_success(client, skill_dir):
 
 
 def test_health_endpoint(client):
-    response = client.get('/health')
+    response = client.get('/parse')
     assert response.status_code == 200
-    assert set(json.loads(response.data.decode('utf8')).keys()) == {'sdk_version', 'status'}
+    assert set(json.loads(response.data.decode('utf8')).keys()) == {'api_version', 'status'}
+
+
+def test_health_endpoint_check(client, skill_dir):
+    key = load_public_key(get_file_contents(os.path.join(skill_dir, 'id_rsa.pub')))
+    secret = 'some secret'
+    challenge = 'challenge'
+    encrypted_challenge = encrypt(message=challenge, public_key=key)
+    signature = generate_signature(secret, challenge)
+    response = client.get(
+        f'/parse?challenge={quote(encrypted_challenge)}',
+        headers={'X-Webex-Assistant-Signature': signature},
+    )
+
+    assert response.status_code == 200
+    response_data = json.loads(response.data.decode('utf8'))
+
+    assert response_data == {
+        'status': 'up',
+        'api_version': '1.0',
+        'validated': True,
+        'challenge': challenge,
+    }
+
+
+def test_health_endpoint_check_failed(client, skill_dir):
+    key = load_public_key(get_file_contents(os.path.join(skill_dir, 'id_rsa.pub')))
+    secret = 'wrong secret'
+    challenge = 'challenge'
+    encrypted_challenge = encrypt(message=challenge, public_key=key)
+    signature = generate_signature(secret, challenge)
+    response = client.get(
+        f'/parse?challenge={quote(encrypted_challenge)}',
+        headers={'X-Webex-Assistant-Signature': signature},
+    )
+
+    assert response.status_code == 400
+    response_data = json.loads(response.data.decode('utf8'))
+
+    assert response_data == {'status': 'error', 'error': 'Invalid signature', 'api_version': '1.0'}

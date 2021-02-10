@@ -53,14 +53,16 @@ Installing the webex_assistant_sdk package adds a wxa_sdk command line applicati
 
 ```bash
 $ wxa_sdk -h
-usage: wxa_sdk [-h] {new,generate-keys,invoke} ...
+usage: wxa_sdk [-h] {new,generate-keys,invoke,check} ...
 
 positional arguments:
-  {new,generate-keys,invoke}
+  {new,generate-keys,invoke,check}
     new                 create a new skill project
     generate-keys       generate keys for use with a Webex Assistant Skill
     invoke              invoke a skill simulating a request from Webex
                         Assistant
+    check               check the health and configuration of a Webex
+                        Assistant Skill
 
 optional arguments:
   -h, --help            show this help message and exit
