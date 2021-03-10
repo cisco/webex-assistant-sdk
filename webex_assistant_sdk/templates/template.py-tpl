@@ -1,0 +1,18 @@
+from webex_assistant_sdk import SkillApplication, crypto
+import os
+
+secret = '$secret'
+key = load_private_key_from_file(Path(__file__).resolve().parent / '$filename', password=$password)
+
+app = SkillApplication(__name__, secret=secret, private_key=key)
+
+
+@app.middleware
+def add_sleep(request, responder, handler):
+    handler(request, responder)
+    # ensure response ends with `listen` or `sleep`
+    if responder.directives[-1]['name'] not in {'listen', 'sleep'}:
+        responder.sleep()
+
+
+__all__ = ['app']

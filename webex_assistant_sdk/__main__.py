@@ -5,6 +5,8 @@ import os
 import pprint
 import shutil
 import sys
+from pathlib import Path
+from string import Template
 
 
 class PasswordPromptAction(argparse.Action):
@@ -50,8 +52,6 @@ def get_parser():
 
     subparsers = parser.add_subparsers(dest='command')
 
-    new_parser = subparsers.add_parser('new', help='create a new skill project')
-    new_parser.add_argument('name', help='the name of the skill', metavar='skill-name')
     keys_parser = subparsers.add_parser(
         'generate-keys', help='generate keys for use with a Webex Assistant Skill'
     )
@@ -65,6 +65,27 @@ def get_parser():
         help='the type of SSH key',
     )
     keys_parser.add_argument(
+        '-p',
+        '--password',
+        default=None,
+        type=str,
+        action=PasswordPromptAction,
+        help='a password to encrypt the private key',
+    )
+
+    new_parser = subparsers.add_parser('new', help='create a new skill project')
+    new_parser.add_argument('skill_name', help='the name of the skill', metavar='skill-name')
+    # TODO: Add MM dependency config flag
+    # new_parser.add_argument('include_mindmeld', help='indicator for including the MindMeld dependency into the skill')
+    new_parser.add_argument(
+        '-s',
+        '--secret',
+        default='',
+        type=str,
+        help='a secret string used for your application',
+    )
+    # TODO: Avoid duplicating these
+    new_parser.add_argument(
         '-p',
         '--password',
         default=None,
@@ -122,6 +143,39 @@ def get_parser():
     )
     return parser
 
+
+def new_skill(skill_name: str, password=None, secret='', mindmeld_dependency=True):
+    # Create directory structure
+    invoke_location = Path().resolve()
+    package_location = Path(__file__).resolve()
+
+    skill_directory = invoke_location / f'{skill_name}/'  # TODO: Check the name for correct format
+    skill_directory.mkdir()
+    print('Creating skill directory')
+
+    rsa_filename: str = f'{skill_name}.id_rsa'
+    generate_keys(f'{skill_directory}/{rsa_filename}', 'rsa', password)
+
+    context: dict = {
+        'filename': rsa_filename,
+        'password': password,
+        'secret': secret,
+    }
+
+    # Fill in template and write to main folder?
+    template_path: str = package_location.parent / 'templates/template.py-tpl'
+    output_path: str = skill_directory / 'app.py'
+    file: str
+    print('Writing starter template to directory')
+    with template_path.open() as f:
+        src = Template(f.read())
+        file = src.substitute(context)
+
+    # Write template to project directory
+    with output_path.open('w') as f:
+        f.write(file)
+
+    print('done')
 
 def generate_keys(filename, key_type, password=None):
     from . import crypto  # pylint: disable=import-outside-toplevel
@@ -184,7 +238,7 @@ def main():
     args = parser.parse_args()
 
     if args.command == 'new':
-        print("\n\nNot yet implemented")
+        new_skill(args.skill_name, args.password, args.secret)  # , args.mindmeld_dependency)
         return
 
     if args.command == 'generate-keys':
