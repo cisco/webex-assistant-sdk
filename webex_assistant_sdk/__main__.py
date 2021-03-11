@@ -145,37 +145,31 @@ def get_parser():
 
 
 def new_skill(skill_name: str, password=None, secret='', mindmeld_dependency=True):
-    # Create directory structure
+    # Use cookiecutter to generate directory
+    from cookiecutter.main import cookiecutter
+
     invoke_location = Path().resolve()
     package_location = Path(__file__).resolve()
-
-    skill_directory = invoke_location / f'{skill_name}/'  # TODO: Check the name for correct format
-    skill_directory.mkdir()
-    print('Creating skill directory')
+    template_path: str = package_location.parent / 'templates/mindmeld_template'
 
     rsa_filename: str = f'{skill_name}.id_rsa'
-    generate_keys(f'{skill_directory}/{rsa_filename}', 'rsa', password)
+    print(invoke_location)
 
-    context: dict = {
-        'filename': rsa_filename,
-        'password': password,
-        'secret': secret,
-    }
+    cookiecutter(
+        str(template_path),
+        output_dir=str(invoke_location),
+        no_input=True,
+        extra_context={
+            'skill_name': skill_name,
+            'rsa_file_name': rsa_filename,  # Path to the RSA key
+            'rsa_password': password,
+            'app_secret': secret,
+        }
+    )
 
-    # Fill in template and write to main folder?
-    template_path: str = package_location.parent / 'templates/template.py-tpl'
-    output_path: str = skill_directory / 'app.py'
-    file: str
-    print('Writing starter template to directory')
-    with template_path.open() as f:
-        src = Template(f.read())
-        file = src.substitute(context)
+    # Generate the rsa keys
+    generate_keys(invoke_location / f'{skill_name}/{rsa_filename}', 'rsa', password)
 
-    # Write template to project directory
-    with output_path.open('w') as f:
-        f.write(file)
-
-    print('done')
 
 def generate_keys(filename, key_type, password=None):
     from . import crypto  # pylint: disable=import-outside-toplevel

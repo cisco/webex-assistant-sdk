@@ -1,0 +1,6 @@
+{
+  "skill_name": "mindmeld_skill",
+  "rsa_file_name": "mm_skill.id_rsa",
+  "rsa_password": "",
+  "app_secret": ""
+}
