@@ -3,12 +3,13 @@
 It is defined here to avoid circular imports
 """
 from webex_assistant_sdk import SkillApplication, crypto
-import os
+from pathlib import Path
 
 secret = '{{cookiecutter.app_secret}}'
-key = load_private_key_from_file(Path(__file__).resolve().parent / '{{cookiecutter.rsa_file_name}}')
+key = crypto.load_private_key_from_file(Path(__file__).resolve().parent / '{{cookiecutter.rsa_file_name}}')
 
 app = SkillApplication(__name__, secret=secret, private_key=key)
+
 
 @app.introduce()
 @app.handle(intent='greet')
@@ -18,7 +19,7 @@ def greet(request, responder):
 
 
 @app.handle(intent='exit')
-def exit(request, responder):
+def exit_(request, responder):
     del request
     responder.reply('Bye!')
 
@@ -29,5 +30,6 @@ def add_sleep(request, responder, handler):
     # ensure response ends with `listen` or `sleep`
     if responder.directives[-1]['name'] not in {'listen', 'sleep'}:
         responder.sleep()
+
 
 __all__ = ['app']

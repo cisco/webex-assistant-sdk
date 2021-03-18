@@ -6,7 +6,6 @@ import pprint
 import shutil
 import sys
 from pathlib import Path
-from string import Template
 
 
 class PasswordPromptAction(argparse.Action):
@@ -75,16 +74,12 @@ def get_parser():
 
     new_parser = subparsers.add_parser('new', help='create a new skill project')
     new_parser.add_argument('skill_name', help='the name of the skill', metavar='skill-name')
-    # TODO: Add MM dependency config flag
-    # new_parser.add_argument('include_mindmeld', help='indicator for including the MindMeld dependency into the skill')
     new_parser.add_argument(
-        '-s',
-        '--secret',
-        default='',
+        'secret',
         type=str,
-        help='a secret string used for your application',
+        help='a secret string used for your skill application',
+        action=PasswordPromptAction,
     )
-    # TODO: Avoid duplicating these
     new_parser.add_argument(
         '-p',
         '--password',
@@ -144,17 +139,18 @@ def get_parser():
     return parser
 
 
-def new_skill(skill_name: str, password=None, secret='', mindmeld_dependency=True):
+def new_skill(skill_name: str, secret: str, password=None):
     # Use cookiecutter to generate directory
     from cookiecutter.main import cookiecutter
 
     invoke_location = Path().resolve()
     package_location = Path(__file__).resolve()
-    template_path: str = package_location.parent / 'templates/mindmeld_template'
+
+    skill_template: str
+    # TODO: Add logic to use MM-less template when available
+    template_path = package_location.parent / 'templates/mindmeld_template'
 
     rsa_filename: str = f'{skill_name}.id_rsa'
-    print(invoke_location)
-
     cookiecutter(
         str(template_path),
         output_dir=str(invoke_location),
@@ -232,7 +228,7 @@ def main():
     args = parser.parse_args()
 
     if args.command == 'new':
-        new_skill(args.skill_name, args.password, args.secret)  # , args.mindmeld_dependency)
+        new_skill(args.skill_name, args.secret, args.password)
         return
 
     if args.command == 'generate-keys':
