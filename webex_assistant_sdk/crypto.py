@@ -1,6 +1,6 @@
 import base64
 import binascii
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union
 
 from cryptography import fernet
 from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
@@ -9,6 +9,21 @@ from cryptography.hazmat.primitives import hashes, hmac, serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519, padding, rsa
 
 from .exceptions import EncryptionKeyError, SignatureGenerationError
+
+
+def _validate_password_input(password: Union[str, bytes]) -> bytes:
+    """Checks the input password is a string or bytes
+    Args:
+        password (Union[str, bytes]): Provided password to be checked
+    Returns:
+        bytes: The password encoded as bytes. Otherwise, raises error
+    """
+    if isinstance(password, bytes):
+        return password
+    elif isinstance(password, str):
+        return str.encode(password, 'utf-8')
+    else:
+        raise EncryptionKeyError('Invalid secret key password provided')
 
 
 def encrypt(public_key, message: str) -> str:
@@ -55,11 +70,11 @@ def decrypt(private_key, cipher_string: str) -> str:
     return cipher.decrypt(encrypted_message.encode('utf-8')).decode('utf-8')
 
 
-def load_private_key(data: bytes, password=None):
+def load_private_key(data: bytes, password: Optional[str] = None):
     """Loads a private key in PEM format"""
     try:
         private_key = serialization.load_pem_private_key(
-            data, password=password, backend=default_backend()
+            data, password=_validate_password_input(password), backend=default_backend()
         )
         return private_key
     except (binascii.Error, ValueError, UnsupportedAlgorithm) as ex:
@@ -144,9 +159,7 @@ def generate_keys(filename: str, key_type: str, password: Optional[str] = None):
         private_key = ed25519.Ed25519PrivateKey.generate()
 
     if password:
-        if isinstance(password, str):
-            password = str.encode(password)
-        encryption = serialization.BestAvailableEncryption(password)
+        encryption = serialization.BestAvailableEncryption(_validate_password_input(password))
     else:
         encryption = serialization.NoEncryption()
 

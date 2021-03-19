@@ -121,8 +121,16 @@ def test_generate_keys(temp_dir, password):
     public_key = temp_dir / 'key.id_rsa.pub'
 
     # Generate the keys
-    generate_keys(temp_dir / 'key.id_rsa', 'rsa', password)
+    generate_keys(private_key, 'rsa', password)
 
     # check if the files exist
     assert private_key.is_file()
     assert public_key.is_file()
+
+
+@pytest.mark.parametrize('password', [200, [1, 2, 3], {'foo': 'bar'}])
+def test_generate_keys_invalid_password(temp_dir, password):
+    private_key = temp_dir / 'key.id_rsa'
+
+    with pytest.raises(EncryptionKeyError):
+        generate_keys(private_key, 'rsa', password)
