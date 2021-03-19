@@ -29,10 +29,9 @@ KEYS = [
 ]
 
 
-@pytest.fixture(scope="session")
-def temp_dir(tmp_path_factory):
-    dir = tmp_path_factory.mktemp("tmp")
-    return dir
+@pytest.fixture(scope='session', name='temp_dir')
+def _temp_dir(tmp_path_factory):
+    return tmp_path_factory.mktemp("tmp")
 
 
 @pytest.mark.parametrize('key_type', KEYS)
