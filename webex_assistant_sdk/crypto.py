@@ -144,6 +144,8 @@ def generate_keys(filename: str, key_type: str, password: Optional[str] = None):
         private_key = ed25519.Ed25519PrivateKey.generate()
 
     if password:
+        if isinstance(password, str):
+            password = str.encode(password)
         encryption = serialization.BestAvailableEncryption(password)
     else:
         encryption = serialization.NoEncryption()

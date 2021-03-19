@@ -114,7 +114,7 @@ def test_signatures():
         generate_signature(secret, '')
 
 
-@pytest.mark.parametrize('password', [None, b'bytes'])
+@pytest.mark.parametrize('password', [None, b'bytes', 'string'])
 def test_generate_keys(temp_dir, password):
     # Set expected file paths
     private_key = temp_dir / 'key.id_rsa'
