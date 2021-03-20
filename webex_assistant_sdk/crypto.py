@@ -44,7 +44,7 @@ def encrypt(public_key, message: str) -> str:
 
 
 def decrypt(private_key, cipher_string: str) -> str:
-    """Decrypes a cypher using the given private key"""
+    """Decrypts a cypher using the given private key"""
     encrypted_components: Sequence[str] = cipher_string.split('.')
     encrypted_temp_key: str = encrypted_components[0]
     # only the first '.' character is special -- we should treat the remainder as the content
@@ -73,8 +73,10 @@ def decrypt(private_key, cipher_string: str) -> str:
 def load_private_key(data: bytes, password: Optional[str] = None):
     """Loads a private key in PEM format"""
     try:
+        if password:
+            password = _validate_password_input(password)
         private_key = serialization.load_pem_private_key(
-            data, password=_validate_password_input(password), backend=default_backend()
+            data, password=password, backend=default_backend()
         )
         return private_key
     except (binascii.Error, ValueError, UnsupportedAlgorithm) as ex:
