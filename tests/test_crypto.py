@@ -12,6 +12,7 @@ from webex_assistant_sdk.crypto import (
     decrypt,
     encrypt,
     generate_signature,
+    generate_keys,
     get_file_contents,
     load_private_key,
     load_public_key,
@@ -26,6 +27,11 @@ KEYS = [
     # 'id_ed25519',
     # 'id_ed25519.encrypted',
 ]
+
+
+@pytest.fixture(scope='session', name='temp_dir')
+def _temp_dir(tmp_path_factory):
+    return tmp_path_factory.mktemp("tmp")
 
 
 @pytest.mark.parametrize('key_type', KEYS)
@@ -105,3 +111,25 @@ def test_signatures():
 
     with pytest.raises(SignatureGenerationError):
         generate_signature(secret, '')
+
+
+@pytest.mark.parametrize('password', [None, b'bytes', 'string'])
+def test_generate_keys(temp_dir, password):
+    # Set expected file paths
+    private_key = temp_dir / 'key.id_rsa'
+    public_key = temp_dir / 'key.id_rsa.pub'
+
+    # Generate the keys
+    generate_keys(private_key, 'rsa', password)
+
+    # check if the files exist
+    assert private_key.is_file()
+    assert public_key.is_file()
+
+
+@pytest.mark.parametrize('password', [200, [1, 2, 3], {'foo': 'bar'}])
+def test_generate_keys_invalid_password(temp_dir, password):
+    private_key = temp_dir / 'key.id_rsa'
+
+    with pytest.raises(EncryptionKeyError):
+        generate_keys(private_key, 'rsa', password)
