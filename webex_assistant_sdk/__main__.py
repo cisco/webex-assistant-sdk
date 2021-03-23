@@ -2,10 +2,10 @@ import argparse
 import getpass
 import json
 import os
+from pathlib import Path
 import pprint
 import shutil
 import sys
-from pathlib import Path
 
 
 class PasswordPromptAction(argparse.Action):
@@ -158,7 +158,7 @@ def new_skill(skill_name: str, secret: str, password=None):
             'rsa_file_name': rsa_filename,  # Path to the RSA key
             'rsa_password': password,
             'app_secret': secret,
-        }
+        },
     )
 
     # Generate the rsa keys
