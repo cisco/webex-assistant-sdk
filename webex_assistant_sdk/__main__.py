@@ -140,13 +140,11 @@ def get_parser():
 
 
 def new_skill(skill_name: str, secret: str, password=None):
-    # Use cookiecutter to generate directory
-    from cookiecutter.main import cookiecutter
+    from cookiecutter.main import cookiecutter  # pylint: disable=import-outside-toplevel
 
     invoke_location = Path().resolve()
     package_location = Path(__file__).resolve()
 
-    skill_template: str
     # TODO: Add logic to use MM-less template when available
     template_path = package_location.parent / 'templates/mindmeld_template'
 
