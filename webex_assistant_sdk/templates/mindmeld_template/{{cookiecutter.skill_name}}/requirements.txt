@@ -1,0 +1,2 @@
+mindmeld==4.3.4rc3
+webex-assistant-sdk==0.2.0

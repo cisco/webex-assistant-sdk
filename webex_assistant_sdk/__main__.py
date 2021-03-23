@@ -2,6 +2,7 @@ import argparse
 import getpass
 import json
 import os
+from pathlib import Path
 import pprint
 import shutil
 import sys
@@ -50,8 +51,6 @@ def get_parser():
 
     subparsers = parser.add_subparsers(dest='command')
 
-    new_parser = subparsers.add_parser('new', help='create a new skill project')
-    new_parser.add_argument('name', help='the name of the skill', metavar='skill-name')
     keys_parser = subparsers.add_parser(
         'generate-keys', help='generate keys for use with a Webex Assistant Skill'
     )
@@ -65,6 +64,23 @@ def get_parser():
         help='the type of SSH key',
     )
     keys_parser.add_argument(
+        '-p',
+        '--password',
+        default=None,
+        type=str,
+        action=PasswordPromptAction,
+        help='a password to encrypt the private key',
+    )
+
+    new_parser = subparsers.add_parser('new', help='create a new skill project')
+    new_parser.add_argument('skill_name', help='the name of the skill', metavar='skill-name')
+    new_parser.add_argument(
+        'secret',
+        type=str,
+        help='a secret string used for your skill application',
+        action=PasswordPromptAction,
+    )
+    new_parser.add_argument(
         '-p',
         '--password',
         default=None,
@@ -121,6 +137,32 @@ def get_parser():
         help='the URL where the skill is served',
     )
     return parser
+
+
+def new_skill(skill_name: str, secret: str, password=None):
+    from cookiecutter.main import cookiecutter  # pylint: disable=import-outside-toplevel
+
+    invoke_location = Path().resolve()
+    package_location = Path(__file__).resolve()
+
+    # TODO: Add logic to use MM-less template when available
+    template_path = package_location.parent / 'templates/mindmeld_template'
+
+    rsa_filename: str = f'{skill_name}.id_rsa'
+    cookiecutter(
+        str(template_path),
+        output_dir=str(invoke_location),
+        no_input=True,
+        extra_context={
+            'skill_name': skill_name,
+            'rsa_file_name': rsa_filename,  # Path to the RSA key
+            'rsa_password': password,
+            'app_secret': secret,
+        },
+    )
+
+    # Generate the rsa keys
+    generate_keys(invoke_location / f'{skill_name}/{rsa_filename}', 'rsa', password)
 
 
 def generate_keys(filename, key_type, password=None):
@@ -184,7 +226,7 @@ def main():
     args = parser.parse_args()
 
     if args.command == 'new':
-        print("\n\nNot yet implemented")
+        new_skill(args.skill_name, args.secret, args.password)
         return
 
     if args.command == 'generate-keys':
