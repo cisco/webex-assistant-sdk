@@ -162,7 +162,7 @@ def new_skill(skill_name: str, secret: str, password=None):
     )
 
     # Generate the rsa keys
-    generate_keys(invoke_location / f'{skill_name}/{rsa_filename}', 'rsa', password)
+    generate_keys(invoke_location / f'{skill_name}/{skill_name}/{rsa_filename}', 'rsa', password)
 
 
 def generate_keys(filename, key_type, password=None):
