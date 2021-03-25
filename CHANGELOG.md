@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Implemented `new` CLI command
 
+### Changed
+
+- Changed the unsupported `go-home` for the new `dismiss-web-view` directive
+
 ### Fixed
 
 - Fixed key password validation

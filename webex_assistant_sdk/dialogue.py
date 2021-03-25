@@ -9,14 +9,14 @@ class AssistantDirectiveNames(DirectiveNames):
     DISPLAY_WEB_VIEW = 'display-web-view'
     """A directive to display a web view."""
 
+    CLEAR_WEB_VIEW = 'clear-web-view'
+    """A directive to clear a web view"""
+
     UI_HINT = 'ui-hint'
     """A directive to display a UI hint."""
 
     ASR_HINT = 'asr-hint'
     """A directive to display an ASR hint."""
-
-    GO_HOME = 'go-home'
-    """A directive to dismiss the web view."""
 
     LONG_REPLY = 'long-reply'
     """A directive to display long replies."""
@@ -131,9 +131,9 @@ class SkillResponder(DialogueResponder):
         payload = {'text': texts}
         self.act(self.DirectiveNames.ASR_HINT, payload=payload)
 
-    def go_home(self):
+    def clear_web_view(self):
         """Dismisses the web view."""
-        self.act(self.DirectiveNames.GO_HOME)
+        self.act(self.DirectiveNames.CLEAR_WEB_VIEW)
 
     def reply(  # pylint: disable=arguments-differ
         self, response_strings, increment_group=False, is_spoken=True, remove_hyphens=False
