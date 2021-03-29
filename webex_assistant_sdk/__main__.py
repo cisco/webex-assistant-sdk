@@ -6,6 +6,7 @@ from pathlib import Path
 import pprint
 import shutil
 import sys
+import textwrap
 
 
 class PasswordPromptAction(argparse.Action):
@@ -72,8 +73,19 @@ def get_parser():
         help='a password to encrypt the private key',
     )
 
-    new_parser = subparsers.add_parser('new', help='create a new skill project')
-    new_parser.add_argument('skill_name', help='the name of the skill', metavar='skill-name')
+    new_parser = subparsers.add_parser(
+        'new',
+        help='create a new skill project',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent(
+            '''\
+            This command creates a simple skill project based on a scaffold template.
+            The skill_name should follow snakecase format because it is used for the
+            package filename as well.
+            '''
+        ),
+    )
+    new_parser.add_argument('skill_name', help='the name of the skill.', metavar='skill-name')
     new_parser.add_argument(
         'secret',
         type=str,
@@ -141,9 +153,18 @@ def get_parser():
 
 def new_skill(skill_name: str, secret: str, password=None):
     from cookiecutter.main import cookiecutter  # pylint: disable=import-outside-toplevel
+    import re  # pylint: disable=import-outside-toplevel
+
+    def _validate_skill_name(name: str) -> bool:
+        package_pattern = re.compile(r'[a-z][a-z0-9_]*')
+        return bool(package_pattern.fullmatch(name))
 
     invoke_location = Path().resolve()
     package_location = Path(__file__).resolve()
+
+    # Format the skill_name; Do not allow spaces
+    if not _validate_skill_name(skill_name):
+        print('Please use snakecase to name your skill')
 
     # TODO: Add logic to use MM-less template when available
     template_path = package_location.parent / 'templates/mindmeld_template'
@@ -162,7 +183,7 @@ def new_skill(skill_name: str, secret: str, password=None):
     )
 
     # Generate the rsa keys
-    generate_keys(invoke_location / f'{skill_name}/{rsa_filename}', 'rsa', password)
+    generate_keys(invoke_location / f'{skill_name}/{skill_name}/{rsa_filename}', 'rsa', password)
 
 
 def generate_keys(filename, key_type, password=None):
