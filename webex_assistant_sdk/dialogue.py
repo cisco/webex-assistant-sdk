@@ -24,6 +24,9 @@ class AssistantDirectiveNames(DirectiveNames):
     DISPLAY = 'display'
     """A generic display directive."""
 
+    ASSISTANT_EVENT = 'assistant-event'
+    """A directive to forward a generic payload"""
+
 
 class DirectiveNotSupportedError(Exception):
     pass
@@ -223,6 +226,18 @@ class SkillResponder(DialogueResponder):
         # If we sent neither long reply or speak, raise error.
         if not success:
             raise DirectiveNotSupportedError
+
+    def send_assistant_event(self, name, payload=None):
+        """Sends a 'assistant-event' directive
+
+        Args:
+            name (string): Used to identify the source of the event
+            payload (json object, optional): Payload to forward
+        """
+        self.act(self.DirectiveNames.ASSISTANT_EVENT, {
+            'name': name,
+            'payload': payload,
+        })
 
     @property
     def supported_directives(self):

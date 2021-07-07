@@ -105,3 +105,15 @@ def test_long_reply(responder: SkillResponder, query: str, remove_hyphens: bool,
     assert responder.directives[0]['type'] == 'view'
     assert responder.directives[1]['payload']['text'] == text
     assert responder.directives[1]['name'] == 'speak'
+
+def test_assistant_event(responder: SkillResponder):
+    expected_name = 'test'
+    expected_payload = { 'foo': 'bar' }
+
+    responder.send_assistant_event(expected_name, expected_payload)
+
+    directive = responder.directives[0]
+
+    assert directive['name'] == responder.DirectiveNames.ASSISTANT_EVENT
+    assert directive['payload']['name'] == expected_name
+    assert directive['payload']['payload'] == expected_payload
