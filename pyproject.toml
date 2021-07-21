@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "webex-assistant-sdk"
 version = "0.3.0"
+homepage = "https://github.com/cisco/webex-assistant-sdk"
 description = "An SDK for developing applications for Webex Assistant."
 readme = "README.md"
 authors = ["Minh Vo Thanh <minhtue@cisco.com>", "J.J. Jackson <jdot@cisco.com>"]
