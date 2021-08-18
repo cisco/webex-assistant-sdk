@@ -13,16 +13,6 @@ def _skill_dir():
     return os.path.join(os.path.realpath(os.path.dirname(__file__)), 'skill')
 
 
-@pytest.fixture(name='keys_dir')
-def _keys_dir(skill_dir):
-    return skill_dir
-
-
-@pytest.fixture
-def passphrase():
-    return b'passphrase'
-
-
 @pytest.fixture
 def responder():
     return SkillResponder()

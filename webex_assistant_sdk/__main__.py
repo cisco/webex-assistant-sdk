@@ -1,12 +1,13 @@
 import argparse
 import getpass
 import json
-import os
 from pathlib import Path
 import pprint
 import shutil
 import sys
 import textwrap
+
+from . import helpers
 
 
 class PasswordPromptAction(argparse.Action):
@@ -113,9 +114,6 @@ def get_parser():
         prompt='Enter skill secret: ',
     )
     invoke_parser.add_argument(
-        '-k', '--key-file', help="the path to the skill's public key file on disk", required=True
-    )
-    invoke_parser.add_argument(
         '-U',
         '--url',
         default='http://localhost:7150/parse',
@@ -138,9 +136,6 @@ def get_parser():
         action=PasswordPromptAction,
         help="the skill's secret",
         prompt='Enter skill secret: ',
-    )
-    check_parser.add_argument(
-        '-k', '--key-file', help="the path to the skill's public key file on disk", required=True
     )
     check_parser.add_argument(
         '-U',
@@ -182,24 +177,8 @@ def new_skill(skill_name: str, secret: str, password=None):
         },
     )
 
-    # Generate the rsa keys
-    generate_keys(invoke_location / f'{skill_name}/{skill_name}/{rsa_filename}', 'rsa', password)
 
-
-def generate_keys(filename, key_type, password=None):
-    from . import crypto  # pylint: disable=import-outside-toplevel
-
-    filename = os.path.abspath(filename)
-    print(f'Generating {key_type} keys at {filename!r}')
-
-    crypto.generate_keys(filename, key_type, password)
-    print('done')
-
-
-def invoke_skill(secret, key_file, url, context=None, frame=None):
-    from . import crypto, helpers  # pylint: disable=import-outside-toplevel
-
-    public_key = crypto.load_public_key_from_file(key_file)
+def invoke_skill(secret, url, context=None, frame=None):
     history = []
     first = True
     while True:
@@ -208,7 +187,7 @@ def invoke_skill(secret, key_file, url, context=None, frame=None):
             first = False
             text = input(f'{prompt}>>> ')
             res = helpers.make_request(
-                secret, public_key, text, context=context, frame=frame, history=history, url=url
+                secret, text, context=context, frame=frame, history=history, url=url
             )
             directives = res.get('directives')
             context = res.get('context')
@@ -225,12 +204,8 @@ def invoke_skill(secret, key_file, url, context=None, frame=None):
         pprint.pprint(directives, indent=2, width=width)
 
 
-def check_skill(secret, key_file, url):
-    from . import crypto, helpers  # pylint: disable=import-outside-toplevel
-
-    public_key = crypto.load_public_key_from_file(key_file)
-    res = helpers.make_health_check(secret, public_key, url)
-
+def check_skill(secret, url):
+    res = helpers.make_health_check(secret, url)
     print(res)
 
 
@@ -250,10 +225,6 @@ def main():
         new_skill(args.skill_name, args.secret, args.password)
         return
 
-    if args.command == 'generate-keys':
-        generate_keys(args.filename, args.key_type, args.password)
-        return
-
     if args.command == 'invoke':
         if not args.secret:
             # reparse with added '-s'
@@ -262,7 +233,7 @@ def main():
 
         context = parse_json_argument('context', args.context) if args.context else None
         frame = parse_json_argument('frame', args.frame) if args.frame else None
-        invoke_skill(args.secret, args.key_file, url=args.url, context=context, frame=frame)
+        invoke_skill(args.secret, url=args.url, context=context, frame=frame)
         return
 
     if args.command == 'check':
@@ -270,7 +241,7 @@ def main():
             # reparse with added '-s'
             # Note: for some reason we have to pop off the first arg when reparsing
             args = parser.parse_args(args=sys.argv[1:] + ['-s'])
-        check_skill(args.secret, args.key_file, url=args.url)
+        check_skill(args.secret, url=args.url)
         return
 
     parser.print_help()
