@@ -2,14 +2,11 @@
 """This module contains an empty application container.
 It is defined here to avoid circular imports
 """
-from pathlib import Path
-
-from webex_assistant_sdk import SkillApplication, crypto
+from webex_assistant_sdk import SkillApplication
 
 secret = '{{cookiecutter.app_secret}}'
-key = crypto.load_private_key_from_file(Path(__file__).resolve().parent / '{{cookiecutter.rsa_file_name}}')
 
-app = SkillApplication(__name__, secret=secret, private_key=key)
+app = SkillApplication(__name__, secret=secret)
 
 
 @app.introduce()

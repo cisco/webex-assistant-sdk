@@ -1,10 +1,8 @@
 import json
 import logging
-import os
 import time
 import uuid
 
-from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from mindmeld import DialogueResponder
@@ -18,19 +16,16 @@ from .exceptions import (
     ServerChallengeValidationError,
     SignatureValidationError,
 )
-from .helpers import validate_health_check, validate_request
+from .helpers import validate_request
 
 logger = logging.getLogger(__name__)
 
 
-def create_skill_server(
-    app_manager: ApplicationManager, secret: str, private_key: RSAPrivateKey
-) -> Flask:
+def create_skill_server(app_manager: ApplicationManager, secret: str) -> Flask:
     server = Flask('mindmeld')
     CORS(server)
 
     server.request_class = MindMeldRequest
-    server._private_key = private_key
     server._secret = secret
 
     # pylint: disable=unused-variable
@@ -40,14 +35,9 @@ def create_skill_server(
 
         start_time = time.time()
         try:
-            use_encryption = not os.environ.get('WXA_SKILL_DEBUG', False)
-            if use_encryption:
-                request_json, challenge = validate_request(
-                    secret, private_key, request.headers, request.get_data().decode('utf-8')
-                )
-            else:
-                request_json = json.loads(request.data)
-                challenge = None
+            request_json, challenge = validate_request(
+                secret, request.headers, request.get_data().decode('utf-8')
+            )
         except SignatureValidationError as exc:
             raise BadMindMeldRequestError(exc.args[0], status_code=403) from exc
         except (RequestValidationError, ServerChallengeValidationError) as exc:
@@ -77,27 +67,7 @@ def create_skill_server(
 
     @server.route('/parse', methods=['GET'])
     def health_check():
-        encrypted_challenge: str = request.args.get('challenge')
-
         response = {'status': 'up', 'api_version': '.'.join((str(i) for i in api_version))}
-        if not encrypted_challenge:
-            return jsonify(response)
-
-        try:
-            response['challenge'] = validate_health_check(
-                secret, private_key, request.headers, encrypted_challenge
-            )
-            response['validated'] = True
-            # except SignatureValidationError as exc:
-        except (
-            SignatureValidationError,
-            RequestValidationError,
-            ServerChallengeValidationError,
-        ) as exc:
-            response['status'] = 'error'
-            response['error'] = exc.args[0]
-            return jsonify(response), 400
-
         return jsonify(response)
 
     # handle exceptions
