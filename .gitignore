@@ -84,6 +84,7 @@ celerybeat-schedule
 # Environments
 .env
 .venv
+.envrc
 env/
 venv/
 ENV/
@@ -105,3 +106,9 @@ venv.bak/
 
 # MindMeld
 .generated
+
+## IDE
+.idea
+
+## Mac
+.DS_STORE
