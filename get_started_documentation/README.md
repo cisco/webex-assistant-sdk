@@ -102,7 +102,6 @@ You should get a response like the following:
 
 ```json
 {
-    "challenge": "random",
     "directives": [
         {
             "name": "reply",
@@ -292,6 +291,10 @@ skill.
 
 You can also use this tool alone to test your own skills.
 
+Note that the skill can also take an environment variable: `ECHO_RUN_DEV_MODE`. When set to `true`, the skill skips
+all the decryption and signing logic and basically becomes the `echo-skill` we tested first. This is a good
+pattern to follow, so you can also test your skill in isolation from all the decryption and signature logic.
+
 ## Hosting Sample Skill Locally
 
 Now that our skill is running securely, we can host it locally over https. For that we can use a service like
@@ -342,3 +345,24 @@ Authorization Bearer <YOUR TOKEN>
 ```
 
 Congratulations, at this point your skill is in the `Skills Service`!
+
+At this point the skill will only be enabled for yourself and not for other people in your organization.
+
+### Testing your Skill
+
+The simplest way to test your skill end to end is by using a Cisco RoomOS device, like a Roomkit or a Desk Pro
+in personal mode that has the `Webex Assistant` enabled.
+
+First we need to make sure the feature toggle for the skills functionality is set for you. Using your tool of
+choice (curl, Postman, Paw, etc...) make the following request (make sure to replace the values in <>):
+
+```
+POST https://feature-a.wbx2.com/feature/api/v1/features/users/<YOUR DEVELOPER ID>/developer
+Authorization Bearer <YOUR TOKEN>
+{
+    "key": "webex-assistant-skills",
+    "val": "true",
+    "mutable": true,
+    "type": "DEV"
+}
+```

@@ -31,14 +31,19 @@ def directive(name: str, dtype: str, payload: dict = None) -> dict:
     }
 
 
-def build_response(text: str, should_listen: bool = False) -> dict:
-    return {
+def build_response(text: str, challenge: str, should_listen: bool = False) -> dict:
+    response = {
         'directives': [
             directive('reply', 'view', {'text': text}),
             directive('speak', 'action', {'text': text}),
             directive('listen' if should_listen else 'sleep', 'action')
         ]
     }
+
+    if not DEV_MODE:
+        response['challenge'] = challenge
+
+    return response
 
 
 def handle_message(req_body: dict):
@@ -50,7 +55,7 @@ def handle_message(req_body: dict):
         text = req_body.get('text', ["Hmm... I didn't get anything to echo"])
         text = text[0]
 
-    return build_response(text, should_listen)
+    return build_response(text, req_body.get('challenge', ''), should_listen)
 
 
 @routes.post('/')
