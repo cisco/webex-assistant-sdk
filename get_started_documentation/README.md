@@ -271,7 +271,11 @@ Let's now look into how this is all done in the `secure` version of our `Echo` s
 
 ### Decrypting the Request's Body
 
+TODO
+
 ### Verifying the signature
+
+TODO
 
 ### Creating Secret and Keys
 
