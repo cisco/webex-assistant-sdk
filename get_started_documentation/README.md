@@ -20,25 +20,60 @@ full document step by step and go through all the sections.
 
 # Skills Architecture Overview
 
-TODO
+In order to better understand what we are doing in this guide, we'll start with a high level overview of how
+skills work within the `Webex Assistant`. The following image is an overview of the architecture:
+
+![Skills Architecture](images/skills_architecture.png)
+
+We'll start defining the different pieces of the system:
+- `Actor`: A user calling a skill using the `Webex Assistant`.
+- `Webex Client`: A supported client that can run the `Webex Assistant`, right now this is only available on
+RoomOS devices like Roomkits and Desk Pros.
+- `Assistant Dialogue`: This is what gets the request and decides how to handle it.
+- `Assistant ANLP`: This is the part of the system that performs ML to analyze the user's query. In the case of
+skills though, this is not used. It's only shown here for completeness purposes.
+- `Assistant Skills`: This is a cloud service that manages skills created by third party developers.
+- `Third Party Skill`: This is a cloud service developed by a third party. It's a service on its own but it's
+registered on the `Assistant Skills` service in order to be used along with the `Webex Assistant`
+  
+The flow works as follows:
+
+1. The user wakes up the assistant and requests the use of a skill, for example by saying: 
+   `OK Webex, tell Echo hello`.
+2. The client then forwards that request to the `Assistant Dialogue` service.
+3. The `Assistant Dialogue` services analyzes the query and finds the user is trying to call a third party
+skill called `Echo` with the payload `hello`.
+4. `Assistant Dialogue` checks with the `Assistant Skills` service to verify if this particular user has access to
+the `Echo` skill.
+5. If the user has access to the given skill, the request goes to the `Assistant Skills` service for further
+processing. If the requested skill is not available for the user, then the request goes to `Assistant ANLP`
+ for further processing.
+6. The `Assistant Skills` encrypts and signs the request and sends it to the `Third Party Skill`.
+7. The `Third Party Skill` handles the request and produces a final response, which is then passed back via
+the same pipeline to the client.
+   
+In this guide well be creating a `Third Party Skill` and using the `Assistant Skills` API to give the 
+`Webex Assistant` access to it.
 
 # Creating a Sample Skill
 
 A skill is an independent service or application that supports a given API, but it exists and runs outside 
-of the Webex Assistant. Let's start building our own `Echo` skill, which is a skill that will  repeat back 
+the Webex Assistant. Let's start building our own `Echo` skill, which is a skill that will  repeat back 
 what we say.
 
 ## Requirements
 
-You need to have some basic knowledge in order to better use this guide:
+You need to have some basic requirements in order to better use this guide:
 
 - Familiarity with Python
 - Familiarity with AIOHTTP applications
 - Familiarity with Poetry for dependency managment
 - Familiarity with cloud services and REST APIs
+- For a better experience, you'll need access to a RoomOS device in personal mode. This is can be a Roomkit
+or a Desk Pro with the `Webex Assistant` enabled.
 
-If you need a refresher on any of the above, there's plenty of documentation online that you can use along 
-the way.
+If you need a refresher on any of the technology above, there's plenty of documentation online that you
+can use along the way.
 
 ## Running the Skill
 
