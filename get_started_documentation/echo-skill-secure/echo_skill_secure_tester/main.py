@@ -26,12 +26,14 @@ def sign_message(message: bytes, secret: bytes) -> bytes:
     return sig
 
 
+challenge = os.urandom(32).hex()
 message_body = {
     "text": ["Hello world!"],
     "context": {},
     "params": {},
     "frame": {},
-    "history": {}
+    "history": {},
+    "challenge": challenge
 }
 
 encrypted_message = encrypt_payload(json.dumps(message_body).encode('utf-8'), PUBLIC_KEY.encode('utf-8'))
@@ -49,7 +51,11 @@ async def main():
     async with aiohttp.ClientSession() as session:
         async with session.post('http://0.0.0.0:8080/', json=request) as resp:
             print(f'Status: {resp.status}')
-            print(f'Response: {await resp.text()}')
+            response = await resp.json()
+            pretty_response = json.dumps(response, indent=4)
+            print(f'Response:\n{pretty_response}')
+
+            assert challenge == response['challenge']
 
 
 loop = asyncio.get_event_loop()
