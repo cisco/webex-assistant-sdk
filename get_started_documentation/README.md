@@ -257,6 +257,12 @@ provide 2 versions of the skill so that in the simple 'insecure' version we buil
 on the API pieces and quickly test things up. However, a real skill will be closer to the 'secure' version
 of `Echo` which we'll look into now.
 
+For starters, go into the `echo-skill-secure` folder:
+
+```bash
+cd echo-skill-secure
+```
+
 ### Understanding the Encryption Flow
 
 As mentioned above, the data in the request to the skill will be encrypted. The encryption is done using rsa keys
