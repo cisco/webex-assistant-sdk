@@ -14,6 +14,7 @@ We'll cover the following topics:
 - [Skills architecture overview](#skills-architecture-overview)
 - [Creating a sample skill](#creating-a-sample-skill)
 - [Registering a skill on the `Skills Service`](#registering-a-skill-on-the-skills-service)
+- [Further API Documentation](#further-api-documentation)
 
 Feel free to go to any individual section by following the links above. Or just follow the 
 full document step by step and go through all the sections.
@@ -405,3 +406,12 @@ Authorization Bearer <YOUR TOKEN>
     "type": "DEV"
 }
 ```
+
+# Further API Documentation
+
+For further documentation on how to use the API of the `Skills Service` you can take a look at our swagger 
+documentation.
+
+Simply go to their [online editor](https://editor.swagger.io/) and load the `openapi.json` file included in this
+folder. You'll see the different available endpoints and more detailed description on how to use them. You can 
+even call the different endpoints from the editor.
