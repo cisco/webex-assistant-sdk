@@ -257,10 +257,12 @@ provide 2 versions of the skill so that in the simple 'insecure' version we buil
 on the API pieces and quickly test things up. However, a real skill will be closer to the 'secure' version
 of `Echo` which we'll look into now.
 
-For starters, go into the `echo-skill-secure` folder:
+For starters, go into the `echo-skill-secure` folder and install its dependencies:
 
 ```bash
 cd echo-skill-secure
+pyenv local 3.9.5
+poetry install
 ```
 
 ### Understanding the Encryption Flow
@@ -341,9 +343,6 @@ def decrypt(message: bytes):
 We run this skill similarly to how we did the `insecure` version:
 
 ```bash
-cd echo-skill-secure
-pyenv local 3.9.5
-poetry install
 poetry run python echo_skill_secure/main.py
 ```
 
