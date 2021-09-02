@@ -272,7 +272,7 @@ that have to be provided by you, the developer, at the moment you register your 
 provide the public key to the service, and then use the private key in the skill to decrypt the content.
 
 In order for the service to know that the skill successfully decrypted the content, it includes a field in the
-request called `challenge'. This is just a random string that needs to be included in the response from the skill.
+request called `challenge`. This is just a random string that needs to be included in the response from the skill.
 If not included, the service will ignore the response and won't act on it.
 
 The final piece is for the skill to make sure the request comes from the official `Skills Service` and not from
