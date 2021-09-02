@@ -19,6 +19,14 @@ We'll cover the following topics:
 Feel free to go to any individual section by following the links above. Or just follow the 
 full document step by step and go through all the sections.
 
+## Disclaimer
+
+The `Skills Service` is still in development and there might be some changes in the next couple weeks. We'll try to
+keep this documentation as up to date as possible.
+
+Also, we are working on some tools that automate some steps you will need to do manually in this guide. So
+we'll share these tools as well as they become available. 
+
 # Skills Architecture Overview
 
 In order to better understand what we are doing in this guide, we'll start with a high level overview of how
