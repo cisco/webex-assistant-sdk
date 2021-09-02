@@ -13,8 +13,7 @@ SECRET = os.getenv('ECHO_SECRET')
 
 
 def encrypt_payload(message: bytes, key: bytes) -> bytes:
-    padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()),
-                   algorithm=hashes.SHA256(), label=None)
+    padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)
     public_key = serialization.load_ssh_public_key(key)
     return public_key.encrypt(message, padding)
 
@@ -22,8 +21,7 @@ def encrypt_payload(message: bytes, key: bytes) -> bytes:
 def sign_message(message: bytes, secret: bytes) -> bytes:
     _hmac = hmac.HMAC(secret, hashes.SHA256())
     _hmac.update(message)
-    sig = _hmac.finalize()
-    return sig
+    return _hmac.finalize()
 
 
 challenge = os.urandom(32).hex()
