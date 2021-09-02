@@ -251,7 +251,7 @@ of `Echo` which we'll look into now.
 
 ### Understanding the Encryption Flow
 
-As mentioned above, the data in the request to the skill will be encrypted. The encryption is done using keys
+As mentioned above, the data in the request to the skill will be encrypted. The encryption is done using rsa keys
 that have to be provided by you, the developer, at the moment you register your skill with the service. You only
 provide the public key to the service, and then use the private key in the skill to decrypt the content.
 
@@ -270,17 +270,9 @@ verify the request comes from the official service.
 
 Let's now look into how this is all done in the `secure` version of our `Echo` skill.
 
-### Decrypting the Request's Body
-
-TODO
-
-### Verifying the signature
-
-TODO
-
 ### Creating Secret and Keys
 
-As mentioned before, we'll need a private/public key pair as well as a `secret`. Let's make those now.
+As mentioned before, we'll need a rsa private/public key pair as well as a `secret`. Let's make those now.
 
 The `secret` is any string at least 22 characters long. You will have to create this yourself. Try following
 the same rules you would follow to create a strong password. We have also provided a very simple tool 
@@ -291,6 +283,7 @@ poetry run python secret_generator/main.py
 ```
 
 Now in order to create the keys, we recommend following [this guide](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent#generating-a-new-ssh-key).
+Make sure to create `rsa` type keys.
 
 Finally, export the created secret and keys to your environment so they can be picked up by the skill and the
 tester latter:
@@ -299,6 +292,34 @@ tester latter:
 export ECHO_PUBLIC_KEY=<YOUR PUBLIC KEY>
 export ECHO_PRIVATE_KEY=<YOUR PRIVATE KEY>
 export ECHO_SECRET=<YOUR SECRET>
+```
+
+### Verifying the signature
+
+The first thing you should do when receiving a request is verifying the signature is valid. You can take a look at
+how that's done on the secure version of `Echo`. Here's the method we use for signature verification:
+
+```python
+def verify_signature(message: bytes, signature: bytes):
+    secret_bytes = SECRET.encode('utf-8')
+    _hmac = hmac.HMAC(secret_bytes, hashes.SHA256())
+    _hmac.update(message)
+    _hmac.verify(signature)
+```
+
+### Decrypting the Request's Message
+
+After the signature has been verified, you can follow to decrypt the content of the request. You can take a look at
+how that's done on the secure version of `Echo`. Here's the method we use for decrypting the message:
+
+```python
+def decrypt(message: bytes):
+    # We expect our message to be a base64 encoded byte string of our cipher text
+    key_bytes = PRIVATE_KEY.encode('utf-8')
+    private_key = load_ssh_private_key(key_bytes, None)
+    padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()),
+                   algorithm=hashes.SHA256(), label=None)
+    return private_key.decrypt(message, padding)
 ```
 
 ### Running the Skill
