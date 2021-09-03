@@ -74,9 +74,9 @@ what we say.
 You need to have some basic requirements in order to better use this guide:
 
 - Familiarity with Python.
-- Dependencies installed: [Python 3](https://www.python.org/downloads/), [pyenv](https://github.com/pyenv/pyenv#installation), [Poetry](https://python-poetry.org/docs/).
-- Familiarity with [AIOHTTP](https://docs.aiohttp.org/en/stable) applications
+- Familiarity with [pyenv](https://github.com/pyenv/pyenv#installation).
 - Familiarity with [Poetry](https://python-poetry.org/) for dependency management
+- Familiarity with [AIOHTTP](https://docs.aiohttp.org/en/stable) applications
 - Familiarity with cloud services and REST APIs.
 - For a better experience, you'll need access to a Webex RoomOS device in personal mode. This is can be a Roomkit
 or a Desk Pro with the `Webex Assistant` enabled.
