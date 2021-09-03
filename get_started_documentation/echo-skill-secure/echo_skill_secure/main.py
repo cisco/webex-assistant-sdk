@@ -5,8 +5,10 @@ import os
 from aiohttp import web
 
 from cryptography.exceptions import InvalidSignature
+from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_ssh_private_key
 
 
@@ -18,20 +20,30 @@ SECRET = os.getenv('ECHO_SECRET')
 routes = web.RouteTableDef()
 
 
-def decrypt(message: bytes):
-    # We expect our message to be a base64 encoded byte string of our cipher text
-    key_bytes = PRIVATE_KEY.encode('utf-8')
-    private_key = load_ssh_private_key(key_bytes, None)
+def decrypt(message: str) -> str:
+    private_key_bytes = PRIVATE_KEY.encode("utf-8")
+
+    private_key: RSAPrivateKey = load_ssh_private_key(private_key_bytes, None)
     padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()),
                    algorithm=hashes.SHA256(), label=None)
-    return private_key.decrypt(message, padding)
+
+    encrypted_fernet_key, fernet_token = message.split(".")
+    encrypted_fernet_key_bytes = base64.b64decode(
+        encrypted_fernet_key.encode("utf-8"))
+
+    fernet_key = private_key.decrypt(encrypted_fernet_key_bytes, padding)
+
+    fernet_token_bytes = base64.b64decode(fernet_token)
+    payload = Fernet(fernet_key).decrypt(fernet_token_bytes)
+    return payload.decode("utf-8")
 
 
-def verify_signature(message: bytes, signature: bytes):
-    secret_bytes = SECRET.encode('utf-8')
-    _hmac = hmac.HMAC(secret_bytes, hashes.SHA256())
-    _hmac.update(message)
-    _hmac.verify(signature)
+def verify_signature(message: bytes, signature: bytes) -> None:
+    secret_bytes = SECRET.encode("utf-8")
+
+    sig = hmac.HMAC(secret_bytes, hashes.SHA256())
+    sig.update(message)
+    sig.verify(signature)
 
 
 def directive(name: str, dtype: str, payload: dict = None) -> dict:
@@ -77,8 +89,8 @@ async def echo(request: web.BaseRequest) -> web.Response:
         request_body: bytes = await request.json()
 
         # Our signature and cipher bytes are expected to be base64 encoded byte strings
-        encoded_signature: str = request_body.get('signature')
-        encoded_cipher: str = request_body.get('message')
+        encoded_signature: str = request_body.get("signature")
+        encoded_cipher: str = request_body.get("message")
 
         # Bail on missing signature
         if not encoded_signature:
@@ -89,7 +101,7 @@ async def echo(request: web.BaseRequest) -> web.Response:
             return web.json_response({"error": "Missing message"}, 400)
 
         # Convert our encoded signature and body to bytes
-        encoded_cipher_bytes: bytes = encoded_cipher.encode('utf-8')
+        encoded_cipher_bytes: bytes = encoded_cipher.encode("utf-8")
 
         # We sign the encoded cipher text so we decode our signature, but not our cipher text yet
         decoded_sig_bytes: bytes = base64.b64decode(encoded_signature)
@@ -101,8 +113,7 @@ async def echo(request: web.BaseRequest) -> web.Response:
             return web.json_response({"error": "Invalid signature"}, 400)
 
         # Now that we've verified our signature we decode our cipher to get the raw bytes
-        decoded_cipher = base64.b64decode(encoded_cipher_bytes)
-        decrypted_body = decrypt(decoded_cipher)
+        decrypted_body = decrypt(encoded_cipher)
 
         # The decrypted cipher text is a json string representing our MindMeld style message
         req_body = json.loads(decrypted_body)

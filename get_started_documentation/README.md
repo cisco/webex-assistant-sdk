@@ -183,14 +183,17 @@ you know what to expect.
 ### 1. How the app works
 
 The app is a very simple server based on AIOHTTP. It only has one endpoint: `/`. Its simple purpose is to
-receive a request that will eventually initiate from the Webex Assistant, will pass through the Skills Service
+receive a request that will eventually initiate from the `Webex Assistant`, will pass through the Skills Service
 and will eventually reach this app.
 
-The request contains the information we need to process in order to create our response. In our case this
-is very simple, we do one of 2 things:
+The request contains the information we need to process in order to create our response. In general there are
+2 type of requests any Skill should be able to respond to:
 
-- Send back the same text that the user spoke.
-- Send back a welcome message if the `target_dialogue_state` is equal to `skill_intro`.
+- Intro requests: When the user says something like "Talk to Echo" the request that comes into the Skill will have
+  a `target_dialogue_state` equal to `skill_intro`. In this case, we handle the request by sending back a welcome
+  message to the user.
+- General requests: these the typical requests a Skill will receive, in our case we handle them by simply responding
+  back with the same text the user just produced.
 
 Let's now dig a bit deeper into the request object.
 
@@ -202,7 +205,21 @@ but here's a short explanation of what the usually contain and how they can be u
 - `text`: This is what the user's query. Since this comes from an ASR engine, there are a few variations in
   the transcription, so they come in an array. The first entry is the most accurate transcription. However,
   we pass all transcriptions to the skill because they can be useful in some scenarios.
-- `context`: Contains some information about how the user is making the request.
+- `context`: Contains some information about how the user is making the request. Here's an example of a typical
+  context:
+```json
+"context": {
+  "orgId": "<ORG_ID>",  # The org id of the user making the request
+  "userId": "<USER_ID>",  # The id of the user making the request
+  "userType": "user",  # The user type
+  "supportedDirectives": [  # The list of directives supported by the client making the request
+    "sleep",
+    "listen",
+    "reply",
+    "speak"
+  ]
+}
+```
 - `params`: Contains information like time_zone, timestamp of the query, language, etc... One particular
   field here is `target_dialogue_state` this can be used to tell us what the user intended to do. In this
   particular case, if the field is equal to `skill_intro`, we need to return an introductory message from the
@@ -223,13 +240,82 @@ use what we call directives. You can see we send a list of directives in our res
 The following are the supported directives right now:
 
 - `reply`: Shows some text in the screen.
+```json
+{
+  "name": "reply",
+  "type": "view",
+  "payload": {
+    "text": "Hello!"
+  }
+}
+```
 - `speak`: Speaks the phrase using TTS.
+```json
+{
+  "name": "speak",
+  "type": "action",
+  "payload": {
+    "text": "Hello!"
+  }
+}
+```
 - `listen`: Asks the assistant to listen and transcribe what the user is saying.
+```json
+{
+  "name": "listen",
+  "type": "action"
+}
+```
 - `sleep`: Dismisses the assistant.
+```json
+{
+  "name": "listen",
+  "type": "action",
+  "payload": {
+    "delay": 0
+  }
+}
+```
 - `ui-hint`: Show a small hint at the bottom panel of the assistant to guide the user on things to say.
+```json
+{
+  "name": "ui-hint",
+  "type": "view",
+  "payload": {
+    "text": ["Hello"],
+    "prompt": "Try saying",
+    "displayImmediately": false
+  }
+}
+```
 - `asr-hint`: Short phrases sent to the ASR engine to improve accuracy around the given vocabulary.
+```json
+{
+  "name": "asr-hint",
+  "type": "action",
+  "payload": {
+    "text": ["Hello"]
+  }
+}
+```
 - `display-web-view`: Opens a web view with the specified URL.
+```json
+{
+  "name": "display-web-view",
+  "type": "action",
+  "payload": {
+    "title": "Google",
+    "url": "https://google.com"
+  }
+}
+```
 - `clear-web-view`: Dismisses the web view.
+```json
+{
+  "name": "clear-web-view",
+  "type": "action"
+}
+```
 - `assistant-event`: A generic event sent to the assistant, this can be used with macros on RoomOS devices.
 
 So as you can see from the response, our skill is just telling the assistant to display and speak what the user
