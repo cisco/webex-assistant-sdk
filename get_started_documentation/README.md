@@ -405,12 +405,16 @@ The first thing you should do when receiving a request is verifying the signatur
 how that's done on the secure version of `Echo`. Here's the method we use for signature verification:
 
 ```python
-def verify_signature(message: bytes, signature: bytes):
-    secret_bytes = SECRET.encode('utf-8')
-    _hmac = hmac.HMAC(secret_bytes, hashes.SHA256())
-    _hmac.update(message)
-    _hmac.verify(signature)
+def verify_signature(message: bytes, signature: bytes) -> None:
+    secret_bytes = SECRET.encode("utf-8")
+
+    sig = hmac.HMAC(secret_bytes, hashes.SHA256())
+    sig.update(message)
+    sig.verify(signature)
 ```
+
+One thing to note here is that we are using the cryptography library, Python's stdlib includes a hmac library 
+which as a different interface.
 
 ### Decrypting the Request's Message
 
@@ -418,13 +422,22 @@ After the signature has been verified, you can follow to decrypt the content of 
 how that's done on the secure version of `Echo`. Here's the method we use for decrypting the message:
 
 ```python
-def decrypt(message: bytes):
-    # We expect our message to be a base64 encoded byte string of our cipher text
-    key_bytes = PRIVATE_KEY.encode('utf-8')
-    private_key = load_ssh_private_key(key_bytes, None)
+def decrypt(message: str) -> str:
+    private_key_bytes = PRIVATE_KEY.encode("utf-8")
+
+    private_key: RSAPrivateKey = load_ssh_private_key(private_key_bytes, None)
     padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()),
                    algorithm=hashes.SHA256(), label=None)
-    return private_key.decrypt(message, padding)
+
+    encrypted_fernet_key, fernet_token = message.split(".")
+    encrypted_fernet_key_bytes = base64.b64decode(
+        encrypted_fernet_key.encode("utf-8"))
+
+    fernet_key = private_key.decrypt(encrypted_fernet_key_bytes, padding)
+
+    fernet_token_bytes = base64.b64decode(fernet_token)
+    payload = Fernet(fernet_key).decrypt(fernet_token_bytes)
+    return payload.decode("utf-8")
 ```
 
 ### Running the Skill
