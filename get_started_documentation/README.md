@@ -430,19 +430,7 @@ At this point the skill will only be enabled for yourself and not for other peop
 The simplest way to test your skill end to end is by using a Cisco RoomOS device, like a Roomkit or a Desk Pro
 in personal mode that has the `Webex Assistant` enabled.
 
-First we need to make sure the feature toggle for the skills functionality is set for you. Using your tool of
-choice (curl, Postman, Paw, etc...) make the following request (make sure to replace the values in <>):
-
-```
-POST https://feature-a.wbx2.com/feature/api/v1/features/users/<YOUR DEVELOPER ID>/developer
-Authorization Bearer <YOUR TOKEN>
-{
-    "key": "webex-assistant-skills",
-    "val": "true",
-    "mutable": true,
-    "type": "DEV"
-}
-```
+As this is a beta feature, make sure that you have the `webex-assistant-skills` feature toggle set to true.
 
 # Further API Documentation
 
