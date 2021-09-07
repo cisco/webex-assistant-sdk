@@ -75,8 +75,10 @@ def handle_message(req_body: dict):
         text = 'This is the echo skill. Say something and I will echo it back.'
         should_listen = True
     else:
-        text = req_body.get('text', ["Hmm... I didn't get anything to echo"])
-        text = text[0]
+        text = req_body.get('text', "Hmm... I didn't get anything to echo")
+        if not isinstance(text, str):
+            # If it's a list of transcripts (this is what the actual Webex Asssitant sends) -- use first
+            text = text[0]
 
     return build_response(text, req_body.get('challenge', ''), should_listen)
 
