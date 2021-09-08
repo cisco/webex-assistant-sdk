@@ -471,6 +471,20 @@ Note that the skill can also take an environment variable: `ECHO_RUN_DEV_MODE`. 
 all the decryption and signing logic and basically becomes the `echo-skill` we tested first. This is a good
 pattern to follow, so you can also test your skill in isolation from all the decryption and signature logic.
 
+### Health Endpoint
+
+You'll notice that in the secure Echo we also have a `GET` endpoint which is marked as a `health` endpoint. This
+is not 100% required right now, but it's encouraged to add it to your apps since it will serve a purpose in
+the upcoming `Developer Portal` we are putting together.
+
+The endpoint should have the same route as the normal invoke method for the skill, but it's a `GET` method instead.
+The expected behaviour should be as follows:
+
+- There are 2 query params similar to the invocatrion endpoint: `signature` and `message`.
+- The skill should verify these 2 params are included.
+- The signature should be verified and the message decrypted.
+- The decrypted message is a `challenge`, which should be sent back in the response to the `Skills Service`.
+
 ## Hosting Sample Skill Locally
 
 Now that our skill is running securely, we can host it locally over https. For that we can use a service like
