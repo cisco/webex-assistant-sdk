@@ -7,7 +7,7 @@ import shutil
 import sys
 import textwrap
 
-from . import helpers
+from . import crypto, helpers
 
 
 class PasswordPromptAction(argparse.Action):
@@ -114,6 +114,9 @@ def get_parser():
         prompt='Enter skill secret: ',
     )
     invoke_parser.add_argument(
+        '-k', '--key-file', help="the path to the skill's public key file on disk", required=True
+    )
+    invoke_parser.add_argument(
         '-U',
         '--url',
         default='http://localhost:7150/parse',
@@ -178,7 +181,9 @@ def new_skill(skill_name: str, secret: str, password=None):
     )
 
 
-def invoke_skill(secret, url, context=None, frame=None):
+def invoke_skill(secret, key_file, url, context=None, frame=None):
+    public_key = crypto.load_public_key_from_file(key_file)
+
     history = []
     first = True
     while True:
@@ -187,13 +192,14 @@ def invoke_skill(secret, url, context=None, frame=None):
             first = False
             text = input(f'{prompt}>>> ')
             res = helpers.make_request(
-                secret, text, context=context, frame=frame, history=history, url=url
+                secret, public_key, text, context=context, frame=frame, history=history, url=url
             )
             directives = res.get('directives')
             context = res.get('context')
             frame = res.get('frame')
             history = res.get('history', [])
-        except Exception:  # pylint: disable=broad-except
+        except Exception as exc:  # pylint: disable=broad-except
+            print(exc)
             print(f'Failed to invoke skill at {url}')
             return
         except KeyboardInterrupt:
@@ -233,7 +239,7 @@ def main():
 
         context = parse_json_argument('context', args.context) if args.context else None
         frame = parse_json_argument('frame', args.frame) if args.frame else None
-        invoke_skill(args.secret, url=args.url, context=context, frame=frame)
+        invoke_skill(args.secret, args.key_file, url=args.url, context=context, frame=frame)
         return
 
     if args.command == 'check':

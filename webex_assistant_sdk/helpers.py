@@ -85,6 +85,7 @@ def validate_request(secret: str, private_key: RSAPrivateKey, body: Union[str, b
 
 def make_request(
     secret,
+    public_key,
     text,
     url='http://0.0.0.0:7150/parse',
     context=None,
@@ -114,14 +115,9 @@ def make_request(
         if v is not None
     }
 
-    encoded_request = json.dumps(request)
+    payload = crypto.prepare_payload(json.dumps(request), public_key, secret)
 
-    headers = {
-        'X-Webex-Assistant-Signature': crypto.generate_signature(secret, encoded_request),
-        'Content-Type': 'application/octet-stream',
-        'Accept': 'application/json',
-    }
-    res = requests.post(url, headers=headers, data=encoded_request)
+    res = requests.post(url, json=payload)
 
     if res.status_code != 200:
         raise ResponseValidationError('Request failed')
