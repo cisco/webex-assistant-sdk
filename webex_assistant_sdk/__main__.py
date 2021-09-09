@@ -141,6 +141,9 @@ def get_parser():
         prompt='Enter skill secret: ',
     )
     check_parser.add_argument(
+        '-k', '--key-file', help="the path to the skill's public key file on disk", required=True
+    )
+    check_parser.add_argument(
         '-U',
         '--url',
         default='http://localhost:7150/parse',
@@ -210,8 +213,10 @@ def invoke_skill(secret, key_file, url, context=None, frame=None):
         pprint.pprint(directives, indent=2, width=width)
 
 
-def check_skill(secret, url):
-    res = helpers.make_health_check(secret, url)
+def check_skill(secret, key_file, url):
+    public_key = crypto.load_public_key_from_file(key_file)
+
+    res = helpers.make_health_check(secret, public_key, url)
     print(res)
 
 
@@ -247,7 +252,7 @@ def main():
             # reparse with added '-s'
             # Note: for some reason we have to pop off the first arg when reparsing
             args = parser.parse_args(args=sys.argv[1:] + ['-s'])
-        check_skill(args.secret, url=args.url)
+        check_skill(args.secret, args.key_file, url=args.url)
         return
 
     parser.print_help()

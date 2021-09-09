@@ -3,14 +3,14 @@ import binascii
 from pathlib import Path
 from typing import cast
 
-from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
+from cryptography.exceptions import UnsupportedAlgorithm
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes, hmac, serialization
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
 from cryptography.hazmat.primitives.serialization import load_ssh_private_key
 
-from webex_assistant_sdk.exceptions import EncryptionKeyError, SignatureGenerationError
+from webex_assistant_sdk.exceptions import EncryptionKeyError
 
 
 def decrypt(private_key: RSAPrivateKey, message: str) -> str:
@@ -82,7 +82,8 @@ def generate_token(message: str, pub_key: str) -> str:
     encoded_fernet_key = base64.b64encode(encrypted_fernet_key).decode('utf-8')
     encoded_message = base64.b64encode(encrypted_message).decode('utf-8')
 
-    # Our final token format is a string of base64 bytes representing our key/message, delineated by a '.'
+    # Our final token format is a string of base64 bytes representing
+    # our key/message, delineated by a '.'
     return f'{encoded_fernet_key}.{encoded_message}'
 
 

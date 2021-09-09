@@ -20,13 +20,16 @@ from .exceptions import (
 logger = logging.getLogger(__name__)
 
 
-def validate_request(secret: str, private_key: RSAPrivateKey, body: Union[str, bytes]) -> Tuple[Mapping, str]:
+def validate_request(
+        secret: str,
+        private_key: RSAPrivateKey,
+        body: Union[str, bytes]) -> Tuple[Mapping, str]:
     """Validates a request to an agent
 
     Args:
-        headers (Mapping): The request headers
-        body (str or bytes): The request body
         secret (str): The configured secret for the skill
+        private_key (RSAPrivateKey): The private key for this skill
+        body (str or bytes): The request body
 
     Returns:
         Tuple[Mapping, str]: The decrypted request body and a challenge string
@@ -129,20 +132,23 @@ def make_request(
     return response_body
 
 
-def make_health_check(secret, url='http://0.0.0.0:7150/parse'):
-    challenge = os.urandom(64).hex()
-    headers = {
-        'X-Webex-Assistant-Signature': crypto.generate_signature(secret, challenge),
-        'Accept': 'application/json',
+def make_health_check(secret, public_key, url='http://0.0.0.0:7150/parse'):
+    challenge = os.urandom(32).hex()
+    token = crypto.generate_token(challenge, public_key)
+    signature = crypto.sign_token(token, secret)
+
+    query_params = {
+        'signature': signature,
+        'message': token
     }
-    res = requests.get(url, headers=headers, params={'payload': challenge})
+    res = requests.get(url, params=query_params)
 
     if res.status_code != 200:
         raise ResponseValidationError('Health check failed')
 
-    response_body = res.json()
+    json_resp = res.json()
 
-    if response_body.get('challenge') != challenge:
+    if json_resp.pop('challenge', None) != challenge:
         raise ClientChallengeValidationError('Response failed challenge')
 
-    return response_body
+    return json_resp

@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import os
@@ -5,6 +6,8 @@ import time
 import uuid
 
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
+from cryptography.exceptions import InvalidSignature
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from mindmeld import DialogueResponder
@@ -12,6 +15,7 @@ from mindmeld.app_manager import ApplicationManager
 from mindmeld.exceptions import BadMindMeldRequestError
 from mindmeld.server import MindMeldRequest
 
+from . import crypto
 from ._version import api_version
 from .exceptions import (
     RequestValidationError,
@@ -23,7 +27,10 @@ from .helpers import validate_request
 logger = logging.getLogger(__name__)
 
 
-def create_skill_server(app_manager: ApplicationManager, secret: str, private_key: RSAPrivateKey) -> Flask:
+def create_skill_server(
+        app_manager: ApplicationManager,
+        secret: str,
+        private_key: RSAPrivateKey) -> Flask:
     server = Flask('mindmeld')
     CORS(server)
 
@@ -75,8 +82,34 @@ def create_skill_server(app_manager: ApplicationManager, secret: str, private_ke
 
     @server.route('/parse', methods=['GET'])
     def health_check():
-        response = {'status': 'up', 'api_version': '.'.join((str(i) for i in api_version))}
-        return jsonify(response)
+        # Our signature and cipher bytes are expected to be base64 encoded byte strings
+        encoded_signature: str = request.args.get("signature")
+        encoded_cipher: str = request.args.get("message")
+
+        # Bail on missing signature
+        if not encoded_signature:
+            return jsonify({"error": "Missing signature"}, 400)
+
+        # And on a missing message
+        if not encoded_cipher:
+            return jsonify({"error": "Missing message"}, 400)
+
+        # Convert our encoded signature and body to bytes
+        encoded_cipher_bytes: bytes = encoded_cipher.encode("utf-8")
+
+        # We sign the encoded cipher text so we decode our signature, but not our cipher text yet
+        decoded_sig_bytes: bytes = base64.b64decode(encoded_signature)
+
+        try:
+            # Cryptography's verify method throws rather than returning false.
+            crypto.verify_signature(secret, encoded_cipher_bytes, decoded_sig_bytes)
+        except InvalidSignature:
+            return jsonify({"error": "Invalid signature"}, 400)
+
+        # Now that we've verified our signature we decode our cipher to get the raw bytes
+        decrypted_challenge = crypto.decrypt(private_key, encoded_cipher)
+
+        return jsonify({'challenge': decrypted_challenge, 'status': 'OK'})
 
     # handle exceptions
     @server.errorhandler(BadMindMeldRequestError)

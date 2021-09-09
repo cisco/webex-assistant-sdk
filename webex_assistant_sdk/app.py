@@ -10,7 +10,14 @@ class SkillApplication(Application):
     SkillApplication extends MindMeld application with the appropriate encryption protocols.
     """
 
-    def __init__(self, import_name, *, secret, private_key, responder_class=SkillResponder, **kwargs):
+    def __init__(
+            self,
+            import_name,
+            *,
+            secret,
+            private_key,
+            responder_class=SkillResponder,
+            **kwargs):
 
         super().__init__(import_name, responder_class=responder_class, **kwargs)
         self.secret = secret
