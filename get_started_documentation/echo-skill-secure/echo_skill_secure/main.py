@@ -83,6 +83,40 @@ def handle_message(req_body: dict):
     return build_response(text, req_body.get('challenge', ''), should_listen)
 
 
+# Health endpoint
+@routes.get('/')
+async def echo(request: web.BaseRequest) -> web.Response:
+    # Our signature and cipher bytes are expected to be base64 encoded byte strings
+    encoded_signature: str = request.query["signature"]
+    encoded_cipher: str = request.query["message"]
+
+    # Bail on missing signature
+    if not encoded_signature:
+        return web.json_response({"error": "Missing signature"}, 400)
+
+    # And on a missing message
+    if not encoded_cipher:
+        return web.json_response({"error": "Missing message"}, 400)
+
+    # Convert our encoded signature and body to bytes
+    encoded_cipher_bytes: bytes = encoded_cipher.encode("utf-8")
+
+    # We sign the encoded cipher text so we decode our signature, but not our cipher text yet
+    decoded_sig_bytes: bytes = base64.b64decode(encoded_signature)
+
+    try:
+        # Cryptography's verify method throws rather than returning false.
+        verify_signature(encoded_cipher_bytes, decoded_sig_bytes)
+    except InvalidSignature:
+        return web.json_response({"error": "Invalid signature"}, 400)
+
+    # Now that we've verified our signature we decode our cipher to get the raw bytes
+    decrypted_challenge = decrypt(encoded_cipher)
+
+    return web.json_response({'challenge': decrypted_challenge, 'status': 'OK'})
+
+
+# Invoke endpoint
 @routes.post('/')
 async def echo(request: web.BaseRequest) -> web.Response:
     if DEV_MODE:
@@ -109,7 +143,7 @@ async def echo(request: web.BaseRequest) -> web.Response:
         decoded_sig_bytes: bytes = base64.b64decode(encoded_signature)
 
         try:
-            # Cryptography's verify method throws rather than returning false..thanks jerks.
+            # Cryptography's verify method throws rather than returning false.
             verify_signature(encoded_cipher_bytes, decoded_sig_bytes)
         except InvalidSignature:
             return web.json_response({"error": "Invalid signature"}, 400)
