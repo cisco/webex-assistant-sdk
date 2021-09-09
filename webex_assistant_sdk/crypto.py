@@ -1,5 +1,6 @@
 import base64
 import binascii
+from pathlib import Path
 from typing import cast
 
 from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
@@ -44,20 +45,14 @@ def load_private_key(private_key_bytes: bytes):
         raise EncryptionKeyError('Unable to load private key') from ex
 
 
-def get_file_contents(filename: str) -> bytes:
-    with open(filename, 'rb') as f:
-        data = f.read()
-    return data
-
-
 def load_private_key_from_file(filename: str):
-    key_data = get_file_contents(filename)
+    key_data = Path(filename).read_bytes()
     private_key = load_private_key(key_data)
     return private_key
 
 
 def load_public_key_from_file(filename: str) -> str:
-    key_data: bytes = get_file_contents(filename)
+    key_data = Path(filename).read_bytes()
     return key_data.decode('utf-8')
 
 
