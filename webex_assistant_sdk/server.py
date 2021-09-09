@@ -1,8 +1,10 @@
 import json
 import logging
+import os
 import time
 import uuid
 
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from mindmeld import DialogueResponder
@@ -21,12 +23,13 @@ from .helpers import validate_request
 logger = logging.getLogger(__name__)
 
 
-def create_skill_server(app_manager: ApplicationManager, secret: str) -> Flask:
+def create_skill_server(app_manager: ApplicationManager, secret: str, private_key: RSAPrivateKey) -> Flask:
     server = Flask('mindmeld')
     CORS(server)
 
     server.request_class = MindMeldRequest
     server._secret = secret
+    server._private_key = private_key
 
     # pylint: disable=unused-variable
     @server.route('/parse', methods=['POST'])
@@ -35,9 +38,14 @@ def create_skill_server(app_manager: ApplicationManager, secret: str) -> Flask:
 
         start_time = time.time()
         try:
-            request_json, challenge = validate_request(
-                secret, request.headers, request.get_data().decode('utf-8')
-            )
+            use_encryption = not os.environ.get('WXA_SKILL_DEBUG', False)
+            if use_encryption:
+                request_json, challenge = validate_request(
+                    secret, private_key, request.get_data().decode('utf-8')
+                )
+            else:
+                request_json = json.loads(request.data)
+                challenge = None
         except SignatureValidationError as exc:
             raise BadMindMeldRequestError(exc.args[0], status_code=403) from exc
         except (RequestValidationError, ServerChallengeValidationError) as exc:

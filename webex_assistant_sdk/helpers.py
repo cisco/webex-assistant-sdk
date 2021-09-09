@@ -1,7 +1,11 @@
+import base64
 import json
 import logging
 import os
 from typing import Mapping, Tuple, Union
+
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 
 import requests
 
@@ -17,7 +21,7 @@ from .exceptions import (
 logger = logging.getLogger(__name__)
 
 
-def validate_request(secret: str, headers: Mapping, body: Union[str, bytes]) -> Tuple[Mapping, str]:
+def validate_request(secret: str, private_key: RSAPrivateKey, body: Union[str, bytes]) -> Tuple[Mapping, str]:
     """Validates a request to an agent
 
     Args:
@@ -34,17 +38,35 @@ def validate_request(secret: str, headers: Mapping, body: Union[str, bytes]) -> 
         SignatureValidationError: raised when signature cannot be validated
     """
     try:
-        signature = headers.get('X-Webex-Assistant-Signature')
-        if not signature:
-            raise SignatureValidationError('Missing signature')
         if not body:
             raise SignatureValidationError('Missing body')
 
-        if not crypto.verify_signature(secret, body, signature):
-            raise SignatureValidationError('Invalid signature')
+        json_body = json.loads(body)
+
+        encoded_signature = json_body.get('signature', '')
+        encoded_cipher = json_body.get('message', '')
+        if not encoded_signature:
+            raise SignatureValidationError('Missing signature')
+        if not encoded_cipher:
+            raise SignatureValidationError('Missing message')
+
+        # Convert our encoded signature and body to bytes
+        encoded_cipher_bytes: bytes = encoded_cipher.encode("utf-8")
+
+        # We sign the encoded cipher text so we decode our signature, but not our cipher text yet
+        decoded_sig_bytes: bytes = base64.b64decode(encoded_signature)
 
         try:
-            request_json = json.loads(body)
+            # Cryptography's verify method throws rather than returning false.
+            crypto.verify_signature(secret, encoded_cipher_bytes, decoded_sig_bytes)
+        except InvalidSignature as exc:
+            raise SignatureValidationError('Invalid signature') from exc
+
+        # Now that we've verified our signature we decode our cipher to get the raw bytes
+        decrypted_body = crypto.decrypt(private_key, encoded_cipher)
+
+        try:
+            request_json = json.loads(decrypted_body)
         except json.JSONDecodeError as exc:
             raise RequestValidationError('Invalid request data') from exc
 
