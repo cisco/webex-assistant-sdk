@@ -22,13 +22,13 @@ logger = logging.getLogger(__name__)
 
 def validate_request(
         secret: str,
-        private_key: RSAPrivateKey,
+        private_key: str,
         body: Union[str, bytes]) -> Tuple[Mapping, str]:
     """Validates a request to an agent
 
     Args:
         secret (str): The configured secret for the skill
-        private_key (RSAPrivateKey): The private key for this skill
+        private_key (str): The private key for this skill
         body (str or bytes): The request body
 
     Returns:

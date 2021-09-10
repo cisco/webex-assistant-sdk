@@ -13,7 +13,9 @@ from cryptography.hazmat.primitives.serialization import load_ssh_private_key
 from webex_assistant_sdk.exceptions import EncryptionKeyError
 
 
-def decrypt(private_key: RSAPrivateKey, message: str) -> str:
+def decrypt(private_key: str, message: str) -> str:
+    key = load_private_key(private_key.encode("utf-8"))
+
     padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()),
                    algorithm=hashes.SHA256(), label=None)
 
@@ -21,7 +23,7 @@ def decrypt(private_key: RSAPrivateKey, message: str) -> str:
     encrypted_fernet_key_bytes = base64.b64decode(
         encrypted_fernet_key.encode("utf-8"))
 
-    fernet_key = private_key.decrypt(encrypted_fernet_key_bytes, padding)
+    fernet_key = key.decrypt(encrypted_fernet_key_bytes, padding)
 
     fernet_token_bytes = base64.b64decode(fernet_token)
     payload = Fernet(fernet_key).decrypt(fernet_token_bytes)
@@ -45,10 +47,9 @@ def load_private_key(private_key_bytes: bytes):
         raise EncryptionKeyError('Unable to load private key') from ex
 
 
-def load_private_key_from_file(filename: str):
+def load_private_key_from_file(filename: str) -> str:
     key_data = Path(filename).read_bytes()
-    private_key = load_private_key(key_data)
-    return private_key
+    return key_data.decode('utf-8')
 
 
 def load_public_key_from_file(filename: str) -> str:

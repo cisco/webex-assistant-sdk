@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 def create_skill_server(
         app_manager: ApplicationManager,
         secret: str,
-        private_key: RSAPrivateKey) -> Flask:
+        private_key: str) -> Flask:
     server = Flask('mindmeld')
     CORS(server)
 
