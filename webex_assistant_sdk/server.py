@@ -5,9 +5,8 @@ import os
 import time
 import uuid
 
-from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.exceptions import InvalidSignature
-
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from mindmeld import DialogueResponder
@@ -109,7 +108,13 @@ def create_skill_server(
         # Now that we've verified our signature we decode our cipher to get the raw bytes
         decrypted_challenge = crypto.decrypt(private_key, encoded_cipher)
 
-        return jsonify({'challenge': decrypted_challenge, 'status': 'OK'})
+        return jsonify(
+            {
+                'challenge': decrypted_challenge,
+                'status': 'OK',
+                'api_version': '.'.join((str(i) for i in api_version))
+            }
+        )
 
     # handle exceptions
     @server.errorhandler(BadMindMeldRequestError)
