@@ -1,7 +1,9 @@
 import json
+import os
+from pathlib import Path
 
 from webex_assistant_sdk import SkillApplication
-from webex_assistant_sdk.crypto import generate_signature
+from webex_assistant_sdk.crypto import prepare_payload, load_public_key_from_file, generate_token, sign_token
 
 
 def test_skill_intro(skill_app: SkillApplication):
@@ -23,16 +25,15 @@ def test_parse_endpoint_fail(client):
     assert response.status_code == 403
 
 
-def test_parse_endpoint_success(client):
+def test_parse_endpoint_success(skill_app, client):
     test_request = {'text': 'hi', 'challenge': 'a challenge'}
 
-    secret = 'some secret'
-    signature = generate_signature(secret, json.dumps(test_request))
+    public_key = load_public_key_from_file(str(Path(__file__).resolve().parent / 'skill/id_rsa.pub'))
+    payload = prepare_payload(json.dumps(test_request), public_key, skill_app.secret)
     response = client.post(
         '/parse',
-        data=json.dumps(test_request),
+        data=json.dumps(payload),
         content_type='application/json',
-        headers={'X-Webex-Assistant-Signature': signature},
         follow_redirects=True,
     )
     assert response.status_code == 200
@@ -54,7 +55,16 @@ def test_parse_endpoint_success(client):
     }
 
 
-def test_health_endpoint(client):
-    response = client.get('/parse')
+def test_health_endpoint(skill_app, client):
+    challenge = os.urandom(32).hex()
+    public_key = load_public_key_from_file(str(Path(__file__).resolve().parent / 'skill/id_rsa.pub'))
+    token = generate_token(challenge, public_key)
+    signature = sign_token(token, skill_app.secret)
+
+    query_params = {
+        'signature': signature,
+        'message': token
+    }
+    response = client.get('/parse', query_string=query_params)
     assert response.status_code == 200
-    assert set(json.loads(response.data.decode('utf8')).keys()) == {'api_version', 'status'}
+    assert set(json.loads(response.data.decode('utf8')).keys()) == {'api_version', 'challenge', 'status'}

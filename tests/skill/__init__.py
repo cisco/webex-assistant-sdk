@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 """This module contains the SkillApplication demo application"""
+from pathlib import Path
 
 from webex_assistant_sdk import SkillApplication
+from webex_assistant_sdk.crypto import load_private_key_from_file
 
 secret = 'some secret'
-app = SkillApplication(__name__, secret=secret)
+key = load_private_key_from_file(str(Path(__file__).resolve().parent / 'id_rsa'))
+app = SkillApplication(__name__, secret=secret, private_key=key)
 
 __all__ = ['app']
 
