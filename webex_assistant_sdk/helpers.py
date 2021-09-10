@@ -1,8 +1,10 @@
+import base64
 import json
 import logging
 import os
 from typing import Mapping, Tuple, Union
 
+from cryptography.exceptions import InvalidSignature
 import requests
 
 from . import crypto
@@ -17,13 +19,16 @@ from .exceptions import (
 logger = logging.getLogger(__name__)
 
 
-def validate_request(secret: str, headers: Mapping, body: Union[str, bytes]) -> Tuple[Mapping, str]:
+def validate_request(
+        secret: str,
+        private_key: str,
+        body: Union[str, bytes]) -> Tuple[Mapping, str]:
     """Validates a request to an agent
 
     Args:
-        headers (Mapping): The request headers
-        body (str or bytes): The request body
         secret (str): The configured secret for the skill
+        private_key (str): The private key for this skill
+        body (str or bytes): The request body
 
     Returns:
         Tuple[Mapping, str]: The decrypted request body and a challenge string
@@ -34,17 +39,35 @@ def validate_request(secret: str, headers: Mapping, body: Union[str, bytes]) -> 
         SignatureValidationError: raised when signature cannot be validated
     """
     try:
-        signature = headers.get('X-Webex-Assistant-Signature')
-        if not signature:
-            raise SignatureValidationError('Missing signature')
         if not body:
             raise SignatureValidationError('Missing body')
 
-        if not crypto.verify_signature(secret, body, signature):
-            raise SignatureValidationError('Invalid signature')
+        json_body = json.loads(body)
+
+        encoded_signature = json_body.get('signature', '')
+        encoded_cipher = json_body.get('message', '')
+        if not encoded_signature:
+            raise SignatureValidationError('Missing signature')
+        if not encoded_cipher:
+            raise SignatureValidationError('Missing message')
+
+        # Convert our encoded signature and body to bytes
+        encoded_cipher_bytes: bytes = encoded_cipher.encode("utf-8")
+
+        # We sign the encoded cipher text so we decode our signature, but not our cipher text yet
+        decoded_sig_bytes: bytes = base64.b64decode(encoded_signature)
 
         try:
-            request_json = json.loads(body)
+            # Cryptography's verify method throws rather than returning false.
+            crypto.verify_signature(secret, encoded_cipher_bytes, decoded_sig_bytes)
+        except InvalidSignature as exc:
+            raise SignatureValidationError('Invalid signature') from exc
+
+        # Now that we've verified our signature we decode our cipher to get the raw bytes
+        decrypted_body = crypto.decrypt(private_key, encoded_cipher)
+
+        try:
+            request_json = json.loads(decrypted_body)
         except json.JSONDecodeError as exc:
             raise RequestValidationError('Invalid request data') from exc
 
@@ -63,6 +86,7 @@ def validate_request(secret: str, headers: Mapping, body: Union[str, bytes]) -> 
 
 def make_request(
     secret,
+    public_key,
     text,
     url='http://0.0.0.0:7150/parse',
     context=None,
@@ -92,14 +116,9 @@ def make_request(
         if v is not None
     }
 
-    encoded_request = json.dumps(request)
+    payload = crypto.prepare_payload(json.dumps(request), public_key, secret)
 
-    headers = {
-        'X-Webex-Assistant-Signature': crypto.generate_signature(secret, encoded_request),
-        'Content-Type': 'application/octet-stream',
-        'Accept': 'application/json',
-    }
-    res = requests.post(url, headers=headers, data=encoded_request)
+    res = requests.post(url, json=payload)
 
     if res.status_code != 200:
         raise ResponseValidationError('Request failed')
@@ -112,20 +131,23 @@ def make_request(
     return response_body
 
 
-def make_health_check(secret, url='http://0.0.0.0:7150/parse'):
-    challenge = os.urandom(64).hex()
-    headers = {
-        'X-Webex-Assistant-Signature': crypto.generate_signature(secret, challenge),
-        'Accept': 'application/json',
+def make_health_check(secret, public_key, url='http://0.0.0.0:7150/parse'):
+    challenge = os.urandom(32).hex()
+    token = crypto.generate_token(challenge, public_key)
+    signature = crypto.sign_token(token, secret)
+
+    query_params = {
+        'signature': signature,
+        'message': token
     }
-    res = requests.get(url, headers=headers, params={'payload': challenge})
+    res = requests.get(url, params=query_params)
 
     if res.status_code != 200:
         raise ResponseValidationError('Health check failed')
 
-    response_body = res.json()
+    json_resp = res.json()
 
-    if response_body.get('challenge') != challenge:
+    if json_resp.pop('challenge', None) != challenge:
         raise ClientChallengeValidationError('Response failed challenge')
 
-    return response_body
+    return json_resp

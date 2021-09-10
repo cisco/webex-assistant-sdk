@@ -1,12 +1,9 @@
+import base64
 import json
 
 import pytest
 
-from webex_assistant_sdk.crypto import (
-    SignatureGenerationError,
-    generate_signature,
-    verify_signature,
-)
+from webex_assistant_sdk.crypto import sign_token, verify_signature
 
 
 @pytest.fixture(scope='session', name='temp_dir')
@@ -18,11 +15,8 @@ def test_signatures():
     secret = 'top secret'
     message = json.dumps({'hello': 'this is a message'})
 
-    signature = generate_signature(secret, message)
-    assert verify_signature(secret, message, signature)
-
-    with pytest.raises(SignatureGenerationError):
-        generate_signature('', message)
-
-    with pytest.raises(SignatureGenerationError):
-        generate_signature(secret, '')
+    signature = sign_token(message, secret)
+    try:
+        verify_signature(secret, message.encode('utf-8'), base64.b64decode(signature))
+    except Exception as exc:  # pylint:disable=broad-except
+        pytest.fail(f"Signature mismatch: {exc}")

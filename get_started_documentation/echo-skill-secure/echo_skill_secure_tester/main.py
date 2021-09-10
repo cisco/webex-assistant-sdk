@@ -1,12 +1,10 @@
-import base64
-
-import aiohttp
 import asyncio
+import base64
 import json
 import os
-
 from typing import cast
 
+import aiohttp
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes, hmac, serialization
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP

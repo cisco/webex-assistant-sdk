@@ -106,9 +106,10 @@ def test_long_reply(responder: SkillResponder, query: str, remove_hyphens: bool,
     assert responder.directives[1]['payload']['text'] == text
     assert responder.directives[1]['name'] == 'speak'
 
+
 def test_assistant_event(responder: SkillResponder):
     expected_name = 'test'
-    expected_payload = { 'foo': 'bar' }
+    expected_payload = {'foo': 'bar'}
 
     responder.send_assistant_event(expected_name, expected_payload)
 
