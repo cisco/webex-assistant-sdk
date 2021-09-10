@@ -1,9 +1,3 @@
-secret = 'some secret'
-key = load_private_key_from_file(str(Path(__file__).resolve().parent / 'id_rsa'))
-app = SkillApplication(__name__, secret=secret, private_key=key)
-
-__all__ = ['app']# Webex Assistant SDK
-
 An SDK for developing Webex Assistant Skills based on the [MindMeld](https://www.mindmeld.com) platform.
 
 ## Install the SDK
