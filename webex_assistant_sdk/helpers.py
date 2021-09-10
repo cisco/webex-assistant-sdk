@@ -5,7 +5,6 @@ import os
 from typing import Mapping, Tuple, Union
 
 from cryptography.exceptions import InvalidSignature
-from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 import requests
 
 from . import crypto
