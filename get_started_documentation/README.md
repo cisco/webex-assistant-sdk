@@ -316,8 +316,17 @@ The following are the supported directives right now:
   "type": "action"
 }
 ```
-- `assistant-event`: A generic event sent to the assistant, this can be used with macros on RoomOS devices.
-
+- `assistant-event`: A generic event sent to the assistant, this can be used with macros on RoomOS devices. 
+  Note that the inner `name` is required, and the inner `payload` has to be an object (or empty).
+````json
+{
+    "name": "assistant-event",
+    "payload": {
+        "name": "test",
+        "payload": { "foo": "bar" },
+    }
+} 
+```
 So as you can see from the response, our skill is just telling the assistant to display and speak what the user
 just said and then go to sleep.
 
