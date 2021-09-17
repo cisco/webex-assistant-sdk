@@ -102,11 +102,11 @@ Go into the `get_started_documentation/echo-skill` folder:
 cd get_started_documentation/echo-skill
 ```
 
-We'll be creating a new python environment using `pyenv`. We'll be using `Python 3.9.5` in this example:
+We'll be creating a new python environment using `pyenv`. We'll be using `Python 3.7.5` in this example:
 
 ```bash
-pyenv install 3.9.5
-pyenv local 3.9.5
+pyenv install 3.7.5
+pyenv local 3.7.5
 ```
 
 Now install all dependencies with `Poetry`:
@@ -318,7 +318,7 @@ The following are the supported directives right now:
 ```
 - `assistant-event`: A generic event sent to the assistant, this can be used with macros on RoomOS devices. 
   Note that the inner `name` is required, and the inner `payload` has to be an object (or empty).
-````json
+```json
 {
     "name": "assistant-event",
     "payload": {
@@ -359,7 +359,7 @@ For starters, go into the `echo-skill-secure` folder and install its dependencie
 
 ```bash
 cd echo-skill-secure
-pyenv local 3.9.5
+pyenv local 3.7.5
 poetry install
 ```
 
