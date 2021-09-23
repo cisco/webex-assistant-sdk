@@ -1,14 +1,15 @@
 import base64
 import binascii
 from pathlib import Path
-from typing import cast
+from typing import Union, cast
 
 from cryptography.exceptions import UnsupportedAlgorithm
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes, hmac, serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
-from cryptography.hazmat.primitives.serialization import load_ssh_private_key
+from cryptography.hazmat.primitives.serialization import BestAvailableEncryption, NoEncryption, load_pem_private_key
 
 from webex_assistant_sdk.exceptions import EncryptionKeyError
 
@@ -16,12 +17,10 @@ from webex_assistant_sdk.exceptions import EncryptionKeyError
 def decrypt(private_key: str, message: str) -> str:
     key = load_private_key(private_key.encode("utf-8"))
 
-    padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()),
-                   algorithm=hashes.SHA256(), label=None)
+    padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)
 
     encrypted_fernet_key, fernet_token = message.split(".")
-    encrypted_fernet_key_bytes = base64.b64decode(
-        encrypted_fernet_key.encode("utf-8"))
+    encrypted_fernet_key_bytes = base64.b64decode(encrypted_fernet_key.encode("utf-8"))
 
     fernet_key = key.decrypt(encrypted_fernet_key_bytes, padding)
 
@@ -41,7 +40,7 @@ def verify_signature(secret: str, message: bytes, signature: bytes) -> None:
 def load_private_key(private_key_bytes: bytes):
     """Loads a private key in PEM format"""
     try:
-        private_key: RSAPrivateKey = load_ssh_private_key(private_key_bytes, None)
+        private_key: RSAPrivateKey = load_pem_private_key(private_key_bytes, None)
         return private_key
     except (binascii.Error, ValueError, UnsupportedAlgorithm) as ex:
         raise EncryptionKeyError('Unable to load private key') from ex
@@ -60,7 +59,7 @@ def load_public_key_from_file(filename: str) -> str:
 def encrypt_fernet_key(fernet_key: bytes, pub_key: bytes) -> bytes:
     """Encrypts a fernet key with an RSA private key"""
     padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)
-    public_key = cast(RSAPublicKey, serialization.load_ssh_public_key(pub_key))
+    public_key = cast(RSAPublicKey, serialization.load_pem_public_key(pub_key))
     return public_key.encrypt(fernet_key, padding)
 
 
@@ -105,3 +104,23 @@ def sign_token(message: str, secret: str) -> str:
     sig.update(message_bytes)
     sig_bytes = sig.finalize()
     return base64.b64encode(sig_bytes).decode('utf-8')
+
+
+def generate_keys(encryption: Union[BestAvailableEncryption, NoEncryption], priv_path: Path, pub_path: Path):
+
+    private_key = rsa.generate_private_key(65537, 4096)
+    public_key: rsa.RSAPublicKey = private_key.public_key()
+
+    priv_path.write_bytes(
+        private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=encryption,
+        )
+    )
+
+    pub_path.write_bytes(
+        public_key.public_bytes(
+            encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+    )

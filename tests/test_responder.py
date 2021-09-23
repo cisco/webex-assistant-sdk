@@ -1,6 +1,6 @@
 import pytest
 
-from webex_assistant_sdk import SkillResponder
+from webex_assistant_sdk.app import SkillResponder
 from webex_assistant_sdk.dialogue import DirectiveFormatError
 
 

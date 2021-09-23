@@ -3,7 +3,8 @@ import os
 from mindmeld import NaturalLanguageProcessor
 import pytest
 
-from webex_assistant_sdk import SkillApplication, SkillResponder
+from webex_assistant_sdk.app import SkillApplication
+from webex_assistant_sdk.dialogue import SkillResponder
 
 from .skill import app
 

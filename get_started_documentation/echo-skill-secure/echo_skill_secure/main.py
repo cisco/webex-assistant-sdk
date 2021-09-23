@@ -8,7 +8,7 @@ from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
-from cryptography.hazmat.primitives.serialization import load_ssh_private_key
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
 DEV_MODE = os.getenv('ECHO_RUN_DEV_MODE', False)
 PRIVATE_KEY = os.getenv('ECHO_PRIVATE_KEY')
@@ -21,13 +21,11 @@ routes = web.RouteTableDef()
 def decrypt(message: str) -> str:
     private_key_bytes = PRIVATE_KEY.encode("utf-8")
 
-    private_key: RSAPrivateKey = load_ssh_private_key(private_key_bytes, None)
-    padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()),
-                   algorithm=hashes.SHA256(), label=None)
+    private_key: RSAPrivateKey = load_pem_private_key(private_key_bytes, None)
+    padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)
 
     encrypted_fernet_key, fernet_token = message.split(".")
-    encrypted_fernet_key_bytes = base64.b64decode(
-        encrypted_fernet_key.encode("utf-8"))
+    encrypted_fernet_key_bytes = base64.b64decode(encrypted_fernet_key.encode("utf-8"))
 
     fernet_key = private_key.decrypt(encrypted_fernet_key_bytes, padding)
 
@@ -45,11 +43,7 @@ def verify_signature(message: bytes, signature: bytes) -> None:
 
 
 def directive(name: str, dtype: str, payload: dict = None) -> dict:
-    return {
-        'name': name,
-        'type': dtype,
-        'payload': payload or {}
-    }
+    return {'name': name, 'type': dtype, 'payload': payload or {}}
 
 
 def build_response(text: str, challenge: str, should_listen: bool = False) -> dict:
@@ -57,7 +51,7 @@ def build_response(text: str, challenge: str, should_listen: bool = False) -> di
         'directives': [
             directive('reply', 'view', {'text': text}),
             directive('speak', 'action', {'text': text}),
-            directive('listen' if should_listen else 'sleep', 'action')
+            directive('listen' if should_listen else 'sleep', 'action'),
         ]
     }
 
@@ -154,6 +148,7 @@ async def echo(request: web.BaseRequest) -> web.Response:
 
     response = handle_message(req_body)
     return web.json_response(response)
+
 
 app = web.Application()
 app.add_routes(routes)

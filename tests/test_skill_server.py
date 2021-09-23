@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-from webex_assistant_sdk import SkillApplication
+from webex_assistant_sdk.app import SkillApplication
 from webex_assistant_sdk.crypto import (
     generate_token,
     load_public_key_from_file,
