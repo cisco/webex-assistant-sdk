@@ -13,7 +13,7 @@ Here is an example implementation which is found in the `tests` folder:
 ```python
 from pathlib import Path
 
-from webex_assistant_sdk import SkillApplication
+from webex_assistant_sdk.app import SkillApplication
 from webex_assistant_sdk.crypto import load_private_key_from_file
 
 
@@ -51,17 +51,20 @@ To debug the server and turn off encryption/decryption, you can set the environm
 Installing the webex_assistant_sdk package adds a wxa_sdk command line application. Use the `-h` argument for help.
 
 ```bash
-$ wxa_sdk -h
-usage: wxa_sdk [-h] {new,generate-keys,invoke,check} ...
+Usage: wxa_sdk [OPTIONS] COMMAND [ARGS]...
 
-positional arguments:
-  {new,invoke,check}
-    new                 create a new skill project
-    invoke              invoke a skill simulating a request from Webex
-                        Assistant
-    check               check the health and configuration of a Webex
-                        Assistant Skill
+Options:
+  --install-completion [bash|zsh|fish|powershell|pwsh]
+                                  Install completion for the specified shell.
+  --show-completion [bash|zsh|fish|powershell|pwsh]
+                                  Show completion for the specified shell, to
+                                  copy it or customize the installation.
 
-optional arguments:
-  -h, --help            show this help message and exit
+  --help                          Show this message and exit.
+
+Commands:
+  generate-keys
+  generate-secret
+  invoke           Invoke a skill running locally or remotely
+
 ```

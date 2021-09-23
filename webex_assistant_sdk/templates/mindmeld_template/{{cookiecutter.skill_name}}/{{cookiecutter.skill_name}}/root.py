@@ -4,7 +4,7 @@ It is defined here to avoid circular imports
 """
 from pathlib import Path
 
-from webex_assistant_sdk import SkillApplication
+from webex_assistant_sdk.app import SkillApplication
 from webex_assistant_sdk.crypto import load_private_key_from_file
 
 secret = '{{cookiecutter.app_secret}}'
