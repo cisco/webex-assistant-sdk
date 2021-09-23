@@ -108,6 +108,7 @@ def generate_secret():
 
 @app.command(name='new')
 def new_skill(skill_name: str, secret: Optional[str] = None, password=None):
+    """Create a new skill project from a template"""
     # TODO: Support key generation, rather than making assumptions about its name
     # and location
     invoke_location = Path().resolve()

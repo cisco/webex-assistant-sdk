@@ -63,8 +63,8 @@ Options:
   --help                          Show this message and exit.
 
 Commands:
-  generate-keys
-  generate-secret
+  generate-keys    Generate an RSA keypair
+  generate-secret  Generate a secret token for signing requests
   invoke           Invoke a skill running locally or remotely
-
+  new              Create a new skill project from a template
 ```
