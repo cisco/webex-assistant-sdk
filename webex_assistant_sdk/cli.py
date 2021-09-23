@@ -19,7 +19,7 @@ app = typer.Typer()
 @app.command()
 def invoke(
     secret: Optional[str] = typer.Option(None, '--secret', '-s'),
-    public_key_path: Optional[Path] = typer.Option(Path('id_rsa.pub'), '-k', '--key'),
+    public_key_path: Optional[Path] = typer.Option(None, '-k', '--key'),
     url: Optional[str] = typer.Option('http://localhost:8080', '-u'),
 ):
     """Invoke a skill running locally or remotely"""
@@ -29,12 +29,19 @@ def invoke(
         typer.echo('Secrets must be at least 20 characters')
         secret = typer.prompt('Secret', hide_input=True)
 
-    if not public_key_path or not public_key_path.exists():
-        public_key_path = typer.prompt('Public key path', public_key_path)
+    if not public_key_path:
+        public_key_path = Path(typer.prompt('Public key path', Path('./id_rsa.pub')))
+
+    if not public_key_path.exists():
+        while 1:
+            typer.secho(f'The path {public_key_path} does not exist, please try again', color=typer.colors.RED)
+            public_key_path = Path(typer.prompt('Public key path', public_key_path))
+            if public_key_path.exists():
+                break
     if not url:
         url = typer.prompt('URL to invoke the skill', default=url)
 
-    public_key_text = public_key_path.read_text()
+    public_key_text = public_key_path.read_text(encoding='utf-8')
     typer.echo('Enter commands below (Ctl+C to exit)')
     query = typer.prompt('>>', prompt_suffix=' ')
 
@@ -53,8 +60,7 @@ def invoke(
         json_resp = resp.json()
 
         if not json_resp.get('challenge') == challenge:
-            typer.secho('Skill did not respond with expected challenge value',
-                        fg=typer.colors.RED, err=True)
+            typer.secho('Skill did not respond with expected challenge value', fg=typer.colors.RED, err=True)
 
         typer.echo(pprint(json_resp, indent=2, width=120))
         query = typer.prompt('>>', prompt_suffix=' ')
@@ -78,7 +84,7 @@ def generate_keys(
 ):
     """Generate an RSA keypair"""
     if not filepath:
-        filepath = Path('.')
+        filepath = Path.cwd()
 
     typer.secho('🔐 Generating new RSA keypair...', fg=typer.colors.GREEN)
 
@@ -92,8 +98,7 @@ def generate_keys(
     pub_path = filepath / f'{name}.pub'
 
     if priv_path.exists() or pub_path.exists():
-        confirmation = typer.confirm(
-            f'File exists, would you like to overwrite the files at {priv_path}')
+        confirmation = typer.confirm(f'File exists, would you like to overwrite the files at {priv_path}')
         if not confirmation:
             return
     typer.echo(f'Writing files {priv_path} and {pub_path} to {filepath.absolute()}')
@@ -107,7 +112,7 @@ def generate_secret():
 
 
 @app.command(name='new')
-def new_skill(skill_name: str, secret: Optional[str] = None, password=None):
+def new_skill(skill_name: str, secret: Optional[str] = None, password: Optional[str] = None):
     """Create a new skill project from a template"""
     # TODO: Support key generation, rather than making assumptions about its name
     # and location
