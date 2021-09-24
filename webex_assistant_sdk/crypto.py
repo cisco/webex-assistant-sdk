@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives import hashes, hmac, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
-from cryptography.hazmat.primitives.serialization import BestAvailableEncryption, NoEncryption, load_ssh_private_key
+from cryptography.hazmat.primitives.serialization import BestAvailableEncryption, NoEncryption, load_pem_private_key
 
 from webex_assistant_sdk.exceptions import EncryptionKeyError
 
@@ -40,7 +40,7 @@ def verify_signature(secret: str, message: bytes, signature: bytes) -> None:
 def load_private_key(private_key_bytes: bytes):
     """Loads a private key in PEM format"""
     try:
-        private_key: RSAPrivateKey = load_ssh_private_key(private_key_bytes, None)
+        private_key: RSAPrivateKey = load_pem_private_key(private_key_bytes, None)
         return private_key
     except (binascii.Error, ValueError, UnsupportedAlgorithm) as ex:
         raise EncryptionKeyError('Unable to load private key') from ex

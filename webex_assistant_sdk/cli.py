@@ -141,6 +141,8 @@ def new_skill(skill_name: str, secret: Optional[str] = None, password: Optional[
         },
     )
 
+    Path(invoke_location / skill_name / skill_name / 'entities').mkdir()
+
 
 def main():
     app()
