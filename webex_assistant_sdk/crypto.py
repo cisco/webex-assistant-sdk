@@ -59,7 +59,7 @@ def load_public_key_from_file(filename: str) -> str:
 def encrypt_fernet_key(fernet_key: bytes, pub_key: bytes) -> bytes:
     """Encrypts a fernet key with an RSA private key"""
     padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)
-    public_key = cast(RSAPublicKey, serialization.load_ssh_public_key(pub_key))
+    public_key = cast(RSAPublicKey, serialization.load_pem_public_key(pub_key))
     return public_key.encrypt(fernet_key, padding)
 
 
