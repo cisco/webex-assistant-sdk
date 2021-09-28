@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.0 - 2021-09-28
+
+### Added
+
+- Added key generation CLI command
+
+### Changed
+
+- Prior key generation methods output keys in the OpenSSH format. The decision was made to only support the PEM
+  encoding format for skill keys going forward. As such the CLI now outputs RSA keys in a PEM format.
+- Examples and tests have been updated to reflect that key format change.
+- The SkillApplication class has been removed from the top level package and must now be imported from the app module.
+- The __main__ file has been removed for now and the cli is now contained in the cli module.
+
+
 ## 0.5.0 - 2021-09-10
 
 ### Changed
