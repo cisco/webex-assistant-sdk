@@ -1,8 +1,8 @@
 from flask import Flask
 from mindmeld import Application
 
-from .dialogue import SkillResponder
-from .server import create_skill_server
+from webex_assistant_sdk.dialogue import SkillResponder
+from webex_assistant_sdk.mindmeld.server import create_skill_server
 
 
 class SkillApplication(Application):
@@ -10,14 +10,7 @@ class SkillApplication(Application):
     SkillApplication extends MindMeld application with the appropriate encryption protocols.
     """
 
-    def __init__(
-            self,
-            import_name,
-            *,
-            secret,
-            private_key,
-            responder_class=SkillResponder,
-            **kwargs):
+    def __init__(self, import_name, *, secret, private_key, responder_class=SkillResponder, **kwargs):
 
         super().__init__(import_name, responder_class=responder_class, **kwargs)
         self.secret = secret

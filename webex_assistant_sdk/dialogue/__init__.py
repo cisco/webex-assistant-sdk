@@ -192,9 +192,7 @@ class SkillResponder(DialogueResponder):
 
         return success
 
-    def long_reply(
-        self, response_strings: list, is_spoken: bool = True, remove_hyphens: bool = False
-    ):
+    def long_reply(self, response_strings: list, is_spoken: bool = True, remove_hyphens: bool = False):
         """Sends a 'long-reply' view and a 'speak' directive. Used for replies
         are too long to be sent as a normal 'reply' and which should be
         formatted appropriately.
@@ -234,18 +232,17 @@ class SkillResponder(DialogueResponder):
             name (string): Used to identify the source of the event
             payload (json object, optional): Payload to forward
         """
-        self.act(self.DirectiveNames.ASSISTANT_EVENT, {
-            'name': name,
-            'payload': payload,
-        })
+        self.act(
+            self.DirectiveNames.ASSISTANT_EVENT,
+            {
+                'name': name,
+                'payload': payload,
+            },
+        )
 
     @property
     def supported_directives(self):
-        return [
-            getattr(self.DirectiveNames, at)
-            for at in dir(self.DirectiveNames)
-            if not at.startswith('__')
-        ]
+        return [getattr(self.DirectiveNames, at) for at in dir(self.DirectiveNames) if not at.startswith('__')]
 
     def is_directive_supported(self, directive):
         return directive in self.supported_directives

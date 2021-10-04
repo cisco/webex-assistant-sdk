@@ -13,22 +13,20 @@ from mindmeld.app_manager import ApplicationManager
 from mindmeld.exceptions import BadMindMeldRequestError
 from mindmeld.server import MindMeldRequest
 
-from . import crypto
-from ._version import api_version
-from .exceptions import (
+from webex_assistant_sdk import crypto
+from webex_assistant_sdk.exceptions import (
     RequestValidationError,
     ServerChallengeValidationError,
     SignatureValidationError,
 )
-from .helpers import validate_request
+from webex_assistant_sdk.helpers import validate_request
+
+from ._version import api_version
 
 logger = logging.getLogger(__name__)
 
 
-def create_skill_server(
-        app_manager: ApplicationManager,
-        secret: str,
-        private_key: str) -> Flask:
+def create_skill_server(app_manager: ApplicationManager, secret: str, private_key: str) -> Flask:
     server = Flask('mindmeld')
     CORS(server)
 
@@ -45,9 +43,7 @@ def create_skill_server(
         try:
             use_encryption = not os.environ.get('WXA_SKILL_DEBUG', False)
             if use_encryption:
-                request_json, challenge = validate_request(
-                    secret, private_key, request.get_data().decode('utf-8')
-                )
+                request_json, challenge = validate_request(secret, private_key, request.get_data().decode('utf-8'))
             else:
                 request_json = json.loads(request.data)
                 challenge = None
@@ -108,11 +104,7 @@ def create_skill_server(
         decrypted_challenge = crypto.decrypt(private_key, encoded_cipher)
 
         return jsonify(
-            {
-                'challenge': decrypted_challenge,
-                'status': 'OK',
-                'api_version': '.'.join((str(i) for i in api_version))
-            }
+            {'challenge': decrypted_challenge, 'status': 'OK', 'api_version': '.'.join((str(i) for i in api_version))}
         )
 
     # handle exceptions
