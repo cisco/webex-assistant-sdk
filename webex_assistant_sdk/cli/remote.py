@@ -39,7 +39,7 @@ def create(
     public_key_path: Optional[Path] = typer.Option(None, '-k', '--key'),
 ):
     """Add configuration for a new remote skill to the cli config file"""
-    app_dir = Path(typer.get_app_dir('skills-cli'))
+    app_dir = Path(typer.get_app_dir('skills-cli', force_posix=True))
     config_file = app_dir / 'config.json'
 
     if not app_dir.exists():

@@ -1,5 +1,5 @@
 from webex_assistant_sdk.api import API
-from webex_assistant_sdk.models import SkillInvokeRequest, SkillInvokeResponse
+from webex_assistant_sdk.models.http import SkillInvokeRequest, SkillInvokeResponse
 
 api = API()
 

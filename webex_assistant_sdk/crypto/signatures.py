@@ -3,10 +3,8 @@ import base64
 from cryptography.hazmat.primitives import hashes, hmac
 
 
-def verify_signature(secret: str, message: bytes, signature: bytes) -> None:
-    secret_bytes = secret.encode("utf-8")
-
-    sig = hmac.HMAC(secret_bytes, hashes.SHA256())
+def verify_signature(secret: bytes, message: bytes, signature: bytes) -> None:
+    sig = hmac.HMAC(secret, hashes.SHA256())
     sig.update(message)
     # TODO: Handle exception and return bool
     sig.verify(signature)

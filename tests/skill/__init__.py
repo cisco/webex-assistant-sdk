@@ -2,8 +2,8 @@
 """This module contains the SkillApplication demo application"""
 from pathlib import Path
 
-from webex_assistant_sdk.app import SkillApplication
 from webex_assistant_sdk.crypto import load_private_key_from_file
+from webex_assistant_sdk.mindmeld.app import SkillApplication
 
 secret = 'some secret'
 key = load_private_key_from_file(str(Path(__file__).resolve().parent / 'id_rsa.pem'))
