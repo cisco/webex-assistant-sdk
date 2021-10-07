@@ -12,7 +12,8 @@ of skills, and we'll also show how to use the different tools available.
 In this documentation we are going to look at the following topics:
 
 - [Simple Skills vs MindMeld Skills](#simple-skills-vs-mindmeld-skills)
-- [Simple Skills](#simple-skills)
+  - [Simple Skills](#simple-skills)
+  - [MindMeld Skills](#mindmeld-skills)
 - [Building a Simple Skill](#building-a-simple-skill)
 - [Building a MindMeld Skill](#building-a-mindmeld-skill)
 - [Encryption](#encryption)
