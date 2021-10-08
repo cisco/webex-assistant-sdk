@@ -11,6 +11,8 @@ of skills, and we'll also show how to use the different tools available.
 
 In this documentation we are going to look at the following topics:
 
+- [Requirements](#requirements)
+  - [Installing the SDK](#installing-the-sdk)
 - [Simple Skills vs MindMeld Skills](#simple-skills-vs-mindmeld-skills)
   - [Simple Skills](#simple-skills)
   - [MindMeld Skills](#mindmeld-skills)
@@ -19,6 +21,30 @@ In this documentation we are going to look at the following topics:
 - [Encryption](#encryption)
     - [Generating Secrets](#generating-secrets)
     - [Generating Keys](#generating-keys)
+  
+## Requirements
+
+In order to follow the examples in this guide, we'll need to install the SDK and its dependencies. Right
+now the SDK works with Python 3.7 and above. Note that if you want to build a `MindMeld Skill` as shown
+later in the guide you will have to use either Python 3.7 or 3.8, since those are the only supported versions
+for the `MindMeld Library`.
+
+### Installing the SDK
+
+We'll start by creating a `pyenv` environment:
+
+```bash
+pyenv install 3.7.5
+pyenv local 3.7.5
+```
+
+We can now install the SDK using `pip`:
+
+```bash
+pip install webex-assistant-sdk
+```
+
+We should be all set, we'll use the SDK later in this guide.
 
 ## Simple Skills vs MindMeld Skills
 
@@ -58,7 +84,7 @@ We'll build a simple skill in [this section](#building-a-simple-skill)
 ### MindMeld Skills
 
 `MindMeld Skills` perform NLP analysis on the requests. These skills are a good template for cases where the
-queries will have a lot of variation and contain a lot of information in the requests. 
+queries will have a lot of variation and contain a lot of information. 
 
 Let's take the case of a skill for ordering food. Queries for a skill like this might look like the following:
 
@@ -66,17 +92,38 @@ Let's take the case of a skill for ordering food. Queries for a skill like this 
 - "Order a pad thai from Thailand Cafe"
 - "I want a hamburger with fries and soda from Hyper Burgers"
 
-As we can see, using regexes for these cases can get out of hand really fast. You would need to be able to
+As we can see, using regexes for these cases can get out of hand really fast. We would need to be able to
 recognize every single dish from every single restaurant, which might account for hundreds or thousands of regexes.
-As you add more dishes and restaurants, updating the codebase becomes a real problem.
+As we add more dishes and restaurants, updating the codebase becomes a real problem.
 
 For cases like this, we leverage the open source [MindMeld Library](https://www.mindmeld.com/). This library makes
 it really easy to perform NLP on any text query and identify entities like `dishes`, `restaurants` and `quantities`.
-With that performing the required actions becomes a much easier job.
+With that, performing the required actions becomes a much easier job.
 
 We'll build a MindMeld skill in [this section](#building-a-mindmeld-skill)
 
 ## Building a Simple Skill
+
+Let's now use the SDK to build a `Simple Skill`. As in the example above, we'll build a skill to turn lights on and
+off according to what the user is asking. We are going to call this skill `Switch`.
+
+In the `pyenv` environment we created before, run the following command:
+
+```bash
+wxa_sdk project init switch
+```
+
+This will create a template for a simple skill. You should see the following file structure:
+![File Structure](images/switch_directory.png)
+
+As you can see, the `project init` command creates a template of a skill. The arguments you can pass to this 
+command are the following:
+
+- 
+
+### Create the Skill Template
+
+
 
 ## Building a MindMeld Skill
 
