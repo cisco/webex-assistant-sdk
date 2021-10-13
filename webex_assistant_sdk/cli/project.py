@@ -16,7 +16,7 @@ app = typer.Typer(name='project')
 
 @app.command(name='init')
 def init(
-    skill_name: str,
+    skill_name: str = typer.Argument(..., help="The name of the skill you want to create"),
     skill_path: Path = typer.Option(
         '.',
         help='Directory in which to initialize a skill project',
@@ -25,8 +25,17 @@ def init(
         writable=True,
         resolve_path=True,
     ),
-    secret: Optional[str] = None,
-    mindmeld: Optional[bool] = typer.Option(False, is_flag=True),
+    secret: Optional[str] = typer.Option(
+        None,
+        help="A secret for encryption. If not provided, one will be"
+        " generated automatically."
+    ),
+    mindmeld: Optional[bool] = typer.Option(
+        False,
+        help="If flag set, a MindMeld app will be created, otherwise "
+             "it defaults to a simple app",
+        is_flag=True
+    ),
 ):
     """Create a new skill project from a template"""
     # TODO: Support private key password

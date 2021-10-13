@@ -11,8 +11,11 @@ app = typer.Typer()
 
 @app.command()
 def generate_keys(
-    filepath: Optional[Path] = typer.Argument(None),
-    name: Optional[str] = 'id_rsa',
+    filepath: Optional[Path] = typer.Argument(
+        None,
+        help="The path where to save the keys created. By default, they get created in the current directory."
+    ),
+    name: Optional[str] = typer.Option('id_rsa', help="The name to use for the keys created."),
     use_password: Optional[bool] = typer.Option(False, '-p', help='Use a password for the private key'),
 ):
     """Generate an RSA keypair"""

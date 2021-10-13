@@ -18,12 +18,33 @@ app = typer.Typer()
 # TODO: Make this more robust, handling various types of errors without completely shitting the bed
 @app.command()
 def invoke(
-    name: Optional[str] = typer.Argument(None),
-    secret: Optional[str] = typer.Option(None, '--secret', '-s'),
-    public_key_path: Optional[Path] = typer.Option(None, '-k', '--key'),
-    url: Optional[str] = typer.Option(None, '-u'),
-    verbose: Optional[bool] = typer.Option(None, '-v'),
-    encrypted: Optional[bool] = typer.Option(True, '--encrypt/--no-encrypt', is_flag=True),
+    name: Optional[str] = typer.Argument(
+        None,
+        help="The name of the skill to invoke. If none specified, you would need to"
+             " at least provide the `public_key_path` and `secret`. If specified, all"
+             " following configuration (keys, secret, url, ect.) will be extracted"
+             " from the skill."
+    ),
+    secret: Optional[str] = typer.Option(
+        None,
+        '--secret',
+        '-s',
+        help="The secret for the skill. If none provided you will be asked for it."
+    ),
+    public_key_path: Optional[Path] = typer.Option(
+        None,
+        '-k',
+        '--key',
+        help="The path of the public key for the skill."
+    ),
+    url: Optional[str] = typer.Option(None, '-u', help="The public url for the skill."),
+    verbose: Optional[bool] = typer.Option(None, '-v', help="Set this flag to get a more verbose output."),
+    encrypted: Optional[bool] = typer.Option(
+        True,
+        '--encrypt/--no-encrypt',
+        is_flag=True,
+        help="Flag to specify if the skill is using encryption."
+    ),
 ):
     # TODO: better error handling for responses
     """Invoke a skill running locally or remotely"""
@@ -102,6 +123,6 @@ def check():
 
 
 @app.command()
-def run(skill_name: str):
+def run(skill_name: str = typer.Argument(..., help="The name of the skill to run.")):
     skill_name = skill_name.replace('-', '_')
     uvicorn.run(f'{skill_name}.app:api', host="127.0.0.1", port=8080, log_level="info")
