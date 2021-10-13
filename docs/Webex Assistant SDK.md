@@ -119,7 +119,7 @@ This will create a template for a simple skill. You should see the following fil
 
 ![File Structure](images/switch_directory.png)
 
-As you can see, the `project init` command creates a template of a skill. The arguments you can pass to this 
+As you can see, the `project` section `init` command creates a template of a skill. The arguments you can pass to this 
 command are the following:
 
 - `skill_name`: (Required, string) The name of the skill you want to create.
@@ -178,14 +178,14 @@ TODO: Make sure this works.
 
 ### Invoking the Skill
 
-The SDK has an `invoke` command which is used for sending requests to the skill. With the skill running, we can invoke
+The SDK `skills` section has an `invoke` command which is used for sending requests to the skill. With the skill running, we can invoke
 it as follows:
 
 ```bash
 webex-skills skills invoke switch
 ```
 
-We can now enter a command and see a reponse:
+We can now enter a command and see a response:
 ```bash
 Enter commands below (Ctl+C to exit)
 >> hi
@@ -199,6 +199,17 @@ Enter commands below (Ctl+C to exit)
 ```
 
 We can see that we got all the directives back. The template skill will simply repeat or echo everything we send to it.
+
+The `invoke` param takes the following parameters:
+
+ - `name`: (Optional, string) The name of the skill to invoke. If none specified, you would need to at least provide
+the `public_key_path` and `secret`. If specified, all following configuration (keys, secret, url, ect.) will be
+extracted from the skill.
+ - `secret ('--secret', '-s')`: (Optional, string) The secret for the skill. If none provided you will be asked for it.
+ - `public_key_path ('-k', '--key')`: (Optional, string) The public key for the skill.
+ - `url ('-u')`: (Optional, string) = typer.Option(None, '-u') The public url for the skill.
+ - `verbose ('-v')`: (Optional, string) = typer.Option(None, '-v') Set this flag to get a more verbose output.
+ - `encrypted ('--encrypt, --no-encrypt')`: (Optional, string) Flag to specify if the skill is using encryption.
 
 ### Updating the Skill
 
