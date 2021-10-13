@@ -122,10 +122,10 @@ This will create a template for a simple skill. You should see the following fil
 As you can see, the `project init` command creates a template of a skill. The arguments you can pass to this 
 command are the following:
 
-- `skill_name`: (string, Required) The name of the skill you want to create.
-- `skill_path`: (string, Optional) The path where the skill will be created, defaults to current directory.
-- `secret`: (string, Optional) A secret for encryption. If not provided, one will be generated automatically.
-- `mindmeld`: (flag, Optional) If flag set, a MindMeld app will be created, otherwise it defaults to a simple app.
+- `skill_name`: (Required, string) The name of the skill you want to create.
+- `skill_path`: (Optional, string) The path where the skill will be created, defaults to current directory.
+- `secret`: (Optional, string) A secret for encryption. If not provided, one will be generated automatically.
+- `mindmeld (--mindmeld, --no-mindmeld)`: (flag, Optional) If flag set, a MindMeld app will be created, otherwise it defaults to a simple app.
 
 ### Running the Template
 
@@ -220,6 +220,43 @@ command with the `--mindmeld` flag set. Let's create a skill called `greeter`:
 webex-skills project init greeter --mindmeld
 ```
 
+TODO: Add pic of folder structre and explanation on it.
+
+### Invoking the MindMeld Skill
+
+
 ## Encryption
+
+Skills require encryption in order to safely send and receive requests. For the encryption to work properly, we need
+to provide a key pair and a secret for our skills. As we saw in the [Simple Skill](#building-a-simple-skill) and
+[MindMeld Skill](#building-a-mindMeld-skill) examples above, the keys and secret will be automatically created for us
+when we use the SDK to create a template. However, the SDK also has tools to create these manually if we need to.
+
+These tools are under the `crypto` section which we'll try next.
+
 ### Generating Secrets
+
+Generating a secret is very simple, simply use the `generate-secret` command:
+
+```bash
+webex-skills crypto generate-secret
+```
+
+A secret will be logged to the terminal, which then you can add to your app.
+
 ### Generating Keys
+
+Generating a key pair is very simple, simply use the `generate-keys` command:
+
+```bash
+webex-skills crypto generate-keys
+```
+
+A key pair will be created.
+
+This command accepts the following parameters:
+
+ - `filepath`: (Optional, string) The path where to save the keys created. By default, they get created in the current 
+   directory. 
+ - `name`: (Optional, string) The name to use for the keys created. By default, they are called `id_rsa`. 
+ - `use_password (-p)`: (Optional, flag) If we want to provide a passphrase for the keys we can set this flag.
