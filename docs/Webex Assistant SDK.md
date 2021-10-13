@@ -18,6 +18,7 @@ In this documentation we are going to look at the following topics:
   - [MindMeld Skills](#mindmeld-skills)
 - [Building a Simple Skill](#building-a-simple-skill)
 - [Building a MindMeld Skill](#building-a-mindmeld-skill)
+- [Converting a Simple Skill into a MindMeld Skill](#converting-a-simple-skill-into-a-mindmeld-skill)
 - [Encryption](#encryption)
     - [Generating Secrets](#generating-secrets)
     - [Generating Keys](#generating-keys)
@@ -235,10 +236,15 @@ command with the `--mindmeld` flag set. Let's create a skill called `greeter`:
 webex-skills project init greeter --mindmeld
 ```
 
-TODO: Add pic of folder structre and explanation on it.
+TODO: Add pic of folder structure and explanation on it.
 
 ### Invoking the MindMeld Skill
 
+TODO
+
+## Converting a Simple Skill into a MindMeld Skill
+
+TODO
 
 ## Encryption
 
