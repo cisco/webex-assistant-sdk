@@ -112,7 +112,7 @@ off according to what the user is asking. We are going to call this skill `Switc
 In the `pyenv` environment we created before, run the following command:
 
 ```bash
-wxa_sdk project init switch
+webex-skills project init switch
 ```
 
 This will create a template for a simple skill. You should see the following file structure:
@@ -129,16 +129,69 @@ command are the following:
 
 ### Running the Template
 
-We can now run our skill and start testing it. The skill is based on FastAPI
+We can now run our skill and start testing it. There are a couple ways you can run it. 
 
-#### Running the Skill with the SDK
+First this SDK has a `run` command, you can run it as follows:
 
-The SDK has an `invoke` command wich can be used for quickly testing that the skill is working well. We can try
+```bash
+webex-skills skills run switch
+```
+
+You should see an output similar to:
+```bash
+INFO:     Started server process [58986]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
+```
+
+The second option is to use `uvicorn`. After all, the skill created is an `asgi` application based on
+[FastAPI](https://fastapi.tiangolo.com/):
+
+```bash
+uvicorn switch.app:api --port 8080 --reload
+```
+
+Now that we have the skill actually run it, we can test it.
+
+### Checking the Skill
+
+One quick thing we can do before sending actual requests to the skill is to make sure we have everything correctly
+setup. The sdk provides a tool for that. We can call it as:
+
+```bash
+webex-skills skills check switch
+```
+
+TODO: Make sure this works.
+
+### Invoking the Skill
+
+The SDK has an `invoke` command which is used for sending requests to the skill. With the skill running, we can invoke
 it as follows:
 
 ```bash
-wxa_sdk invoke
+webex-skills skills invoke switch
 ```
+
+We can now enter a command and see a reponse:
+```bash
+Enter commands below (Ctl+C to exit)
+>> hi
+{ 'challenge': 'c4a427441a56ada1dfdef0ccfab34aeead83bc85973a312ea83c40a3366b556e',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'hi'}, 'type': 'view'},
+                  {'name': 'speak', 'payload': {'text': 'hi'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {}, 'type': 'action'}],
+  'frame': [],
+  'history': [],
+  'params': {}}
+```
+
+We can see that we got all the directives back. The template skill will simply repeat or echo everything we send to it.
+
+### Updating the Skill
+
+
 
 ## Building a MindMeld Skill
 
