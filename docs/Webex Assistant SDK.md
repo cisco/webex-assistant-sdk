@@ -152,6 +152,17 @@ The second option is to use `uvicorn`. After all, the skill created is an `asgi`
 uvicorn switch.app:api --port 8080 --reload
 ```
 
+You should see an output similat to the following:
+
+```bash
+INFO:     Will watch for changes in these directories: ['<PATH_TO_SKILL>']
+INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
+INFO:     Started reloader process [5324] using statreload
+INFO:     Started server process [5343]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
 Now that we have the skill actually run it, we can test it.
 
 ### Checking the Skill
@@ -191,9 +202,23 @@ We can see that we got all the directives back. The template skill will simply r
 
 ### Updating the Skill
 
+Let's now modify our skill so it does what we want: remember we want this skill to turn on and off the office lights. 
 
+Simply update the `app.py` file with the following code:
 
 ## Building a MindMeld Skill
+
+When a skill is very complex and needs to handle many commands, usually the best approach is to create a MindMeld 
+based skill. This will allow us to use NLP to better classify the request and extract important information we need
+from it. We are not going to go very deep into how a MindMeld application works, but there are a lot of resources in the
+official [MindMeld library](https://www.mindmeld.com/) site.
+
+This SDK also has tooling in place for setting up a MindMeld based skill. For that, we can use the `project init`
+command with the `--mindmeld` flag set. Let's create a skill called `greeter`:
+
+```bash
+webex-skills project init greeter --mindmeld
+```
 
 ## Encryption
 ### Generating Secrets
