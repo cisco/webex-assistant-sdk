@@ -20,9 +20,12 @@ In this documentation we are going to look at the following topics:
 - [Building a MindMeld Skill](#building-a-mindmeld-skill)
 - [Converting a Simple Skill into a MindMeld Skill](#converting-a-simple-skill-into-a-mindmeld-skill)
 - [Encryption](#encryption)
-    - [Generating Secrets](#generating-secrets)
-    - [Generating Keys](#generating-keys)
-  
+  - [Generating Secrets](#generating-secrets)
+  - [Generating Keys](#generating-keys)
+- [Remotes](#remotes)
+  - [Creating a Remote](#creating-a-remote)
+  - [Listing Remotes](#listing-remotes)
+
 ## Requirements
 
 In order to follow the examples in this guide, we'll need to install the SDK and its dependencies. Right
@@ -120,13 +123,33 @@ This will create a template for a simple skill. You should see the following fil
 
 ![File Structure](images/switch_directory.png)
 
-As you can see, the `project` section `init` command creates a template of a skill. The arguments you can pass to this 
-command are the following:
+As you can see, the `project` section `init` command creates a template of a skill. As usual, you can use the `--help
+` option to see the documentation for this command:
 
-- `skill_name`: (Required, string) The name of the skill you want to create.
-- `skill_path`: (Optional, string) The path where the skill will be created, defaults to current directory.
-- `secret`: (Optional, string) A secret for encryption. If not provided, one will be generated automatically.
-- `mindmeld (--mindmeld, --no-mindmeld)`: (flag, Optional) If flag set, a MindMeld app will be created, otherwise it defaults to a simple app.
+```bash
+$ webex-skills project init --help
+Usage: webex-skills project init [OPTIONS] SKILL_NAME
+
+  Create a new skill project from a template
+
+Arguments:
+  SKILL_NAME  The name of the skill you want to create  [required]
+
+Options:
+  --skill-path DIRECTORY      Directory in which to initialize a skill project
+                              [default: .]
+
+  --secret TEXT               A secret for encryption. If not provided, one
+                              will be generated automatically.
+
+  --mindmeld / --no-mindmeld  If flag set, a MindMeld app will be created,
+                              otherwise it defaults to a simple app  [default:
+                              False]
+
+  --help                      Show this message and exit.
+```
+
+
 
 ### Running the Template
 
@@ -146,11 +169,20 @@ INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
 ```
 
-The run command only takes one parameter:
+As usual, you can use the `--help` option to see the documentation for this command:
 
-- `name`: (Required, string) The name of the skill to run.
+```bash
+$ webex-skills skills run --help
+Usage: webex-skills skills run [OPTIONS] SKILL_NAME
 
-The second option is to use `uvicorn`. After all, the skill created is an `asgi` application based on
+Arguments:
+  SKILL_NAME  The name of the skill to run.  [required]
+
+Options:
+  --help  Show this message and exit.
+```
+
+The second option to run a skill is to use `uvicorn`. After all, the skill created is an `asgi` application based on
 [FastAPI](https://fastapi.tiangolo.com/):
 
 ```bash
@@ -183,8 +215,8 @@ TODO: Make sure this works.
 
 ### Invoking the Skill
 
-The SDK `skills` section has an `invoke` command which is used for sending requests to the skill. With the skill running, we can invoke
-it as follows:
+The SDK `skills` section has an `invoke` command which is used for sending requests to the skill. With the skill
+running, we can invoke it as follows:
 
 ```bash
 webex-skills skills invoke switch
@@ -205,16 +237,33 @@ Enter commands below (Ctl+C to exit)
 
 We can see that we got all the directives back. The template skill will simply repeat or echo everything we send to it.
 
-The `invoke` param takes the following parameters:
+As usual, you can use the `--help` option to see the documentation for this command:
 
- - `name`: (Optional, string) The name of the skill to invoke. If none specified, you would need to at least provide
-the `public_key_path` and `secret`. If specified, all following configuration (keys, secret, url, ect.) will be
-extracted from the skill.
- - `secret ('--secret', '-s')`: (Optional, string) The secret for the skill. If none provided you will be asked for it.
- - `public_key_path ('-k', '--key')`: (Optional, string) The public key for the skill.
- - `url ('-u')`: (Optional, string) = typer.Option(None, '-u') The public url for the skill.
- - `verbose ('-v')`: (Optional, string) = typer.Option(None, '-v') Set this flag to get a more verbose output.
- - `encrypted ('--encrypt, --no-encrypt')`: (Optional, string) Flag to specify if the skill is using encryption.
+```bash
+$ webex-skills skills invoke --help
+Usage: webex-skills skills invoke [OPTIONS] [NAME]
+
+  Invoke a skill running locally or remotely
+
+Arguments:
+  [NAME]  The name of the skill to invoke. If none specified, you would need
+          to at least provide the `public_key_path` and `secret`. If
+          specified, all following configuration (keys, secret, url, ect.)
+          will be extracted from the skill.
+
+
+Options:
+  -s, --secret TEXT         The secret for the skill. If none provided you
+                            will be asked for it.
+
+  -k, --key PATH            The path of the public key for the skill.
+  -u TEXT                   The public url for the skill.
+  -v                        Set this flag to get a more verbose output.
+  --encrypt / --no-encrypt  Flag to specify if the skill is using encryption.
+                            [default: True]
+
+  --help                    Show this message and exit.
+```
 
 ### Updating the Skill
 
@@ -275,9 +324,27 @@ webex-skills crypto generate-keys
 
 A key pair will be created.
 
-This command accepts the following parameters:
+As usual, you can use the `--help` option to see the documentation for this command:
 
- - `filepath`: (Optional, string) The path where to save the keys created. By default, they get created in the current 
-   directory. 
- - `name`: (Optional, string) The name to use for the keys created. By default, they are called `id_rsa`. 
- - `use_password (-p)`: (Optional, flag) If we want to provide a passphrase for the keys we can set this flag.
+```bash
+$ webex-skills crypto generate-keys --help
+Usage: webex-skills crypto generate-keys [OPTIONS] [FILEPATH]
+
+  Generate an RSA keypair
+
+Arguments:
+  [FILEPATH]  The path where to save the keys created. By default, they get
+              created in the current directory.
+
+
+Options:
+  --name TEXT  The name to use for the keys created.  [default: id_rsa]
+  -p           Use a password for the private key  [default: False]
+  --help       Show this message and exit.
+```
+
+## Remotes
+
+### Creating a Remote
+
+### Listing Remotes
