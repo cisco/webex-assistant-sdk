@@ -145,6 +145,10 @@ INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
 ```
 
+The run command only takes one parameter:
+
+- `name`: (Required, string) The name of the skill to run.
+
 The second option is to use `uvicorn`. After all, the skill created is an `asgi` application based on
 [FastAPI](https://fastapi.tiangolo.com/):
 
