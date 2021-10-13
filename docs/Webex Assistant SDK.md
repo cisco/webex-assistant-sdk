@@ -107,6 +107,8 @@ We'll build a MindMeld skill in [this section](#building-a-mindmeld-skill)
 Let's now use the SDK to build a `Simple Skill`. As in the example above, we'll build a skill to turn lights on and
 off according to what the user is asking. We are going to call this skill `Switch`.
 
+### Create the Skill Template
+
 In the `pyenv` environment we created before, run the following command:
 
 ```bash
@@ -114,16 +116,29 @@ wxa_sdk project init switch
 ```
 
 This will create a template for a simple skill. You should see the following file structure:
+
 ![File Structure](images/switch_directory.png)
 
 As you can see, the `project init` command creates a template of a skill. The arguments you can pass to this 
 command are the following:
 
-- 
+- `skill_name`: (string, Required) The name of the skill you want to create.
+- `skill_path`: (string, Optional) The path where the skill will be created, defaults to current directory.
+- `secret`: (string, Optional) A secret for encryption. If not provided, one will be generated automatically.
+- `mindmeld`: (flag, Optional) If flag set, a MindMeld app will be created, otherwise it defaults to a simple app.
 
-### Create the Skill Template
+### Running the Template
 
+We can now run our skill and start testing it. The skill is based on FastAPI
 
+#### Running the Skill with the SDK
+
+The SDK has an `invoke` command wich can be used for quickly testing that the skill is working well. We can try
+it as follows:
+
+```bash
+wxa_sdk invoke
+```
 
 ## Building a MindMeld Skill
 
