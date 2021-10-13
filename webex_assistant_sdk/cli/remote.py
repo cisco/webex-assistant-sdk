@@ -33,10 +33,20 @@ def prompt_for_key():
 
 @remote.command()
 def create(
-    name: str,
-    url: Optional[str] = typer.Option(None, '-u'),
-    secret: Optional[str] = typer.Option(None, '--secret', '-s'),
-    public_key_path: Optional[Path] = typer.Option(None, '-k', '--key'),
+    name: str = typer.Argument(..., help="The name to give to the remote."),
+    url: Optional[str] = typer.Option(None, '-u', help="URL of the remote. If not provided it will be requested."),
+    secret: Optional[str] = typer.Option(
+        None,
+        '--secret',
+        '-s',
+        help="The skill secret. If not provided it will be requested."
+    ),
+    public_key_path: Optional[Path] = typer.Option(
+        None,
+        '-k',
+        '--key',
+        help="The path to the public key. If not provided it will be requested."
+    ),
 ):
     """Add configuration for a new remote skill to the cli config file"""
     app_dir = Path(typer.get_app_dir('skills-cli', force_posix=True))
@@ -74,7 +84,7 @@ def create(
 
 
 @remote.command('list')
-def ls(name: Optional[str] = typer.Argument(None)):
+def ls(name: Optional[str] = typer.Option(None, help="The name of a particular skill to display.")):
     """List configured remote skills"""
     remotes = get_skill_config()
     if not remotes:
