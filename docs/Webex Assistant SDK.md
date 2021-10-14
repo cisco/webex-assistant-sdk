@@ -345,6 +345,64 @@ Options:
 
 ## Remotes
 
+This SDK also has the notion of `remotes`. That is, skills that are already running and even deployed somewhere, but
+we still want to be able to test them using the SDK. 
+
+The process for using remotes is very simple, we're going to look into that now. We'll use the `remote` section of the
+SDK.
+
 ### Creating a Remote
 
+You can create a remote by using the `create` command. Let's create a remote for our simple app we called `switch`:
+
+```bash
+webex-skills remote create switch
+```
+
+TODO: Add the prompts
+
+In a more real scenario, this skill would be deployed and running on a server with a public URL and we would use that
+URL instead of our local one.
+
+As usual, you can use the `--help` option to see the documentation for this command:
+
+```bash
+$ webex-skills remote create --help
+
+Usage: webex-skills remote create [OPTIONS] NAME
+
+  Add configuration for a new remote skill to the cli config file
+
+Arguments:
+  NAME  The name to give to the remote.  [required]
+
+Options:
+  -u TEXT            URL of the remote. If not provided it will be requested.
+  -s, --secret TEXT  The skill secret. If not provided it will be requested.
+  -k, --key PATH     The path to the public key. If not provided it will be
+                     requested.
+
+  --help             Show this message and exit.
+```
+
 ### Listing Remotes
+
+You can also list the remotes you currently have set up. For that you can use the `list` command:
+
+```bash
+webex-skills remote list
+```
+
+As usual, you can use the `--help` option to see the documentation for this command:
+
+```bash
+$ run webex-skills remote list --help
+
+Usage: webex-skills remote list [OPTIONS]
+
+  List configured remote skills
+
+Options:
+  --name TEXT  The name of a particular skill to display.
+  --help       Show this message and exit.
+```
