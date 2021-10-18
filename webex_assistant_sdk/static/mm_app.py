@@ -1,14 +1,19 @@
-from webex_assistant_sdk.api import API
-from webex_assistant_sdk.models.http import SkillInvokeRequest, SkillInvokeResponse
+from webex_assistant_sdk.api import MindmeldAPI
+from webex_assistant_sdk.dialogue import responses
+from webex_assistant_sdk.models.mindmeld import DialogueState
 
-api = API()
+api = MindmeldAPI()
 
 
-@api.handle(targeted_only=True, name='skill_intro')
-def parse_things(invoke_request: SkillInvokeRequest) -> SkillInvokeResponse:
-    directives = [
-        {'name': 'reply', 'type': 'view', 'payload': {'text': invoke_request.text}},
-        {'name': 'speak', 'type': 'action', 'payload': {'text': invoke_request.text}},
-        {'name': 'sleep', 'type': 'action', 'payload': {}},
+@api.handle(intent='greet')
+async def greet(current_state: DialogueState) -> DialogueState:
+    text = 'Hello I am a super simple skill using NLP'
+    new_state = current_state.copy()
+
+    new_state.directives = [
+        responses.Reply(text),
+        responses.Speak(text),
+        responses.Sleep(10),
     ]
-    return SkillInvokeResponse(challenge=invoke_request.challenge, directives=directives)
+
+    return new_state

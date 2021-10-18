@@ -13,21 +13,21 @@ __all__ = ['app']
 
 
 @app.introduce
-@app.handle(intent='greet')
+@app.handle(pattern=)
 def welcome(request, responder):
     del request
     responder.reply('Hello. I am a third party skill. What would you like to do?')
     responder.listen()
 
 
-@app.handle(intent='exit')
+@app.handle(pattern=)
 def say_goodbye(request, responder):
     del request
     responder.reply(['Bye', 'Goodbye', 'Have a nice day.'])
     responder.sleep()
 
 
-@app.handle(intent='help')
+@app.handle(pattern=)
 def provide_help(request, responder):
     del request
     prompts = ["I can help you with your personal tasks.'"]

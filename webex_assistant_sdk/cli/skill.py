@@ -15,38 +15,27 @@ from webex_assistant_sdk.cli.config import get_skill_config
 app = typer.Typer()
 
 
-# TODO: Make this more robust, handling various types of errors without completely shitting the bed
 @app.command()
 def invoke(
     name: Optional[str] = typer.Argument(
         None,
         help="The name of the skill to invoke. If none specified, you would need to"
-             " at least provide the `public_key_path` and `secret`. If specified, all"
-             " following configuration (keys, secret, url, ect.) will be extracted"
-             " from the skill."
+        " at least provide the `public_key_path` and `secret`. If specified, all"
+        " following configuration (keys, secret, url, ect.) will be extracted"
+        " from the skill.",
     ),
     secret: Optional[str] = typer.Option(
-        None,
-        '--secret',
-        '-s',
-        help="The secret for the skill. If none provided you will be asked for it."
+        None, '--secret', '-s', help="The secret for the skill. If none provided you will be asked for it."
     ),
     public_key_path: Optional[Path] = typer.Option(
-        None,
-        '-k',
-        '--key',
-        help="The path of the public key for the skill."
+        None, '-k', '--key', help="The path of the public key for the skill."
     ),
     url: Optional[str] = typer.Option(None, '-u', help="The public url for the skill."),
     verbose: Optional[bool] = typer.Option(None, '-v', help="Set this flag to get a more verbose output."),
     encrypted: Optional[bool] = typer.Option(
-        True,
-        '--encrypt/--no-encrypt',
-        is_flag=True,
-        help="Flag to specify if the skill is using encryption."
+        True, '--encrypt/--no-encrypt', is_flag=True, help="Flag to specify if the skill is using encryption."
     ),
 ):
-    # TODO: better error handling for responses
     """Invoke a skill running locally or remotely"""
     if name:
         # Load details from config
@@ -107,19 +96,10 @@ def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
             'challenge': challenge,
             'text': query,
             'context': json_resp.get('context', {}),
-            'params': {
-                'time_zone': 'sometime',
-                'timestamp': 12345,
-                'language': 'en',
-            },
+            'params': json_resp.get('params', {}),
             'frame': json_resp.get('frame', []),
             'history': json_resp.get('history', []),
         }
-
-
-@app.command()
-def check():
-    """Performs a health check on a given skill"""
 
 
 @app.command()

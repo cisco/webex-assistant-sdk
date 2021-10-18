@@ -1,13 +1,17 @@
 import base64
 
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes, hmac
 
 
-def verify_signature(secret: bytes, message: bytes, signature: bytes) -> None:
+def verify_signature(secret: bytes, message: bytes, signature: bytes) -> bool:
     sig = hmac.HMAC(secret, hashes.SHA256())
     sig.update(message)
-    # TODO: Handle exception and return bool
-    sig.verify(signature)
+    try:
+        sig.verify(signature)
+        return True
+    except InvalidSignature:
+        return False
 
 
 def sign_token(message: str, secret: str) -> str:

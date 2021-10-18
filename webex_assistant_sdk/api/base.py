@@ -1,27 +1,20 @@
-from typing import TYPE_CHECKING, Coroutine, Optional
+from typing import Optional
 
 from fastapi import FastAPI
 from pydantic import BaseSettings
 from starlette.middleware import Middleware
-from starlette.routing import Route
 
-from webex_assistant_sdk.config import SkillSettings
 from webex_assistant_sdk.crypto.messages import load_private_key
+from webex_assistant_sdk.settings import SkillSettings
 
-from ..models.http import SkillInvokeRequest
+from ..models.http import SkillInvokeRequest, SkillInvokeResponse
 from .middlewares import DecryptionMiddleware
 from .middlewares.signing import SignatureMiddleware
 
-if TYPE_CHECKING:
-    from mindmeld import DialogueResponder
 
-    AsyncHandler = Coroutine[DialogueResponder]
-
-
+# TODO: Disable OpenAPI by default
 class BaseAPI(FastAPI):
     def __init__(self, *args, settings: Optional[BaseSettings] = None, **extra):
-        # TODO: Add Response serialization -- Handled by FastAPI for non-mm cases
-        # TODO: Support additional passed in routes
         self.settings = settings or SkillSettings()
         middleware = extra.get('middlewares', [])
 
@@ -34,11 +27,8 @@ class BaseAPI(FastAPI):
                 *middleware,
             ]
 
-        # routes = [Route('/parse', self.parse, methods=['POST'])]
         super().__init__(*args, **extra, middleware=middleware)
+        self.router.add_api_route('/parse', self.parse, methods=['POST'], response_model=SkillInvokeResponse)
 
-    def handle(self):
-        pass
-
-    def parse(self, request: SkillInvokeRequest):
+    async def parse(self, request: SkillInvokeRequest):
         pass

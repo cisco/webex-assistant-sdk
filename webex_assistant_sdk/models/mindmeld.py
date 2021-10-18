@@ -1,67 +1,40 @@
-from pydantic import BaseModel
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, constr
+
+# Mindmeld's Request object is essentially just a ProcessedQuery object + the dialogue manager stuff
 
 
-class MindmeldRequest(BaseModel):
-    pass
+class Params(BaseModel):
+    target_dialogue_state: Optional[str]
+    time_zone: str
+    timestamp: int
+    # We enforce length via min/max length in addition to the regex so we get a more
+    # useful error message if the length is wrong.
+    language: constr(min_length=2, max_length=2, regex="^[a-zA-Z]{2}$")  # type: ignore
+    locale: Optional[constr(regex="^[a-z]{2}([-_][A-Z]{2})?$")]  # type: ignore
+    dynamic_resource: Optional[Dict[Any, Any]] = {}
+    allowed_intents: Optional[List[str]] = []
 
 
-class MindmeldResponse(BaseModel):
-    pass
+class ProcessedQuery(BaseModel):
+    # This is a subset of the fields on ProcessedQuery. We will only ever receive a single transcript
+    # So we don't need to include any of the nbest_* fields or the confidence
+    text: str
+    domain: Optional[str]
+    intent: Optional[str]
+    # TODO: Add proper typing for entities (dict with keys for entity types and values)
+    entities: Optional[List[Dict[Any, Any]]]
 
 
-"""@attr.s(frozen=True, kw_only=True)  # pylint: disable=too-many-instance-attributes
-class Request:
-    # 
-    # The Request is an object passed in through the Dialogue Manager and contains all the
-    # information provided by the application client for the dialogue handler to act on. Note: the
-    # Request object is read-only since it represents the client state, which should not be mutated.
-    #
-    # Attributes:
-    #     domains (str): Domain of the current query.
-    #     intent (str): Intent of the current query.
-    #     entities (list of dicts): A list of entities in the current query.
-    #     history (list of dicts): List of previous and current responder objects
-    #         (de-serialized) up to the current conversation.
-    #     text (str): The query text.
-    #     frame (): Immutables Map of stored data across multiple dialogue turns.
-    #     params (Params): An object that modifies how MindMeld process the current turn.
-    #     context (dict): Immutables Map containing front-end client state that is passed to the
-    #         application from the client in the request.
-    #     confidences (dict): Immutables Map of keys ``domains``, ``intents``, ``entities``
-    #         and ``roles`` containing confidence probabilities across all labels for
-    #         each classifier.
-    #     nbest_transcripts_text (tuple): List of alternate n-best transcripts from an ASR system
-    #     nbest_transcripts_entities (tuple): List of lists of extracted entities for each of the
-    #         n-best transcripts.
-    #     nbest_aligned_entities (tuple): List of lists of aligned entities for each of the n-best
-    #         transcripts.
-    #
-    domain = attr.ib(default=None)
-    intent = attr.ib(default=None)
-    entities = attr.ib(
-        default=attr.Factory(tuple), converter=deserialize_to_list_immutable_maps
-    )
-    history = attr.ib(
-        default=attr.Factory(tuple), converter=deserialize_to_list_immutable_maps
-    )
-    text = attr.ib(default=None)
-    frame = attr.ib(default=immutables.Map(), converter=immutables.Map)
-    params = attr.ib(default=FrozenParams())
-    context = attr.ib(default=immutables.Map(), converter=immutables.Map)
-    confidences = attr.ib(default=immutables.Map(), converter=immutables.Map)
-    nbest_transcripts_text = attr.ib(
-        default=attr.Factory(tuple), converter=tuple
-    )
-    nbest_transcripts_entities = attr.ib(
-        default=attr.Factory(tuple), converter=deserialize_to_lists_of_list_of_immutable_maps
-    )
-    nbest_aligned_entities = attr.ib(
-        default=attr.Factory(tuple), converter=deserialize_to_lists_of_list_of_immutable_maps
-    )
-    form = attr.ib(default=attr.Factory(tuple), converter=immutables.Map)
-
-    def __iter__(self):
-        for key, value in DEFAULT_REQUEST_SCHEMA.dump(self).items():
-            if value:
-                yield key, value
-"""
+class DialogueState(BaseModel):
+    text: Optional[str]
+    context: Dict[Any, Any]
+    params: Params
+    frame: Dict[Any, Any]
+    history: Optional[List[Dict[Any, Any]]] = []
+    # TODO: Unsure if I should put this directly on the State object or if our method should just be required
+    # to return a state and a list of directives
+    directives: Optional[List[Dict[Any, Any]]] = []

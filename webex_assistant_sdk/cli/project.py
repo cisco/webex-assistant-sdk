@@ -26,15 +26,12 @@ def init(
         resolve_path=True,
     ),
     secret: Optional[str] = typer.Option(
-        None,
-        help="A secret for encryption. If not provided, one will be"
-        " generated automatically."
+        None, help="A secret for encryption. If not provided, one will be" " generated automatically."
     ),
     mindmeld: Optional[bool] = typer.Option(
         False,
-        help="If flag set, a MindMeld app will be created, otherwise "
-             "it defaults to a simple app",
-        is_flag=True
+        help="If flag set, a MindMeld app will be created, otherwise " "it defaults to a simple app",
+        is_flag=True,
     ),
 ):
     """Create a new skill project from a template"""
@@ -66,7 +63,6 @@ def create_project(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate keys
-    # TODO: Factor out key generation cli bits as it's going to be used in multiple places
     typer.secho('🔐 Generating new RSA keypair...', fg=typer.colors.GREEN)
     priv_path = output_dir / 'id_rsa.pem'
     pub_path = output_dir / 'id_rsa.pub'

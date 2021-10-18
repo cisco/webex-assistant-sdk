@@ -16,8 +16,10 @@ def create_nlp(app_path):
 
 
 @app.command()
-def build(app_path):
+def build():
     """Build nlp models associated with this skill"""
+    nlp = create_nlp('.')
+    nlp.build()
 
 
 @app.command()

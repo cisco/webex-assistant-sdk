@@ -36,16 +36,10 @@ def create(
     name: str = typer.Argument(..., help="The name to give to the remote."),
     url: Optional[str] = typer.Option(None, '-u', help="URL of the remote. If not provided it will be requested."),
     secret: Optional[str] = typer.Option(
-        None,
-        '--secret',
-        '-s',
-        help="The skill secret. If not provided it will be requested."
+        None, '--secret', '-s', help="The skill secret. If not provided it will be requested."
     ),
     public_key_path: Optional[Path] = typer.Option(
-        None,
-        '-k',
-        '--key',
-        help="The path to the public key. If not provided it will be requested."
+        None, '-k', '--key', help="The path to the public key. If not provided it will be requested."
     ),
 ):
     """Add configuration for a new remote skill to the cli config file"""

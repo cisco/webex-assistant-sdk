@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, constr
 
-# TODO: Actually narrow these types
+from webex_assistant_sdk.models.mindmeld import DialogueState, Params
 
 
 class InvokePayload(BaseModel):
@@ -10,36 +10,14 @@ class InvokePayload(BaseModel):
     message: str
 
 
-class InvocationParams(BaseModel):
-    target_dialogue_state: Optional[str]
-    time_zone: str
-    timestamp: int
-    # We enforce length via min/max length in addition to the regex so we get a more
-    # useful error message if the length is wrong.
-    language: constr(min_length=2, max_length=2, regex="^[a-zA-Z]{2}$")  # type: ignore
-    locale: Optional[constr(regex="^[a-z]{2}([-_][A-Z]{2})?$")]  # type: ignore
-    dynamic_resource: Optional[Dict[Any, Any]] = {}
-    allowed_intents: Optional[List[str]] = []
-
-
-class DialogStep(BaseModel):
-    text: str
-    context: Dict[Any, Any]
-    params: InvocationParams
-    frame: Dict[Any, Any]
-
-
-class NLPInvokeRequest(DialogStep):
-    history: Optional[List[Dict[Any, Any]]] = []
-
-
-class SkillInvokeRequest(DialogStep):
+class SkillInvokeRequest(DialogueState):
     challenge: constr(min_length=64, max_length=64)  # type: ignore
 
 
+# TODO: This should probably be like the InvokeRequest and just add a challenge to an existing type
 class SkillInvokeResponse(BaseModel):
     challenge: str
     directives: List[Dict[Any, Any]]
     frame: Optional[Dict[Any, Any]] = []
-    params: Optional[InvocationParams] = {}
+    params: Optional[Params] = {}
     history: Optional[List[Dict[Any, Any]]] = []

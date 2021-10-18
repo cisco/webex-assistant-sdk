@@ -6,11 +6,6 @@ import pytest
 from webex_assistant_sdk.crypto import sign_token, verify_signature
 
 
-@pytest.fixture(scope='session', name='temp_dir')
-def _temp_dir(tmp_path_factory):
-    return tmp_path_factory.mktemp("tmp")
-
-
 def test_signatures():
     secret = b'top secret'
     message = json.dumps({'hello': 'this is a message'})

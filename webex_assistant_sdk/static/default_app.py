@@ -1,7 +1,7 @@
-from webex_assistant_sdk.api import API
+from webex_assistant_sdk.api import SimpleAPI
 from webex_assistant_sdk.models.http import SkillInvokeRequest, SkillInvokeResponse
 
-api = API()
+api = SimpleAPI()
 
 
 @api.post('/parse')

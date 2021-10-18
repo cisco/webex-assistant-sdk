@@ -1,9 +1,9 @@
 import warnings
 
-from mindmeld.core import ProcessedQuery
-
-from webex_assistant_sdk.api.base import BaseAPI
-from webex_assistant_sdk.models.http import SkillInvokeRequest
+from ..dialogue.manager import MMDialogueManager
+from ..models.http import SkillInvokeRequest, SkillInvokeResponse
+from ..models.mindmeld import DialogueState, ProcessedQuery
+from .base import BaseAPI
 
 
 class suppress_warnings:
@@ -22,28 +22,41 @@ class suppress_warnings:
         return
 
 
-# TODO: Figure out dialogue manager stuff
+with suppress_warnings():
+    from mindmeld import NaturalLanguageProcessor
+
+
 class MindmeldAPI(BaseAPI):
-    async def parse(self, invoke_request: SkillInvokeRequest):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.nlp = NaturalLanguageProcessor(self.settings.app_dir)
+        self.nlp.load()
+        self.dialogue_manager = MMDialogueManager()
+
+    async def parse(self, request: SkillInvokeRequest):
+        current_state = DialogueState(**request.dict())
         """A default parse method for mindmeld apps so the user only has to handle dialogue stuff"""
-        processed_query: ProcessedQuery = self.nlp.process(
-            query_text=invoke_request.text,
-            locale=invoke_request.params.locale,
-            language=invoke_request.params.language,
-            time_zone=invoke_request.params.time_zone,
-            timestamp=invoke_request.params.timestamp,
-            dynamic_resource=invoke_request.params.dynamic_resource,
+        processed_query = self.nlp.process(
+            query_text=request.text,
+            locale=request.params.locale,
+            language=request.params.language,
+            time_zone=request.params.time_zone,
+            timestamp=request.params.timestamp,
+            dynamic_resource=request.params.dynamic_resource,
         )
+
+        processed_query = ProcessedQuery(**processed_query)  # type: ignore
         # This should invoke the relevant function, wrapped so that the end result of the dialogue flow can be
         # serialized to a json response using one of our pydantic objects
-        return self.dm.handle(processed_query)
+        new_state = await self.dialogue_manager.handle(processed_query, current_state)
 
-    def init_mm(self):
-        with suppress_warnings():
-            # TODO: Update routes so parse_mm handles the /parse endpoint
-            # TODO: Initialize NLP and DM
-            from mindmeld import NaturalLanguageProcessor
-            from mindmeld.components import DialogueManager
+        # new_state = self.update_history(current_state, new_state)
+        response = SkillInvokeResponse(**new_state.dict(), challenge=request.challenge)
+        return response
 
-            self.nlp = NaturalLanguageProcessor(self.settings.app_dir)
-            self.dm = DialogueManager()
+    def handle(self, *, domain=None, intent=None, entities=None):
+        """Wraps a function to behave as a dialogue handler"""
+        return self.dialogue_manager.add_rule(domain=domain, intent=intent, entities=entities)
+
+    def update_history(self, old_state, new_state) -> DialogueState:
+        """Append the most recent request (sans it's history entries) on to the response history"""
