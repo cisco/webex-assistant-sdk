@@ -38,8 +38,9 @@ for the `MindMeld Library`.
 We'll start by creating a `pyenv` environment:
 
 ```bash
-pyenv install 3.7.5
-pyenv local 3.7.5
+pyenv install 3.8.6
+pyenv virtualenv 3.8.6 webex-skills
+pyenv local webex-skills
 ```
 
 We can now install the SDK using `pip`:
@@ -149,8 +150,6 @@ Options:
   --help                      Show this message and exit.
 ```
 
-
-
 ### Running the Template
 
 We can now run our skill and start testing it. There are a couple ways you can run it. 
@@ -163,7 +162,7 @@ webex-skills skills run switch
 
 You should see an output similar to:
 ```bash
-INFO:     Started server process [58986]
+INFO:     Started server process [86661]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
@@ -189,13 +188,13 @@ The second option to run a skill is to use `uvicorn`. After all, the skill creat
 uvicorn switch.app:api --port 8080 --reload
 ```
 
-You should see an output similat to the following:
+You should see an output similar to the following:
 
 ```bash
 INFO:     Will watch for changes in these directories: ['<PATH_TO_SKILL>']
 INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
-INFO:     Started reloader process [5324] using statreload
-INFO:     Started server process [5343]
+INFO:     Started reloader process [86234] using statreload
+INFO:     Started server process [86253]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ```
@@ -211,7 +210,18 @@ setup. The sdk provides a tool for that. We can call it as:
 webex-skills skills check switch
 ```
 
-TODO: Make sure this works.
+In your skill output, you should see something like this:
+```bash
+INFO:     127.0.0.1:58112 - "GET /check?signature=KALwaYRD4x7qLZ%2B2ejlxPjtgOdwrTAm7eKT11dtOOGQ%3D&message=TXZVRdbgoOq9rZtL6q0ImEZMjVb5o2GUW%2FLF4bmD5%2BjumNCtzmZqV%2FvXSvz1lQRLcB7%2FpWJc7OxTC2nqvf68Thu%2FYWzlfd46TBNZgo%2BQtFI647mS22Yd6yEsKm8Xs4FDkaAkYGlKl8Y2xrZT7MIpOQC98dtVOOAucfnJlJTIZEMdB9luV%2BuZnuoxXvCHHo9gCm6xaRJsgUjdnXOOGwEzLUkF9C%2FB1GH1yTw5fh%2BTgeQraE6weQ0nFS9CPbHw2NZakH5sEwz2epHjLgJCEkYrX4IVt0pD2xXMmUAloc0ao8CVGad1w%2Bd6g9edpDswuPqLVKkehTZABElZfwnt8vFZ6nmv20R1G8MThml2RNEoAiDebnFZjgqGpE1%2BBbvzlksnpGteGfJ%2FM06V0GsB5aRummTROYw1B%2BV4OlFb%2B8sQRzxzhS2x3eQujEHQCSpzD6Jsl6wcx4O5PS39Hab317HmpUQnEdamdXflwmqSTt6eCGmihgF9KmkmEvXoIDB1itiiJfnxqpUQGnwi5El82WSKk0NKXpC1ch488Xz1Qg4vEQUNP7GkP3k94um6N5BG6btW5CHwcKFywoOjbdBshA7r%2F4bqI9lccPG9VbYQbw2xx%2F%2Bgt7Zixh9723EHtTDB4UMEBFx5l4d%2FY5u3G648UOJy21Az91Gr7LQOEEaW7tVN5X8%3D.Z0FBQUFBQmhjSTkzYW90ZkQxVXVfVEFkMUVyLVd5X19ZUmEyRUdwRTdUVFQ1TFJRU1llZlVOZjNIelh4TzZzeVlrS0xzakFUbUUzZjg2RTZ3WXhDX1VUYVZtUmJGRTdCYmRldE5fVkNNNnR1Uk9lUVAzS2VYTE9ZcVBiNjV0V3U4UlRrdGtHbkRxS1BZSWpTTWhtU2h2NHlneTNDc0ZTTnVIci1FdFJZcnd1T2cwLTRLNFh2V21JPQ%3D%3D HTTP/1.1" 200 OK
+```
+
+In the SDK output you should see:
+
+```bash
+switch appears to be working correctly
+```
+
+That means that your skill is running and the `check` request was successfully processed.
 
 ### Invoking the Skill
 
@@ -226,13 +236,19 @@ We can now enter a command and see a response:
 ```bash
 Enter commands below (Ctl+C to exit)
 >> hi
-{ 'challenge': 'c4a427441a56ada1dfdef0ccfab34aeead83bc85973a312ea83c40a3366b556e',
-  'directives': [ {'name': 'reply', 'payload': {'text': 'hi'}, 'type': 'view'},
-                  {'name': 'speak', 'payload': {'text': 'hi'}, 'type': 'action'},
-                  {'name': 'sleep', 'payload': {}, 'type': 'action'}],
-  'frame': [],
+{ 'challenge': '598f7a896de806f25bfec73afa32d3a35e88729de1a6bfc9c6e0cb508b85761f',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'Hello I am a super simple skill using NLP'}, 'type': 'action'},
+                  {'name': 'speak', 'payload': {'text': 'Hello I am a super simple skill using NLP'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
+  'frame': {},
   'history': [],
-  'params': {}}
+  'params': { 'allowed_intents': [],
+              'dynamic_resource': {},
+              'language': 'en',
+              'locale': None,
+              'target_dialogue_state': None,
+              'time_zone': 'sometime',
+              'timestamp': 12345}}
 ```
 
 We can see that we got all the directives back. The template skill will simply repeat or echo everything we send to it.
@@ -269,7 +285,97 @@ Options:
 
 Let's now modify our skill so it does what we want: remember we want this skill to turn on and off the office lights. 
 
-Simply update the `app.py` file with the following code:
+Simply update the `app.py` file with the following 2 handlers:
+
+```python
+@api.handle(pattern=r'.*\son\s?.*')
+async def greet(current_state: DialogueState) -> DialogueState:
+    new_state = current_state.copy()
+
+    # Call lights API to turn on your light here.
+
+    text = 'Ok, turning lights on.'
+    new_state.directives = [
+        responses.Reply(text),
+        responses.Speak(text),
+        responses.Sleep(10),
+    ]
+
+    return new_state
+
+
+@api.handle(pattern=r'.*\soff\s?.*')
+async def greet(current_state: DialogueState) -> DialogueState:
+    new_state = current_state.copy()
+
+    # Call lights API to turn off your light here.
+
+    text = 'Ok, turning lights off.'
+    new_state.directives = [
+        responses.Reply(text),
+        responses.Speak(text),
+        responses.Sleep(10),
+    ]
+
+    return new_state
+```
+
+The SDK provides the `@api.handle` decorator, and as you can see it can take a `pattern` parameter which is then
+applied to the query to determine if the handler applies to the query being processed. This way, we can add
+a few handlers by simple creating regexes that match the type of queries we want to support.
+
+In the example above, we have added regexes to identify the `on` and `off` keywords. Which mostly tell what the user
+wants to do.
+
+By using the `skill invoke` command we can run a few tests:
+
+```bash
+>> turn on the lights
+{ 'challenge': 'b2229cee3ab233994e86d29773651e5c5d4e6dcac651f7fb434b3d596faae4bd',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
+                  {'name': 'speak', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
+  'frame': {},
+  'history': [],
+  'params': { 'allowed_intents': [],
+              'dynamic_resource': {},
+              'language': 'en',
+              'locale': None,
+              'target_dialogue_state': None,
+              'time_zone': 'sometime',
+              'timestamp': 12345}}
+>> turn off the lights
+{ 'challenge': 'a530a6f0b0a209dbcbaf4c2a56ffc75ab661cb058c9207ae329e05d9c672e4b3',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning lights off.'}, 'type': 'action'},
+                  {'name': 'speak', 'payload': {'text': 'Ok, turning lights off.'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
+  'frame': {},
+  'history': [],
+  'params': { 'allowed_intents': [],
+              'dynamic_resource': {},
+              'language': 'en',
+              'locale': None,
+              'target_dialogue_state': None,
+              'time_zone': 'sometime',
+              'timestamp': 12345}}
+>> turn the lights on
+{ 'challenge': '75b054e7c183479c0582b640b829ddab2658029889c1a9e80a2d8b0b2b9070a1',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
+                  {'name': 'speak', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
+  'frame': {},
+  'history': [],
+  'params': { 'allowed_intents': [],
+              'dynamic_resource': {},
+              'language': 'en',
+              'locale': None,
+              'target_dialogue_state': None,
+              'time_zone': 'sometime',
+              'timestamp': 12345}}
+```
+
+In the examples above, we can see the skill responding with the correct message. In a real skill, we would also call an
+API to actually perform the action the user wants.
 
 ## Building a MindMeld Skill
 
@@ -285,7 +391,10 @@ command with the `--mindmeld` flag set. Let's create a skill called `greeter`:
 webex-skills project init greeter --mindmeld
 ```
 
-TODO: Add pic of folder structure and explanation on it.
+The folder structure should look like this:
+
+![File Structure](images/greeter_directory.png)
+
 
 ### Invoking the MindMeld Skill
 
