@@ -1,4 +1,3 @@
-# Home for the various response directives
 from typing import Any, Dict
 from typing import List as _List
 from typing import Optional, Union
@@ -7,8 +6,6 @@ from pydantic import BaseModel
 
 PayloadDict = Dict[str, Any]
 Payload = Union[PayloadDict, _List[Any]]
-
-# TODO: Look at possibility of validating types for payload arguments
 
 
 class SkillDirective(BaseModel):
@@ -28,10 +25,6 @@ class ActionDirective(SkillDirective):
     type: str = 'action'
 
 
-class List(ViewDirective):
-    payload: str
-
-
 class Listen(ActionDirective):
     name: str = 'listen'
 
@@ -43,19 +36,11 @@ class Reply(ActionDirective):
         super().__init__(payload={'text': text})
 
 
-class Reset(ActionDirective):
-    pass
-
-
 class Speak(ActionDirective):
     name: str = 'speak'
 
     def __init__(self, text):
         super().__init__(payload={'text': text})
-
-
-class Suggest(ViewDirective):
-    name: str = 'suggest'
 
 
 class Sleep(ActionDirective):
@@ -67,28 +52,29 @@ class Sleep(ActionDirective):
 
 
 class DisplayWebView(ActionDirective):
-    pass
+    name: str = 'display-web-view'
+
+    def __init__(self, url: str, title: Optional[str]):
+        super().__init__(payload={'url': url, 'title': title})
 
 
 class ClearWebView(ActionDirective):
-    pass
+    name: str = 'display-web-view'
 
 
 class UIHint(ViewDirective):
-    pass
+    name: str = 'ui-hint'
+
+    def __init__(self, texts, prompt, display_immediately):
+        super().__init__(payload={'texts': texts, 'prompt': prompt, 'display_immediately': display_immediately})
 
 
 class AsrHint(ActionDirective):
-    pass
+    name: str = 'asr-hint'
 
-
-class LongReply(ViewDirective):
-    pass
-
-
-class Display(ViewDirective):
-    pass
+    def __init__(self, texts):
+        super().__init__(payload={'texts': texts})
 
 
 class AssistantEvent(ActionDirective):
-    pass
+    name: str = 'assistant-event'
