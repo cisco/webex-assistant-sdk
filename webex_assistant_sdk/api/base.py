@@ -12,7 +12,6 @@ from .middlewares import DecryptionMiddleware
 from .middlewares.signing import SignatureMiddleware
 
 
-# TODO: Disable OpenAPI by default
 class BaseAPI(FastAPI):
     def __init__(self, *args, settings: Optional[BaseSettings] = None, **extra):
         self.settings = settings or SkillSettings()
@@ -21,6 +20,9 @@ class BaseAPI(FastAPI):
         if self.settings.use_encryption:
             private_key = load_private_key(self.settings.private_key_path.read_bytes())
             secret = self.settings.secret.encode('utf-8')
+            # NOTE: The order here is significant. We sign the encrypted message so we want our signature
+            # verification to run _before_ the decryption middleware which will alter the message to the
+            # decrypted version.
             middleware = [
                 Middleware(SignatureMiddleware, secret=secret),
                 Middleware(DecryptionMiddleware, private_key=private_key),
