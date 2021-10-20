@@ -7,7 +7,7 @@ api = SimpleAPI()
 
 @api.handle(default=True)
 async def greet(current_state: DialogueState) -> DialogueState:
-    text = 'Hello I am a super simple skill using NLP'
+    text = 'Hello I am a super simple skill'
     new_state = current_state.copy()
 
     new_state.directives = [
