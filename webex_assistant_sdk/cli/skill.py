@@ -1,5 +1,7 @@
+from datetime import datetime
 import json
 from json import JSONDecodeError
+import locale
 import os
 from pathlib import Path
 from pprint import pformat
@@ -59,9 +61,9 @@ def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
         'text': query,
         'context': {},
         'params': {
-            'time_zone': 'sometime',
-            'timestamp': 12345,
-            'language': 'en',
+            'time_zone': 'UTC',
+            'timestamp': datetime.utcnow().timestamp(),
+            'language': locale.getdefaultlocale()[0][:2],
         },
         'frame': {},
         'history': [],
