@@ -13,9 +13,12 @@ from .middlewares.signing import SignatureMiddleware
 
 
 class BaseAPI(FastAPI):
-    def __init__(self, *args, settings: Optional[BaseSettings] = None, **extra):
+    def __init__(self, nlp=None, dialogue_manager=None, settings: Optional[BaseSettings] = None, **kwargs):
         self.settings = settings or SkillSettings()
-        middleware = extra.get('middlewares', [])
+        middleware = kwargs.pop('middlewares', [])
+
+        self.nlp = nlp
+        self.dialogue_manager = dialogue_manager
 
         if self.settings.use_encryption:
             private_key = load_private_key(self.settings.private_key_path.read_bytes())
@@ -29,7 +32,7 @@ class BaseAPI(FastAPI):
                 *middleware,
             ]
 
-        super().__init__(*args, **extra, middleware=middleware)
+        super().__init__(**kwargs, middleware=middleware)
         self.router.add_api_route('/parse', self.parse, methods=['POST'], response_model=SkillInvokeResponse)
 
     async def parse(self, request: SkillInvokeRequest):

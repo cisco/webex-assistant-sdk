@@ -1,6 +1,6 @@
 import warnings
 
-from ..dialogue.manager import MMDialogueManager
+from ..dialogue.manager import NLPDialogueManager
 from ..models.http import SkillInvokeRequest, SkillInvokeResponse
 from ..models.mindmeld import DialogueState, ProcessedQuery
 from .base import BaseAPI
@@ -22,16 +22,19 @@ class suppress_warnings:
         return
 
 
-with suppress_warnings():
-    from mindmeld import NaturalLanguageProcessor
-
-
 class MindmeldAPI(BaseAPI):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.nlp = NaturalLanguageProcessor(self.settings.app_dir)
-        self.nlp.load()
-        self.dialogue_manager = MMDialogueManager()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        if not self.nlp:
+            with suppress_warnings():
+                from mindmeld import NaturalLanguageProcessor
+
+                self.nlp = NaturalLanguageProcessor(self.settings.app_dir)
+                self.nlp.load()
+
+        if not self.dialogue_manager:
+            self.dialogue_manager = NLPDialogueManager()
 
     async def parse(self, request: SkillInvokeRequest):
         current_state = DialogueState(**request.dict())
