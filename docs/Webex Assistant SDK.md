@@ -1,0 +1,408 @@
+# Webex Assistant SDK
+
+The Webex Assistant SDK is designed to simplify the process of creating a Webex Assistant Skill.
+It provides some tools that help to easily set up a template skill, deal with encryption and 
+test the skill locally, among other things.
+
+In this document we'll go through some examples of how to use this SDK to create different types
+of skills, and we'll also show how to use the different tools available.
+
+## Overview
+
+In this documentation we are going to look at the following topics:
+
+- [Requirements](#requirements)
+  - [Installing the SDK](#installing-the-sdk)
+- [Simple Skills vs MindMeld Skills](#simple-skills-vs-mindmeld-skills)
+  - [Simple Skills](#simple-skills)
+  - [MindMeld Skills](#mindmeld-skills)
+- [Building a Simple Skill](#building-a-simple-skill)
+- [Building a MindMeld Skill](#building-a-mindmeld-skill)
+- [Converting a Simple Skill into a MindMeld Skill](#converting-a-simple-skill-into-a-mindmeld-skill)
+- [Encryption](#encryption)
+  - [Generating Secrets](#generating-secrets)
+  - [Generating Keys](#generating-keys)
+- [Remotes](#remotes)
+  - [Creating a Remote](#creating-a-remote)
+  - [Listing Remotes](#listing-remotes)
+
+## Requirements
+
+In order to follow the examples in this guide, we'll need to install the SDK and its dependencies. Right
+now the SDK works with Python 3.7 and above. Note that if you want to build a `MindMeld Skill` as shown
+later in the guide you will have to use either Python 3.7 or 3.8, since those are the only supported versions
+for the `MindMeld Library`.
+
+### Installing the SDK
+
+We'll start by creating a `pyenv` environment:
+
+```bash
+pyenv install 3.7.5
+pyenv local 3.7.5
+```
+
+We can now install the SDK using `pip`:
+
+```bash
+pip install webex-assistant-sdk
+```
+
+We should be all set, we'll use the SDK later in this guide.
+
+## Simple Skills vs MindMeld Skills
+
+In a nutshell, a skill is a web service that takes a request containing some text and some context,
+analyzes that information and responds accordingly. The level of analysis done on that information
+will depend greatly on the tasks the skills has to accomplish. Some skills will simply need to look
+for keywords in the text, while others will perform complex NLP in order to understand what the user
+is requesting.
+
+This SDK has tooling for creating 2 types of skills: `Simple Skills` and `MindMed Skills`. These should 
+serve as templates for basic and complex skills. Let's now take a look at these templates in detail.
+
+### Simple Skills
+
+`Simple Skills` do not perform any type of ML or NLP analysis on the requests. These skills are a good
+starting point for developers to start tinkering with, and they are usually good enough for performing
+trivial non-complicated tasks. Most developers would start with a `Simple Skill` and then migrate to a
+`MindMed Skill` if needed.
+
+Most of the time all you need is to recognize a few keywords in the text. Imagine a skill which only task
+is to turn on and off the lights in the office. Some typical queries would be:
+
+- "Turn on the lights" 
+- "Turn off the lights" 
+- "Turn on the lights please" 
+- "Turn the lights off" 
+
+In this particular case, it will probably be good enough to just look for the words `on` and `off` in the
+text received. If `on` is present, the skill turns on the lights and responds accordingly and vice versa.
+
+As you can imagine, we don't really need any complex NLP for this skill. A simple regex would be more
+than enough. `Simple Skills` do just that: they provide a template where you can specify the regexes you
+care about and have them map to specific handlers (`turn_on_lights` and `turn_off_lights` in our example).
+
+We'll build a simple skill in [this section](#building-a-simple-skill)  
+
+### MindMeld Skills
+
+`MindMeld Skills` perform NLP analysis on the requests. These skills are a good template for cases where the
+queries will have a lot of variation and contain a lot of information. 
+
+Let's take the case of a skill for ordering food. Queries for a skill like this might look like the following:
+
+- "Order a pepperoni pizza from Super Pizzas"
+- "Order a pad thai from Thailand Cafe"
+- "I want a hamburger with fries and soda from Hyper Burgers"
+
+As we can see, using regexes for these cases can get out of hand really fast. We would need to be able to
+recognize every single dish from every single restaurant, which might account for hundreds or thousands of regexes.
+As we add more dishes and restaurants, updating the codebase becomes a real problem.
+
+For cases like this, we leverage the open source [MindMeld Library](https://www.mindmeld.com/). This library makes
+it really easy to perform NLP on any text query and identify entities like `dishes`, `restaurants` and `quantities`.
+With that, performing the required actions becomes a much easier job.
+
+We'll build a MindMeld skill in [this section](#building-a-mindmeld-skill)
+
+## Building a Simple Skill
+
+Let's now use the SDK to build a `Simple Skill`. As in the example above, we'll build a skill to turn lights on and
+off according to what the user is asking. We are going to call this skill `Switch`.
+
+### Create the Skill Template
+
+In the `pyenv` environment we created before, run the following command:
+
+```bash
+webex-skills project init switch
+```
+
+This will create a template for a simple skill. You should see the following file structure:
+
+![File Structure](images/switch_directory.png)
+
+As you can see, the `project` section `init` command creates a template of a skill. As usual, you can use the `--help
+` option to see the documentation for this command:
+
+```bash
+$ webex-skills project init --help
+Usage: webex-skills project init [OPTIONS] SKILL_NAME
+
+  Create a new skill project from a template
+
+Arguments:
+  SKILL_NAME  The name of the skill you want to create  [required]
+
+Options:
+  --skill-path DIRECTORY      Directory in which to initialize a skill project
+                              [default: .]
+
+  --secret TEXT               A secret for encryption. If not provided, one
+                              will be generated automatically.
+
+  --mindmeld / --no-mindmeld  If flag set, a MindMeld app will be created,
+                              otherwise it defaults to a simple app  [default:
+                              False]
+
+  --help                      Show this message and exit.
+```
+
+
+
+### Running the Template
+
+We can now run our skill and start testing it. There are a couple ways you can run it. 
+
+First this SDK has a `run` command, you can run it as follows:
+
+```bash
+webex-skills skills run switch
+```
+
+You should see an output similar to:
+```bash
+INFO:     Started server process [58986]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
+```
+
+As usual, you can use the `--help` option to see the documentation for this command:
+
+```bash
+$ webex-skills skills run --help
+Usage: webex-skills skills run [OPTIONS] SKILL_NAME
+
+Arguments:
+  SKILL_NAME  The name of the skill to run.  [required]
+
+Options:
+  --help  Show this message and exit.
+```
+
+The second option to run a skill is to use `uvicorn`. After all, the skill created is an `asgi` application based on
+[FastAPI](https://fastapi.tiangolo.com/):
+
+```bash
+uvicorn switch.app:api --port 8080 --reload
+```
+
+You should see an output similat to the following:
+
+```bash
+INFO:     Will watch for changes in these directories: ['<PATH_TO_SKILL>']
+INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
+INFO:     Started reloader process [5324] using statreload
+INFO:     Started server process [5343]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
+Now that we have the skill actually run it, we can test it.
+
+### Checking the Skill
+
+One quick thing we can do before sending actual requests to the skill is to make sure we have everything correctly
+setup. The sdk provides a tool for that. We can call it as:
+
+```bash
+webex-skills skills check switch
+```
+
+TODO: Make sure this works.
+
+### Invoking the Skill
+
+The SDK `skills` section has an `invoke` command which is used for sending requests to the skill. With the skill
+running, we can invoke it as follows:
+
+```bash
+webex-skills skills invoke switch
+```
+
+We can now enter a command and see a response:
+```bash
+Enter commands below (Ctl+C to exit)
+>> hi
+{ 'challenge': 'c4a427441a56ada1dfdef0ccfab34aeead83bc85973a312ea83c40a3366b556e',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'hi'}, 'type': 'view'},
+                  {'name': 'speak', 'payload': {'text': 'hi'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {}, 'type': 'action'}],
+  'frame': [],
+  'history': [],
+  'params': {}}
+```
+
+We can see that we got all the directives back. The template skill will simply repeat or echo everything we send to it.
+
+As usual, you can use the `--help` option to see the documentation for this command:
+
+```bash
+$ webex-skills skills invoke --help
+Usage: webex-skills skills invoke [OPTIONS] [NAME]
+
+  Invoke a skill running locally or remotely
+
+Arguments:
+  [NAME]  The name of the skill to invoke. If none specified, you would need
+          to at least provide the `public_key_path` and `secret`. If
+          specified, all following configuration (keys, secret, url, ect.)
+          will be extracted from the skill.
+
+
+Options:
+  -s, --secret TEXT         The secret for the skill. If none provided you
+                            will be asked for it.
+
+  -k, --key PATH            The path of the public key for the skill.
+  -u TEXT                   The public url for the skill.
+  -v                        Set this flag to get a more verbose output.
+  --encrypt / --no-encrypt  Flag to specify if the skill is using encryption.
+                            [default: True]
+
+  --help                    Show this message and exit.
+```
+
+### Updating the Skill
+
+Let's now modify our skill so it does what we want: remember we want this skill to turn on and off the office lights. 
+
+Simply update the `app.py` file with the following code:
+
+## Building a MindMeld Skill
+
+When a skill is very complex and needs to handle many commands, usually the best approach is to create a MindMeld 
+based skill. This will allow us to use NLP to better classify the request and extract important information we need
+from it. We are not going to go very deep into how a MindMeld application works, but there are a lot of resources in the
+official [MindMeld library](https://www.mindmeld.com/) site.
+
+This SDK also has tooling in place for setting up a MindMeld based skill. For that, we can use the `project init`
+command with the `--mindmeld` flag set. Let's create a skill called `greeter`:
+
+```bash
+webex-skills project init greeter --mindmeld
+```
+
+TODO: Add pic of folder structure and explanation on it.
+
+### Invoking the MindMeld Skill
+
+TODO
+
+## Converting a Simple Skill into a MindMeld Skill
+
+TODO
+
+## Encryption
+
+Skills require encryption in order to safely send and receive requests. For the encryption to work properly, we need
+to provide a key pair and a secret for our skills. As we saw in the [Simple Skill](#building-a-simple-skill) and
+[MindMeld Skill](#building-a-mindMeld-skill) examples above, the keys and secret will be automatically created for us
+when we use the SDK to create a template. However, the SDK also has tools to create these manually if we need to.
+
+These tools are under the `crypto` section which we'll try next.
+
+### Generating Secrets
+
+Generating a secret is very simple, simply use the `generate-secret` command:
+
+```bash
+webex-skills crypto generate-secret
+```
+
+A secret will be logged to the terminal, which then you can add to your app.
+
+### Generating Keys
+
+Generating a key pair is very simple, simply use the `generate-keys` command:
+
+```bash
+webex-skills crypto generate-keys
+```
+
+A key pair will be created.
+
+As usual, you can use the `--help` option to see the documentation for this command:
+
+```bash
+$ webex-skills crypto generate-keys --help
+Usage: webex-skills crypto generate-keys [OPTIONS] [FILEPATH]
+
+  Generate an RSA keypair
+
+Arguments:
+  [FILEPATH]  The path where to save the keys created. By default, they get
+              created in the current directory.
+
+
+Options:
+  --name TEXT  The name to use for the keys created.  [default: id_rsa]
+  -p           Use a password for the private key  [default: False]
+  --help       Show this message and exit.
+```
+
+## Remotes
+
+This SDK also has the notion of `remotes`. That is, skills that are already running and even deployed somewhere, but
+we still want to be able to test them using the SDK. 
+
+The process for using remotes is very simple, we're going to look into that now. We'll use the `remote` section of the
+SDK.
+
+### Creating a Remote
+
+You can create a remote by using the `create` command. Let's create a remote for our simple app we called `switch`:
+
+```bash
+webex-skills remote create switch
+```
+
+TODO: Add the prompts
+
+In a more real scenario, this skill would be deployed and running on a server with a public URL and we would use that
+URL instead of our local one.
+
+As usual, you can use the `--help` option to see the documentation for this command:
+
+```bash
+$ webex-skills remote create --help
+
+Usage: webex-skills remote create [OPTIONS] NAME
+
+  Add configuration for a new remote skill to the cli config file
+
+Arguments:
+  NAME  The name to give to the remote.  [required]
+
+Options:
+  -u TEXT            URL of the remote. If not provided it will be requested.
+  -s, --secret TEXT  The skill secret. If not provided it will be requested.
+  -k, --key PATH     The path to the public key. If not provided it will be
+                     requested.
+
+  --help             Show this message and exit.
+```
+
+### Listing Remotes
+
+You can also list the remotes you currently have set up. For that you can use the `list` command:
+
+```bash
+webex-skills remote list
+```
+
+As usual, you can use the `--help` option to see the documentation for this command:
+
+```bash
+$ run webex-skills remote list --help
+
+Usage: webex-skills remote list [OPTIONS]
+
+  List configured remote skills
+
+Options:
+  --name TEXT  The name of a particular skill to display.
+  --help       Show this message and exit.
+```
