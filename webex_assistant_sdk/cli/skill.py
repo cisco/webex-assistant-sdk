@@ -7,10 +7,12 @@ from typing import Optional
 
 import requests
 import typer
+from typer import colors
 import uvicorn
 
 from webex_assistant_sdk import crypto
 from webex_assistant_sdk.cli.config import get_skill_config
+from webex_assistant_sdk.crypto.messages import generate_token, sign_token
 
 app = typer.Typer()
 
@@ -106,3 +108,50 @@ def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
 def run(skill_name: str = typer.Argument(..., help="The name of the skill to run.")):
     skill_name = skill_name.replace('-', '_')
     uvicorn.run(f'{skill_name}.app:api', host="127.0.0.1", port=8080, log_level="info")
+
+
+@app.command()
+def check(
+    name: Optional[str] = typer.Argument(
+        None,
+        help="The name of the skill to check. If none specified, you would need to"
+        " at least provide the `public_key_path` and `secret`. If specified, all"
+        " following configuration (keys, secret, etc.) will be extracted"
+        " from the skill.",
+    ),
+    secret: Optional[str] = typer.Option(
+        None, '--secret', '-s', help="The secret for the skill. If none provided you will be asked for it."
+    ),
+    public_key_path: Optional[Path] = typer.Option(
+        None, '-k', '--key', help="The path of the public key for the skill."
+    ),
+    url: Optional[str] = typer.Option('http://localhost:8080/check', '-u', help="The check url for the skill."),
+):
+    if name:
+        # Load details from config
+        config = get_skill_config(name)
+        public_key_path = public_key_path or Path(config['public_key_path'])
+        secret = secret or config['secret']
+
+    public_key_text = public_key_path.read_text(encoding='utf-8')
+    challenge = os.urandom(32).hex()
+    token = generate_token(challenge, public_key_text)
+    signature = sign_token(token, secret)
+
+    resp = requests.get(url, params={'signature': signature, 'message': token})
+    if resp.status_code != 200:
+        typer.secho(f'Non-200 response from skill: {resp.content}', fg=colors.RED)
+        return
+
+    try:
+        json_resp = resp.json()
+    except JSONDecodeError:
+        typer.secho(f'Invalid json response {resp.content}', fg=colors.RED)
+        return
+
+    resp_challenge = json_resp.get('challenge')
+    if not resp_challenge or resp_challenge != challenge:
+        typer.secho(f'Invalid challenge response {resp_challenge}', fg=colors.RED)
+        return
+
+    typer.secho(f'{name} appears to be working correctly', fg=colors.GREEN)
