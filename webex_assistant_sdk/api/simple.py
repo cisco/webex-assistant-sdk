@@ -9,10 +9,10 @@ from webex_assistant_sdk.models.mindmeld import DialogueState
 
 
 class SimpleAPI(BaseAPI):
-    def __init__(self, *args, dialogue_manager=None, **extra: Any) -> None:
-        super().__init__(*args, **extra)
-        self.skill_name = self.settings.skill_name
-        self.dialogue_manager = dialogue_manager or SimpleDialogueManager()
+    def __init__(self, **extra: Any) -> None:
+        super().__init__(**extra)
+        if not self.dialogue_manager:
+            self.dialogue_manager = SimpleDialogueManager()
 
     async def parse(self, request: SkillInvokeRequest) -> SkillInvokeResponse:
         current_state = DialogueState(**request.dict())
