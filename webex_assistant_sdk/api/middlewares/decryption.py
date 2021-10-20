@@ -1,10 +1,17 @@
 import json
+import logging
 
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from webex_assistant_sdk.api.middlewares.base import BaseReceiver
 from webex_assistant_sdk.crypto import decrypt
+
+logger = logging.getLogger(__name__)
+
+
+class DecryptionError(Exception):
+    pass
 
 
 class DecryptionMiddleware:
@@ -30,13 +37,19 @@ class DecryptingReceiver(BaseReceiver):
     async def __call__(self, scope, receive: Receive, send: Send):
         await self.app(scope, self.receive_decrypted, send)
 
-    # TODO: Properly handle a failed decryption
     async def receive_decrypted(self) -> Message:
         message = await self.receive()
 
         assert message["type"] == "http.request"
         message_body = await self.message_body(message)
         encrypted_message = json.loads(message_body)
-        message["body"] = decrypt(self.private_key, encrypted_message['message'].encode('utf-8'))
+        try:
+            message["body"] = decrypt(self.private_key, encrypted_message['message'].encode('utf-8'))
+        except ValueError:
+            # We log with error rather than exception here because the exception raised by cryptography
+            # if decryption fails doesn't provide useful information, and the stack trace is largely unhelpful
+            msg = 'Failed to decrypt payload'
+            logger.error(msg)
+            raise DecryptionError(msg)
 
         return message

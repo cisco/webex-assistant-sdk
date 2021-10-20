@@ -1,13 +1,19 @@
 import base64
 import json
+import logging
 
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from webex_assistant_sdk.api.middlewares.base import BaseReceiver
 from webex_assistant_sdk.crypto import verify_signature
 
+logger = logging.getLogger(__name__)
 
-# TODO: This could just use a normal starlette middleware since it doesn't modify the request
+
+class SignatureVerificationError(Exception):
+    pass
+
+
 class SignatureMiddleware:
     def __init__(self, app: ASGIApp, secret: bytes):
         self.app = app
@@ -42,6 +48,8 @@ class SignatureReceiver(BaseReceiver):
 
         signature: bytes = base64.b64decode(signature)
 
-        # TODO: Properly handle an invalid signature, this will raise but probably not in an informative way
-        verify_signature(self.secret, encrypted_message.encode('utf-8'), signature)
+        if not verify_signature(self.secret, encrypted_message.encode('utf-8'), signature):
+            msg = 'Failed to validate signature'
+            logger.error(msg)
+            raise SignatureVerificationError(msg)
         return message
