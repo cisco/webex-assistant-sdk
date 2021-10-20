@@ -1,6 +1,6 @@
 import warnings
 
-from ..dialogue.manager import NLPDialogueManager
+from ..dialogue.manager import MMDialogueManager
 from ..models.http import SkillInvokeRequest, SkillInvokeResponse
 from ..models.mindmeld import DialogueState, ProcessedQuery
 from .base import BaseAPI
@@ -34,7 +34,7 @@ class MindmeldAPI(BaseAPI):
                 self.nlp.load()
 
         if not self.dialogue_manager:
-            self.dialogue_manager = NLPDialogueManager()
+            self.dialogue_manager = MMDialogueManager()
 
     async def parse(self, request: SkillInvokeRequest):
         current_state = DialogueState(**request.dict())
