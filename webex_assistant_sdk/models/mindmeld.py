@@ -29,7 +29,7 @@ class ProcessedQuery(BaseModel):
     entities: Optional[List[Dict[Any, Any]]]
 
 
-DialogueState = ForwardRef('DialogueState')
+_DialogueState = ForwardRef('DialogueState')
 
 
 class DialogueState(BaseModel):
@@ -37,7 +37,7 @@ class DialogueState(BaseModel):
     context: Dict[Any, Any]
     params: Params
     frame: Dict[Any, Any]
-    history: Optional[List[DialogueState]] = []
+    history: Optional[List[_DialogueState]] = []
     # TODO: Unsure if I should put this directly on the State object or if our method should just be required
     # to return a state and a list of directives
     directives: Optional[List[Dict[Any, Any]]] = []

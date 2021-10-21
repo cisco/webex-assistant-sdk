@@ -1,26 +1,10 @@
 from typing import cast
-import warnings
 
 from ..dialogue.manager import MMDialogueManager
 from ..models.http import SkillInvokeRequest, SkillInvokeResponse
 from ..models.mindmeld import DialogueState, ProcessedQuery
+from ..supress_warnings import suppress_warnings
 from .base import BaseAPI
-
-
-class suppress_warnings:
-    def __init__(self):
-        self._showwarning = None
-
-    def showwarning(self, *args, **kwargs):
-        pass
-
-    def __enter__(self):
-        self._showwarning = warnings.showwarning
-        warnings.showwarning = self.showwarning
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        warnings.showwarning = self._showwarning
-        return
 
 
 class MindmeldAPI(BaseAPI):

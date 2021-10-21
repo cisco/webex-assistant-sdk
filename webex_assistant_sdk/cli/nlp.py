@@ -1,33 +1,41 @@
+from pprint import pformat
+from typing import Optional
+
 import typer
+
+from webex_assistant_sdk.cli.config import get_skill_config
+from webex_assistant_sdk.cli.helpers import create_nlp
 
 app = typer.Typer(help='Commands for working with NLP models')
 
 
-def create_nlp(app_path):
-    try:
-        from mindmeld.components.nlp import NaturalLanguageProcessor
-    except ImportError:
-        raise ImportError('You must install the extras package webex-assistant-sdk[mindmeld] to use NLP commmands')
-    # TODO: Add root command to handle import and initialization of NLP processor or whatever
-    # so that we don't import mindmeld unless and until we actually need it
-
-    nlp = NaturalLanguageProcessor(app_path=app_path)
-    return nlp
-
-
+# take name to find app path, otherwise default to cwd
 @app.command()
-def build():
+def build(name: Optional[str]):
     """Build nlp models associated with this skill"""
-    nlp = create_nlp('.')
+    app_dir = '.'
+    if name:
+        config = get_skill_config(name)
+        app_dir = config['app_dir']
+
+    nlp = create_nlp(app_dir)
     nlp.build()
 
 
 @app.command()
-def initialize():
-    """Create initial structure for mindmeld models"""
-    # TODO: Add option to augment data
-
-
-@app.command()
-def process():
+def process(name: Optional[str]):
     """Run a query through NLP processing"""
+    app_dir = '.'
+    if name:
+        config = get_skill_config(name)
+        app_dir = config['app_dir']
+
+    nlp = create_nlp(app_dir)
+    nlp.load()
+
+    typer.echo('Enter a query below (Ctl+C to exit)')
+    query = typer.prompt('>>', prompt_suffix=' ')
+    while True:
+        output = nlp.process(query)
+        typer.secho(pformat(output, indent=2, width=120), fg=typer.colors.GREEN)
+        query = typer.prompt('>>', prompt_suffix=' ')
