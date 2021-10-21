@@ -406,7 +406,12 @@ With the `greeter` skill running, let's try invoking it using the SDK `skills in
 
 ## Converting a Simple Skill into a MindMeld Skill
 
-TODO
+In many cases, when you start creating a new skill, you would probably start with a `Simple Skill`. As your skill grows
+in complexity, you might need to convert it into a `Mindmeld Skill`. This SDK makes that conversion very easy, we are
+going to take a look into that next.
+
+Consider the [Switch Skill](#building-a-simple-skill) we built above. It really just recognize if we want to turn 
+something on or off. 
 
 ## Encryption
 
