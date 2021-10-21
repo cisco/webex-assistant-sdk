@@ -57,15 +57,16 @@ def invoke(
 
 def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
     challenge = os.urandom(32).hex()
+    default_params = {
+        'time_zone': 'UTC',
+        'timestamp': datetime.utcnow().timestamp(),
+        'language': 'en',
+    }
     message = {
         'challenge': challenge,
         'text': query,
         'context': {},
-        'params': {
-            'time_zone': 'UTC',
-            'timestamp': datetime.utcnow().timestamp(),
-            'language': 'en',
-        },
+        'params': default_params,
         'frame': {},
         'history': [],
     }
@@ -89,7 +90,6 @@ def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
             typer.secho('Unable to deserialize JSON response')
             json_resp = {}
 
-        # TODO: Handle non-200 responses or validation errors
         if not json_resp.get('challenge') == challenge:
             typer.secho('Skill did not respond with expected challenge value', fg=typer.colors.RED, err=True)
 
@@ -101,7 +101,7 @@ def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
             'challenge': challenge,
             'text': query,
             'context': json_resp.get('context', {}),
-            'params': json_resp.get('params', {}),
+            'params': json_resp.get('params', default_params),
             'frame': json_resp.get('frame', []),
             'history': json_resp.get('history', []),
         }
