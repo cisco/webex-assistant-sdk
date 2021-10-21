@@ -236,9 +236,9 @@ We can now enter a command and see a response:
 ```bash
 Enter commands below (Ctl+C to exit)
 >> hi
-{ 'challenge': '598f7a896de806f25bfec73afa32d3a35e88729de1a6bfc9c6e0cb508b85761f',
-  'directives': [ {'name': 'reply', 'payload': {'text': 'Hello I am a super simple skill using NLP'}, 'type': 'action'},
-                  {'name': 'speak', 'payload': {'text': 'Hello I am a super simple skill using NLP'}, 'type': 'action'},
+{ 'challenge': 'dea3a23c39fcbf1f8649d17e95a65e9ba81b5bfdd58fe280454c7e77cc921c54',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'Hello I am a super simple skill'}, 'type': 'action'},
+                  {'name': 'speak', 'payload': {'text': 'Hello I am a super simple skill'}, 'type': 'action'},
                   {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
   'frame': {},
   'history': [],
@@ -247,8 +247,8 @@ Enter commands below (Ctl+C to exit)
               'language': 'en',
               'locale': None,
               'target_dialogue_state': None,
-              'time_zone': 'sometime',
-              'timestamp': 12345}}
+              'time_zone': 'UTC',
+              'timestamp': 1634847225}}
 ```
 
 We can see that we got all the directives back. The template skill will simply repeat or echo everything we send to it.
@@ -331,7 +331,7 @@ By using the `skill invoke` command we can run a few tests:
 
 ```bash
 >> turn on the lights
-{ 'challenge': 'b2229cee3ab233994e86d29773651e5c5d4e6dcac651f7fb434b3d596faae4bd',
+{ 'challenge': '031b16ee32e49da80dfac93357febbb06f374f89dcb63ffe9b48e776e007e9e8',
   'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
                   {'name': 'speak', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
                   {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
@@ -342,10 +342,10 @@ By using the `skill invoke` command we can run a few tests:
               'language': 'en',
               'locale': None,
               'target_dialogue_state': None,
-              'time_zone': 'sometime',
-              'timestamp': 12345}}
+              'time_zone': 'UTC',
+              'timestamp': 1634847972}}
 >> turn off the lights
-{ 'challenge': 'a530a6f0b0a209dbcbaf4c2a56ffc75ab661cb058c9207ae329e05d9c672e4b3',
+{ 'challenge': '316aa500f7525fc94e8ee43c8e693fe3a45fb1398ca277adff04458053e227d5',
   'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning lights off.'}, 'type': 'action'},
                   {'name': 'speak', 'payload': {'text': 'Ok, turning lights off.'}, 'type': 'action'},
                   {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
@@ -356,10 +356,10 @@ By using the `skill invoke` command we can run a few tests:
               'language': 'en',
               'locale': None,
               'target_dialogue_state': None,
-              'time_zone': 'sometime',
-              'timestamp': 12345}}
+              'time_zone': 'UTC',
+              'timestamp': 1634847972}}
 >> turn the lights on
-{ 'challenge': '75b054e7c183479c0582b640b829ddab2658029889c1a9e80a2d8b0b2b9070a1',
+{ 'challenge': '3365583d931965cbb8ca063fa4192b3e0b05b325fd1ab99f2b825922b4a57dfa',
   'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
                   {'name': 'speak', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
                   {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
@@ -370,8 +370,8 @@ By using the `skill invoke` command we can run a few tests:
               'language': 'en',
               'locale': None,
               'target_dialogue_state': None,
-              'time_zone': 'sometime',
-              'timestamp': 12345}}
+              'time_zone': 'UTC',
+              'timestamp': 1634847972}}
 ```
 
 In the examples above, we can see the skill responding with the correct message. In a real skill, we would also call an
@@ -398,7 +398,11 @@ The folder structure should look like this:
 
 ### Invoking the MindMeld Skill
 
-TODO
+With the `greeter` skill running, let's try invoking it using the SDK `skills invoke` command:
+
+```bash
+
+```
 
 ## Converting a Simple Skill into a MindMeld Skill
 
