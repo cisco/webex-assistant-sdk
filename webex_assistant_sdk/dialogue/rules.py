@@ -10,6 +10,10 @@ class MMDialogueStateRule:
     def __init__(self, domain, intent, entities, dialogue_state, targeted_only):
         self.domain = domain
         self.intent = intent
+
+        if entities:
+            entities = set(entities)
+
         self.entities = entities
         self.targeted_only = targeted_only
         self.dialogue_state = dialogue_state

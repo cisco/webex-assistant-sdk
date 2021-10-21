@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, ForwardRef, List, Optional
 
 from pydantic import BaseModel, constr
 
@@ -29,12 +29,22 @@ class ProcessedQuery(BaseModel):
     entities: Optional[List[Dict[Any, Any]]]
 
 
+DialogueState = ForwardRef('DialogueState')
+
+
 class DialogueState(BaseModel):
     text: Optional[str]
     context: Dict[Any, Any]
     params: Params
     frame: Dict[Any, Any]
-    history: Optional[List[Dict[Any, Any]]] = []
+    history: Optional[List[DialogueState]] = []
     # TODO: Unsure if I should put this directly on the State object or if our method should just be required
     # to return a state and a list of directives
     directives: Optional[List[Dict[Any, Any]]] = []
+
+    def update_history(self, old_state: DialogueState):
+        old_state_dict = DialogueState(**old_state.dict(exclude={'history'}))
+        self.history.append(old_state_dict)
+
+
+DialogueState.update_forward_refs()
