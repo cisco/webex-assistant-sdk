@@ -63,7 +63,7 @@ def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
         'params': {
             'time_zone': 'UTC',
             'timestamp': datetime.utcnow().timestamp(),
-            'language': locale.getdefaultlocale()[0][:2],
+            'language': 'en',
         },
         'frame': {},
         'history': [],
