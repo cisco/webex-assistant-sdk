@@ -5,6 +5,7 @@ import locale
 import os
 from pathlib import Path
 from pprint import pformat
+import sys
 from typing import Optional
 
 import requests
@@ -108,8 +109,12 @@ def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
 
 @app.command()
 def run(skill_name: str = typer.Argument(..., help="The name of the skill to run.")):
-    skill_name = skill_name.replace('-', '_')
-    uvicorn.run(f'{skill_name}.app:api', host="127.0.0.1", port=8080, log_level="info")
+    config = get_skill_config(skill_name)
+    sys.path.insert(0, config['project_path'])
+    os.environ['SKILLS_PRIVATE_KEY_PATH'] = config['private_key_path']
+    os.environ['SKILLS_SECRET'] = config['secret']
+    os.environ['SKILLS_APP_DIR'] = config['app_dir']
+    uvicorn.run(f'{skill_name}.main:api', host="127.0.0.1", port=8080, log_level="info")
 
 
 @app.command()
