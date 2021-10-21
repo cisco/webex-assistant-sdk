@@ -5,8 +5,6 @@ from webex_assistant_sdk.dialogue.manager import SimpleDialogueManager
 from webex_assistant_sdk.models.http import SkillInvokeRequest, SkillInvokeResponse
 from webex_assistant_sdk.models.mindmeld import DialogueState
 
-# TODO: Update history
-
 
 class SimpleAPI(BaseAPI):
     def __init__(self, **extra: Any) -> None:
@@ -16,7 +14,7 @@ class SimpleAPI(BaseAPI):
 
     async def parse(self, request: SkillInvokeRequest) -> SkillInvokeResponse:
         current_state = DialogueState(**request.dict())
-        new_state = await self.dialogue_manager.handle(current_state)
+        new_state = await self.dialogue_manager.handle(query=current_state.text, current_state=current_state)
         response = SkillInvokeResponse(**new_state.dict(), challenge=request.challenge)
         return response
 
