@@ -1,3 +1,4 @@
+from pprint import pformat
 from typing import Optional
 
 import typer
@@ -22,5 +23,19 @@ def build(name: Optional[str]):
 
 
 @app.command()
-def process():
+def process(name: Optional[str]):
     """Run a query through NLP processing"""
+    app_dir = '.'
+    if name:
+        config = get_skill_config(name)
+        app_dir = config['app_dir']
+
+    nlp = create_nlp(app_dir)
+    nlp.load()
+
+    typer.echo('Enter a query below (Ctl+C to exit)')
+    query = typer.prompt('>>', prompt_suffix=' ')
+    while True:
+        output = nlp.process(query)
+        typer.secho(pformat(output, indent=2, width=120), fg=typer.colors.GREEN)
+        query = typer.prompt('>>', prompt_suffix=' ')
