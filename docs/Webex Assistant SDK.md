@@ -18,6 +18,8 @@ In this documentation we are going to look at the following topics:
   - [MindMeld Skills](#mindmeld-skills)
 - [Building a Simple Skill](#building-a-simple-skill)
 - [Building a MindMeld Skill](#building-a-mindmeld-skill)
+  - [Building New Models](#building-new-models)
+  - [Testing the Models](#testing-the-models)
 - [Converting a Simple Skill into a MindMeld Skill](#converting-a-simple-skill-into-a-mindmeld-skill)
 - [Encryption](#encryption)
   - [Generating Secrets](#generating-secrets)
@@ -401,7 +403,96 @@ The folder structure should look like this:
 With the `greeter` skill running, let's try invoking it using the SDK `skills invoke` command:
 
 ```bash
+$ poetry run webex-skills skills invoke greeter
 
+Enter commands below (Ctl+C to exit)
+>> hi
+{ 'challenge': 'a31ced06481293abd8cbbcffe72d712e996cf0ddfb56d981cd1ff9c1d9a46bfd',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'Hello I am a super simple skill using NLP'}, 'type': 'action'},
+                  {'name': 'speak', 'payload': {'text': 'Hello I am a super simple skill using NLP'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
+  'frame': {},
+  'history': [ { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634880182},
+                 'text': 'hi'}],
+  'params': { 'allowed_intents': [],
+              'dynamic_resource': {},
+              'language': 'en',
+              'locale': None,
+              'target_dialogue_state': None,
+              'time_zone': 'UTC',
+              'timestamp': 1634880182}}
+```
+
+As you can see, the response of a `MindMeld Skill` has the same shape as a `Simple Skill`, it's really just the internals
+of the skill that change.
+
+### Building New Models
+
+Since `MindMeld Skills` use NLP, we need to retrain the ML models each time we modify the training data. The SDK
+provides a the 'nlp build` command for this purpose:
+
+```bash
+webex-skills nlp build greeter
+```
+
+After running this, the models will be refreshed with the latest training data.
+
+As usual, you can use the `--help` option to see the documentation for this command:
+
+```bash
+$ webex-skills nlp build --help
+Usage: webex-skills nlp build [OPTIONS] [NAME]
+
+  Build nlp models associated with this skill
+
+Arguments:
+  [NAME]  The name of the skill to build.
+
+Options:
+  --help  Show this message and exit.
+```
+
+### Testing the Models
+
+Anothoer useful command in this SDK is the `nlp process` command. It's similar to the `skill invoke` command, in the 
+sense that it will send a query to the running skill. However, the query will only be run through the NLP pipeline so
+we can see how it was categorized. Let's look at an example:
+
+```bash
+$ webex-skills nlp process greeter
+
+Enter a query below (Ctl+C to exit)
+>> hi
+{'domain': 'greeting', 'entities': [], 'intent': 'greet', 'text': 'hi'}
+>>
+```
+
+You can see that now the response only contains the extracted ANLP pieces. This command is very useful for testing
+your models as you work on improving them.
+
+As usual, you can use the `--help` option to see the documentation for this command:
+
+```bash
+$ webex-skills nlp process --help
+Usage: webex-skills nlp process [OPTIONS] [NAME]
+
+  Run a query through NLP processing
+
+Arguments:
+  [NAME]  The name of the skill to send the query to.
+
+Options:
+  --help  Show this message and exit.
 ```
 
 ## Converting a Simple Skill into a MindMeld Skill

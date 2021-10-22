@@ -11,7 +11,12 @@ app = typer.Typer(help='Commands for working with NLP models')
 
 # take name to find app path, otherwise default to cwd
 @app.command()
-def build(name: Optional[str]):
+def build(
+    name: Optional[str] = typer.Argument(
+        None,
+        help="The name of the skill to build.",
+    ),
+):
     """Build nlp models associated with this skill"""
     app_dir = '.'
     if name:
@@ -23,7 +28,12 @@ def build(name: Optional[str]):
 
 
 @app.command()
-def process(name: Optional[str]):
+def process(
+    name: Optional[str] = typer.Argument(
+        None,
+        help="The name of the skill to send the query to.",
+    ),
+):
     """Run a query through NLP processing"""
     app_dir = '.'
     if name:
