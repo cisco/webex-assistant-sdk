@@ -64,7 +64,7 @@ pyenv local webex-skills
 We can now install the SDK using `pip`:
 
 ```bash
-pip install assistant-skills-sdk
+pip install webex-skills
 ```
 
 We should be all set, we'll use the SDK later in this guide. You will need to work inside the `webex-skills` virtual
@@ -316,16 +316,17 @@ Options:
 
 Let's now modify our skill so it does what we want: remember we want this skill to turn on and off the office lights. 
 
-Simply update the `app.py` file with the following 2 handlers:
+Simply update the `main.py` file with the following 2 handlers:
 
 ```python
 @api.handle(pattern=r'.*\son\s?.*')
 async def turn_on(current_state: DialogueState) -> DialogueState:
     new_state = current_state.copy()
 
-    # Call lights API to turn on your light here.
-
     text = 'Ok, turning lights on.'
+    
+      # Call lights API to turn on your light here.
+    
     new_state.directives = [
         responses.Reply(text),
         responses.Speak(text),
@@ -339,9 +340,10 @@ async def turn_on(current_state: DialogueState) -> DialogueState:
 async def turn_off(current_state: DialogueState) -> DialogueState:
     new_state = current_state.copy()
 
-    # Call lights API to turn off your light here.
-
     text = 'Ok, turning lights off.'
+    
+    # Call lights API to turn off your light here.
+    
     new_state.directives = [
         responses.Reply(text),
         responses.Speak(text),
@@ -639,16 +641,110 @@ In the `@api.handle` decorators, add the intent you want to handle instead of th
 
 ```python
 @api.handle(intent='turn_lights_on')
-async def turn_on(current_state: DialogueState) -> DialogueState:
+async def turn_on(current_state: DialogueState, processed_query: ProcessedQuery) -> DialogueState:
 ...
 
 @api.handle(intent='turn_lights_off')
-async def turn_off(current_state: DialogueState) -> DialogueState:
+async def turn_off(current_state: DialogueState, processed_query: ProcessedQuery) -> DialogueState:
 ```
 
-Finally, add some logic to complement the response with the location entity if available:
+Finally, add some logic to complement the response with the location entity if available. In the `turn_on` handler, 
+replace the line:
 
-TODO: Add location entities
+```python
+    text = 'Ok, turning lights on.'
+```
+
+With the following logic:
+
+```python
+    if len(processed_query.entities) > 0:
+        location = processed_query.entities[0]['text']
+        if location == 'all':
+            text = 'Ok, turning all lights on.'
+        else:
+            text = f'Ok, turning the {location} lights on.'
+    else:
+        text = 'Ok, turning all lights on.'
+```
+
+Do the corresponding change to the `turn_off` handler.
+
+You will also need to import the new classes you are using: `MindmeldAPI` and `ProcessedQuery`.
+
+That's it! We now have NLP support in our skill. 
+
+All in all your `main.py` should look like this:
+
+```python
+from webex_assistant_sdk.api import MindmeldAPI
+from webex_assistant_sdk.dialogue import responses
+from webex_assistant_sdk.models.mindmeld import DialogueState, ProcessedQuery
+
+api = MindmeldAPI()
+
+
+@api.handle(default=True)
+async def greet(current_state: DialogueState) -> DialogueState:
+    text = 'Hello I am a super simple skill'
+    new_state = current_state.copy()
+
+    new_state.directives = [
+        responses.Reply(text),
+        responses.Speak(text),
+        responses.Sleep(10),
+    ]
+
+    return new_state
+
+
+@api.handle(intent='turn_lights_on')
+async def turn_on(current_state: DialogueState, processed_query: ProcessedQuery) -> DialogueState:
+    new_state = current_state.copy()
+
+    if len(processed_query.entities) > 0:
+        location = processed_query.entities[0]['text']
+        if location == 'all':
+            text = 'Ok, turning all lights on.'
+        else:
+            text = f'Ok, turning the {location} lights on.'
+    else:
+        text = 'Ok, turning all lights on.'
+
+    # Call lights API to turn on your light here.
+
+    new_state.directives = [
+        responses.Reply(text),
+        responses.Speak(text),
+        responses.Sleep(10),
+    ]
+
+    return new_state
+
+
+@api.handle(intent='turn_lights_off')
+async def turn_off(current_state: DialogueState, processed_query: ProcessedQuery) -> DialogueState:
+    new_state = current_state.copy()
+
+    if len(processed_query.entities) > 0:
+        location = processed_query.entities[0]['text']
+        if location == 'all':
+            text = 'Ok, turning all lights off.'
+        else:
+            text = f'Ok, turning the {location} lights off.'
+    else:
+        text = 'Ok, turning all lights off.'
+
+    # Call lights API to turn off your light here.
+
+    new_state.directives = [
+        responses.Reply(text),
+        responses.Speak(text),
+        responses.Sleep(10),
+    ]
+
+    return new_state
+```
 
 ### Testing the Skill
 
@@ -668,9 +764,187 @@ We can now run our new skill:
 webex-skills skills run switch
 ```
 
-And use the invoke method to send a couple commands:
+Finally, we can use the invoke method to send a couple commands:
 
-TODO: Add commands
+```bash
+$ webex-skills skills invoke switch
+Enter commands below (Ctl+C to exit)
+>> hi
+{ 'challenge': 'bd57973f82227c37fdaed9404f86be521ecdbefc684e15319f0d51bbecbb456e',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'Hello I am a super simple skill'}, 'type': 'action'},
+                  {'name': 'speak', 'payload': {'text': 'Hello I am a super simple skill'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
+  'frame': {},
+  'history': [ { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634934720},
+                 'text': 'hi'}],
+  'params': { 'allowed_intents': [],
+              'dynamic_resource': {},
+              'language': 'en',
+              'locale': None,
+              'target_dialogue_state': None,
+              'time_zone': 'UTC',
+              'timestamp': 1634934720}}
+>> turn on the lights
+{ 'challenge': 'ff8e57bcb94b90c736e11dd79ae5fe3b269dcc450d7bb07b083de73d9a22d5e8',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning all lights on.'}, 'type': 'action'},
+                  {'name': 'speak', 'payload': {'text': 'Ok, turning all lights on.'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
+  'frame': {},
+  'history': [ { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634934720},
+                 'text': 'hi'},
+               { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634934720},
+                 'text': 'turn on the lights'}],
+  'params': { 'allowed_intents': [],
+              'dynamic_resource': {},
+              'language': 'en',
+              'locale': None,
+              'target_dialogue_state': None,
+              'time_zone': 'UTC',
+              'timestamp': 1634934720}}
+>> turn off the kitchen lights
+{ 'challenge': '300e7adfe2f199998f152793b944bc597c5145e991dda621e1495e2e06cebb6e',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning the kitchen lights off.'}, 'type': 'action'},
+                  {'name': 'speak', 'payload': {'text': 'Ok, turning the kitchen lights off.'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
+  'frame': {},
+  'history': [ { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634934720},
+                 'text': 'hi'},
+               { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634934720},
+                 'text': 'turn on the lights'},
+               { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634934720},
+                 'text': 'turn off the kitchen lights'}],
+  'params': { 'allowed_intents': [],
+              'dynamic_resource': {},
+              'language': 'en',
+              'locale': None,
+              'target_dialogue_state': None,
+              'time_zone': 'UTC',
+              'timestamp': 1634934720}}
+>> turn off all the lights
+{ 'challenge': 'e92a90c304c9ef96a3edf31c6ffb10606739cdf98ad34cfd57314b20138ad59b',
+  'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning all lights off.'}, 'type': 'action'},
+                  {'name': 'speak', 'payload': {'text': 'Ok, turning all lights off.'}, 'type': 'action'},
+                  {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
+  'frame': {},
+  'history': [ { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634934720},
+                 'text': 'hi'},
+               { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634934720},
+                 'text': 'turn on the lights'},
+               { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634934720},
+                 'text': 'turn off the kitchen lights'},
+               { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634934720},
+                 'text': 'turn off all the lights'}],
+  'params': { 'allowed_intents': [],
+              'dynamic_resource': {},
+              'language': 'en',
+              'locale': None,
+              'target_dialogue_state': None,
+              'time_zone': 'UTC',
+              'timestamp': 1634934720}}
+>>
+```
+
+We have now converted a `Simple Skill` into a `MindMeld Skill`.
 
 ## Encryption
 
