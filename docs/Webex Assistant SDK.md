@@ -187,7 +187,7 @@ The second option to run a skill is to use `uvicorn`. After all, the skill creat
 [FastAPI](https://fastapi.tiangolo.com/):
 
 ```bash
-uvicorn switch.app:api --port 8080 --reload
+uvicorn switch.main:api --port 8080 --reload
 ```
 
 You should see an output similar to the following:
@@ -303,7 +303,7 @@ Simply update the `app.py` file with the following 2 handlers:
 
 ```python
 @api.handle(pattern=r'.*\son\s?.*')
-async def greet(current_state: DialogueState) -> DialogueState:
+async def turn_on(current_state: DialogueState) -> DialogueState:
     new_state = current_state.copy()
 
     # Call lights API to turn on your light here.
@@ -319,7 +319,7 @@ async def greet(current_state: DialogueState) -> DialogueState:
 
 
 @api.handle(pattern=r'.*\soff\s?.*')
-async def greet(current_state: DialogueState) -> DialogueState:
+async def turn_off(current_state: DialogueState) -> DialogueState:
     new_state = current_state.copy()
 
     # Call lights API to turn off your light here.
@@ -607,6 +607,53 @@ and copy the `train.txt` files from the corresponding intents into our folders. 
 corresponding `gazetteer.txt` and `mapping.json` files into our folders. Our directory should now look like this:
 
 ![File Structure](images/smart_lights_dir_complete.png)
+
+### Updating the Handlers
+
+The next thing we'll do is to convert our logic to turn it into a `MindMeld Skill`. The steps are very simple, let's
+start. We'll make all the following changes in `main.py`:
+
+Instead of making the variable `app` a `SimpleApi`, make it a `MindMeldAPI`:
+```python
+api = MindmeldAPI()
+```
+
+In the `@api.handle` decorators, add the intent you want to handle instead of the pattern:
+
+```python
+@api.handle(intent='turn_lights_on')
+async def turn_on(current_state: DialogueState) -> DialogueState:
+...
+
+@api.handle(intent='turn_lights_off')
+async def turn_off(current_state: DialogueState) -> DialogueState:
+```
+
+Finally, add some logic to complement the response with the location entity if available:
+
+TODO: Add location entities
+
+### Testing the Skill
+
+We can now test the skill to make sure it works as intended. Since we just added our training data, we need to build
+the models first. Since we have entities defined, we will need to have Elasticsearch running for the `nlp build`
+command to work properly. You can refer to the 
+[MindMeld Getting Started Documentation](https://www.mindmeld.com/docs/userguide/getting_started.html) for a guide on
+how to install and run Elasticsearch. With that out of the way, you can build the models:
+
+```bash
+webex-skills nlp build switch
+```
+
+We can now run our new skill:
+
+```bash
+webex-skills skills run switch
+```
+
+And use the invoke method to send a couple commands:
+
+TODO: Add commands
 
 ## Encryption
 
