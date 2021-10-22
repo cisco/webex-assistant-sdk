@@ -613,14 +613,14 @@ be able to identify which light to switch. On the `switch` app, create the follo
 
 ![File Structure](images/smart_lights_directory.png)
 
-As you can see, we have created a `smart_lights` domain, the intents `turn_lights_on` and `turn_lights_off`, and the 
-entities `all` and `location`. We now need to add training data to make this setup work.
+As you can see, we have created a `greeting` and `smart_lights` domains, the intents `greet`, `turn_lights_on`
+and `turn_lights_off`, and the entities `all` and `location`. We now need to add training data to make this setup work.
 
-Normally, you would need to collect training data manually to create your domain, intents and entities. But for this
+Normally, you would need to collect training data manually to create your domain, intents and entities. But, for this
 guide, we are going to take a shortcut. If you are familiar with the [MindMeld library](https://www.mindmeld.com/), you
 have probably seen that it comes with `Blueprint` applications, so we are going to borrow some data from one of them.
 
-Go to this [repo](https://github.com/CiscoDevNet/mindmeld-blueprints/tree/develop/blueprints/home_assistant/domains/smart_home)
+Go to this [repo](https://github.com/CiscoDevNet/mindmeld-blueprints/tree/develop/blueprints/home_assistant/domains)
 and copy the `train.txt` files from the corresponding intents into our folders. Do the same for entities, from 
 [here](https://github.com/CiscoDevNet/mindmeld-blueprints/tree/develop/blueprints/home_assistant/entities) copy the 
 corresponding `gazetteer.txt` and `mapping.json` files into our folders. Our directory should now look like this:
