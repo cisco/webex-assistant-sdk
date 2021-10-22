@@ -1,4 +1,4 @@
-# Webex Assistant SDK
+# Webex Skills SDK
 
 The Webex Assistant SDK is designed to simplify the process of creating a Webex Assistant Skill.
 It provides some tools that help to easily set up a template skill, deal with encryption and 
