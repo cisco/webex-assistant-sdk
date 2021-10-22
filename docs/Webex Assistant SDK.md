@@ -48,7 +48,7 @@ pyenv local webex-skills
 We can now install the SDK using `pip`:
 
 ```bash
-pip install webex-assistant-sdk
+pip install assistant-skills-sdk
 ```
 
 We should be all set, we'll use the SDK later in this guide.
