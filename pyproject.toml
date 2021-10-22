@@ -1,33 +1,34 @@
 [tool.poetry]
-name = "webex-assistant-sdk"
+name = "webex-skills-sdk"
 version = "1.0.0"
 homepage = "https://github.com/cisco/webex-assistant-sdk"
-description = "An SDK for developing applications for Webex Assistant."
+description = "An SDK for skills for the Webex Assistant."
 readme = "README.md"
-authors = ["Minh Vo Thanh <minhtue@cisco.com>", "J.J. Jackson <jdot@cisco.com>"]
+authors = [
+    "James Snow <jasnow@cisco.com>",
+    "Juan Rodriguez <juanrdz@cisco.com>",
+    "Christian Mata <cmata@cisco.com>",
+    "Brady Lenz <brlenz@cisco.com>"
+]
 license = "MIT"
 keywords = ['webex', 'webex-assistant', 'webex-teams']
 classifiers = [
-    'Development Status :: 2 - Pre-Alpha',
+    'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'Natural Language :: English',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
 ]
 
 
 [tool.poetry.dependencies]
-python = "^3.7"
-# Cryptography's versioning scheme will change with 35.0.0 (3.5) to something which more closely resembles
-# SemVer. For now, we'll just pin to the curent version which should be stable through the rest of 3.4
-cryptography = "^3.4.8"
+python = "^3.8"
+cryptography = "^35.0.0"
 mindmeld = {version= "^4.3.5rc11", optional=true}
 requests = "^2.22.0"
-cookiecutter = "^1.7.2"
 typer = "^0.4.0"
 pydantic = {extras = ["dotenv"], version = "^1.8.2"}
 fastapi = "^0.68.1"
-uvicorn = "^0.15.0"
 
 [tool.poetry.dev-dependencies]
 black = '^21.9b0'
@@ -39,12 +40,13 @@ tox = "^3.14.0"
 autopep8 = "^1.5.7"
 mock = "^4.0.3"
 pytest-asyncio = "^0.15.1"
+uvicorn = "^0.15.0"
 
 [tool.poetry.extras]
 mindmeld = ["mindmeld"]
 
 [tool.poetry.scripts]
-webex-skills = 'webex_assistant_sdk.cli:main'
+webex-skills = 'webex_skills.cli:main'
 
 [tool.autopep8]
 max_line_length = 120

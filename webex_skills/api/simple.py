@@ -1,9 +1,9 @@
 from typing import Any, Optional
 
-from webex_assistant_sdk.api.base import BaseAPI
-from webex_assistant_sdk.dialogue.manager import SimpleDialogueManager
-from webex_assistant_sdk.models.http import SkillInvokeRequest, SkillInvokeResponse
-from webex_assistant_sdk.models.mindmeld import DialogueState
+from ..dialogue.manager import SimpleDialogueManager
+from ..models.http import SkillInvokeRequest, SkillInvokeResponse
+from ..models.mindmeld import DialogueState
+from .base import BaseAPI
 
 
 class SimpleAPI(BaseAPI):

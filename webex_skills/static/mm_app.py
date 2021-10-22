@@ -1,6 +1,6 @@
-from webex_assistant_sdk.api import MindmeldAPI
-from webex_assistant_sdk.dialogue import responses
-from webex_assistant_sdk.models.mindmeld import DialogueState
+from webex_skills.api import MindmeldAPI
+from webex_skills.dialogue import responses
+from webex_skills.models.mindmeld import DialogueState
 
 api = MindmeldAPI()
 
