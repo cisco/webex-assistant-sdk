@@ -14,7 +14,6 @@ def generate_keys(
         None, help="The path where to save the keys created. By default, they get created in the current directory."
     ),
     name: Optional[str] = typer.Option('id_rsa', help="The name to use for the keys created."),
-    use_password: Optional[bool] = typer.Option(False, '-p', help='Use a password for the private key'),
 ):
     """Generate an RSA keypair"""
     if not filepath:
@@ -22,11 +21,7 @@ def generate_keys(
 
     typer.secho('🔐 Generating new RSA keypair...', fg=typer.colors.GREEN)
 
-    if use_password:
-        password: str = typer.prompt('Password', hide_input=True, confirmation_prompt=True)
-        encryption = serialization.BestAvailableEncryption(password.encode('utf-8'))
-    else:
-        encryption = serialization.NoEncryption()
+    encryption = serialization.NoEncryption()
 
     priv_path = filepath / f'{name}.pem'
     pub_path = filepath / f'{name}.pub'
