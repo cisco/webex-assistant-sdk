@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "webex-skills-sdk"
+name = "webex-skills"
 version = "2.0.0"
 homepage = "https://github.com/cisco/webex-assistant-sdk"
 description = "An SDK for skills for the Webex Assistant."
