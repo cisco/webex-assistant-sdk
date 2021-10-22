@@ -1,7 +1,6 @@
 from datetime import datetime
 import json
 from json import JSONDecodeError
-import locale
 import os
 from pathlib import Path
 from pprint import pformat
