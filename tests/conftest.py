@@ -1,40 +1,23 @@
-import os
+import re
 
-from mindmeld import NaturalLanguageProcessor
 import pytest
 
-from webex_assistant_sdk.app import SkillApplication
-from webex_assistant_sdk.dialogue import SkillResponder
+from webex_assistant_sdk.dialogue.rules import SimpleDialogueStateRule
+from webex_assistant_sdk.models.mindmeld import DialogueState
 
-from .skill import app
+pytestmark = pytest.mark.asyncio
 
 
-@pytest.fixture(name='skill_dir')
-def _skill_dir():
-    return os.path.join(os.path.realpath(os.path.dirname(__file__)), 'skill')
+@pytest.fixture()
+def dialogue_state():
+    return DialogueState(
+        text='test',
+        context={},
+        params={'time_zone': 'thing', 'timestamp': 12345, 'language': 'en'},
+        frame={},
+    )
 
 
 @pytest.fixture
-def responder():
-    return SkillResponder()
-
-
-@pytest.fixture(name='skill_nlp')
-def _skill_nlp(skill_dir) -> NaturalLanguageProcessor:
-    """Provides a built processor instance"""
-    nlp = NaturalLanguageProcessor(app_path=skill_dir)
-    nlp.build()
-    nlp.dump()
-    return nlp
-
-
-@pytest.fixture(name='skill_app')
-def _skill_app(skill_nlp) -> SkillApplication:
-    app.lazy_init(nlp=skill_nlp)
-    return app
-
-
-@pytest.fixture(name='client')
-def _client(skill_app: SkillApplication):
-    server = skill_app._server.test_client()
-    yield server
+def test_rule():
+    return SimpleDialogueStateRule(re.compile('.*test.*'))
