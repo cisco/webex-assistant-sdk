@@ -775,7 +775,7 @@ You will get something like:
           'public_key_path': '<KEY_PATH>',
           'secret': '<SECRET>',
           'url': 'http://localhost:8080/parse'},
-{'greeter': {'app_dir': '<APP_DIR>>',
+ 'greeter': {'app_dir': '<APP_DIR>>',
              'name': 'greeter',
              'private_key_path': '<KEY_PATH>',
              'project_path': '<PROJECT_PATH>',
