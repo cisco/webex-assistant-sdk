@@ -4,8 +4,8 @@ import logging
 
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from webex_assistant_sdk.api.middlewares.base import BaseReceiver
-from webex_assistant_sdk.crypto import verify_signature
+from ...crypto import verify_signature
+from .base import BaseReceiver
 
 logger = logging.getLogger(__name__)
 

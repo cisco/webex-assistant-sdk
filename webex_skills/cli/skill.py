@@ -13,9 +13,9 @@ import typer
 from typer import colors
 import uvicorn
 
-from webex_assistant_sdk import crypto
-from webex_assistant_sdk.cli.config import get_skill_config
-from webex_assistant_sdk.crypto.messages import generate_token, sign_token
+from ..crypto.messages import generate_token, prepare_payload
+from ..crypto.signatures import sign_token
+from .config import get_skill_config
 
 app = typer.Typer()
 
@@ -74,7 +74,7 @@ def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
     while True:
         req = message
         if encrypted:
-            req = crypto.prepare_payload(json.dumps(message), public_key, secret)
+            req = prepare_payload(json.dumps(message), public_key, secret)
 
         resp = requests.post(url, json=req)
 

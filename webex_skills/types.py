@@ -1,7 +1,7 @@
 from typing import Awaitable, Callable, Dict, Union
 
-from webex_assistant_sdk.dialogue.rules import MMDialogueStateRule, SimpleDialogueStateRule
-from webex_assistant_sdk.models.mindmeld import DialogueState, ProcessedQuery
+from .dialogue.rules import MMDialogueStateRule, SimpleDialogueStateRule
+from .models.mindmeld import DialogueState, ProcessedQuery
 
 DialogueQuery = Union[ProcessedQuery, str]
 SimpleHandler = Callable[[DialogueState], Awaitable[DialogueState]]

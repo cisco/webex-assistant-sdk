@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, constr
 
-from webex_assistant_sdk.models.mindmeld import DialogueState, Params
+from .mindmeld import DialogueState, Params
 
 
 class InvokePayload(BaseModel):

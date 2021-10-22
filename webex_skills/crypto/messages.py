@@ -9,8 +9,8 @@ from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey, RSAPublicKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
-from webex_assistant_sdk.crypto.signatures import sign_token
-from webex_assistant_sdk.exceptions import EncryptionKeyError
+from ..exceptions import EncryptionKeyError
+from .signatures import sign_token
 
 
 def encrypt_fernet_key(fernet_key: bytes, pub_key: bytes) -> bytes:

@@ -1,4 +1,4 @@
-from webex_assistant_sdk.supress_warnings import suppress_warnings
+from webex_skills.supress_warnings import suppress_warnings
 
 
 def create_nlp(app_path):

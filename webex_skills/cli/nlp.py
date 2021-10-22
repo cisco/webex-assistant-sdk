@@ -3,8 +3,8 @@ from typing import Optional
 
 import typer
 
-from webex_assistant_sdk.cli.config import get_skill_config
-from webex_assistant_sdk.cli.helpers import create_nlp
+from .config import get_skill_config
+from .helpers import create_nlp
 
 app = typer.Typer(help='Commands for working with NLP models')
 
