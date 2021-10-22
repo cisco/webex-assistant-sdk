@@ -720,18 +720,25 @@ we still want to be able to test them using the SDK.
 The process for using remotes is very simple, we're going to look into that now. We'll use the `remote` section of the
 SDK.
 
+Remotes are automatically added for skills created with this SDK.
+
 ### Creating a Remote
 
-You can create a remote by using the `create` command. Let's create a remote for our simple app we called `switch`:
+You can create a remote by using the `create` command. Let's recreate a remote for a skill called `echo`:
 
 ```bash
-webex-skills remote create switch
+webex-skills remote create echo
 ```
 
-TODO: Add the prompts
+Follow the prompts to create a new remote:
 
-In a more real scenario, this skill would be deployed and running on a server with a public URL and we would use that
-URL instead of our local one.
+```bash
+$ webex-skills remote create echo
+
+Secret: <SECRET>
+Public key path [id_rsa.pub]: <KEY_PATH>
+URL to invoke the skill [http://localhost:8080/parse]: <URL>
+```
 
 As usual, you can use the `--help` option to see the documentation for this command:
 
@@ -760,6 +767,28 @@ You can also list the remotes you currently have set up. For that you can use th
 
 ```bash
 webex-skills remote list
+```
+
+You will get something like:
+```bash
+{'echo': {'name': 'echo',
+          'public_key_path': '<KEY_PATH>',
+          'secret': '<SECRET>',
+          'url': 'http://localhost:8080/parse'},
+{'greeter': {'app_dir': '<APP_DIR>>',
+             'name': 'greeter',
+             'private_key_path': '<KEY_PATH>',
+             'project_path': '<PROJECT_PATH>',
+             'public_key_path': '<KEY_PATH>',
+             'secret': '<SECRET>',
+             'url': 'http://localhost:8080/parse'},
+ 'switch': {'app_dir': '<APP_DIR>>',
+            'name': 'switch',
+            'private_key_path': '<KEY_PATH>',
+            'project_path': '<PROJECT_PATH>',
+            'public_key_path': '<KEY_PATH>',
+            'secret': '<SECRET>',
+            'url': 'http://localhost:8080/parse'}}
 ```
 
 As usual, you can use the `--help` option to see the documentation for this command:
