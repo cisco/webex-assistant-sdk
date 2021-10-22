@@ -42,10 +42,9 @@ In this documentation we are going to look at the following topics:
 
 ## Requirements
 
-In order to follow the examples in this guide, we'll need to install the SDK and its dependencies. Right
-now the SDK works with Python 3.7 and above. Note that if you want to build a `MindMeld Skill` as shown
-later in the guide you will have to use either Python 3.7 or 3.8, since those are the only supported versions
-for the `MindMeld Library`.
+In order to follow the examples in this guide, we'll need to install the SDK and its dependencies. Right now the SDK
+works with Python 3.8 and above. Note that if you want to build a `MindMeld Skill` as shown later in the guide you will
+have to use Python 3.8, since that is the only supported version for the `MindMeld Library`.
 
 ### Installing the SDK
 
@@ -506,7 +505,13 @@ from it. We are not going to go very deep into how a MindMeld application works,
 official [MindMeld library](https://www.mindmeld.com/) site.
 
 This SDK also has tooling in place for setting up a MindMeld based skill. For that, we can use the `project init`
-command with the `--mindmeld` flag set. Let's create a skill called `greeter`:
+command with the `--mindmeld` flag set. But first, we need to add the extra dependency `mindmeld`:
+
+```bash
+pip install "webex-skills[mindmeld]"
+```
+
+Let's create a skill called `greeter`:
 
 ```bash
 webex-skills project init greeter --mindmeld
@@ -790,7 +795,15 @@ We can now test the skill to make sure it works as intended. Since we just added
 the models first. Since we have entities defined, we will need to have Elasticsearch running for the `nlp build`
 command to work properly. You can refer to the 
 [MindMeld Getting Started Documentation](https://www.mindmeld.com/docs/userguide/getting_started.html) for a guide on
-how to install and run Elasticsearch. With that out of the way, you can build the models:
+how to install and run Elasticsearch.
+
+Remember that in order to build `MindMeld` skills we need the extra `mindmeld` dependency:
+
+```bash
+pip install "webex-skills[mindmeld]"
+```
+
+With that out of the way, you can build the models:
 
 ```bash
 webex-skills nlp build switch
