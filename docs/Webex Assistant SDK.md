@@ -582,8 +582,31 @@ In many cases, when you start creating a new skill, you would probably start wit
 in complexity, you might need to convert it into a `Mindmeld Skill`. This SDK makes that conversion very easy, we are
 going to take a look into that next.
 
-Consider the [Switch Skill](#building-a-simple-skill) we built above. It really just recognize if we want to turn 
-something on or off. 
+Consider the [Switch Skill](#building-a-simple-skill) we built above. It really just recognizes if we want to turn 
+something on or off. But what if we have multiple lights? We could in principle look at the query and try to extract
+the light we want to switch with another regex, but that can be very brittle. Instead, let's try turning it into a 
+`MindMeld Skill`.
+
+### Adding the Training Data
+
+Let's start by creating our domains, intents and entities. We still want to just turn on and off lights, but we want to
+be able to identify which light to switch. On the `switch` app, create the following folder structure:
+
+![File Structure](images/smart_lights_directory.png)
+
+As you can see, we have created a `smart_lights` domain, the intents `turn_lights_on` and `turn_lights_off`, and the 
+entities `all` and `location`. We now need to add training data to make this setup work.
+
+Normally, you would need to collect training data manually to create your domain, intents and entities. But for this
+guide, we are going to take a shortcut. If you are familiar with the [MindMeld library](https://www.mindmeld.com/), you
+have probably seen that it comes with `Blueprint` applications, so we are going to borrow some data from one of them.
+
+Go to this [repo](https://github.com/CiscoDevNet/mindmeld-blueprints/tree/develop/blueprints/home_assistant/domains/smart_home)
+and copy the `train.txt` files from the corresponding intents into our folders. Do the same for entities, from 
+[here](https://github.com/CiscoDevNet/mindmeld-blueprints/tree/develop/blueprints/home_assistant/entities) copy the 
+corresponding `gazetteer.txt` and `mapping.json` files into our folders. Our directory should now look like this:
+
+![File Structure](images/smart_lights_dir_complete.png)
 
 ## Encryption
 
