@@ -36,6 +36,7 @@ In this documentation we are going to look at the following topics:
 - [Remotes](#remotes)
   - [Creating a Remote](#creating-a-remote)
   - [Listing Remotes](#listing-remotes)
+- [Further Development and Deployment of your Skill](#further-development-and-deployment-of-your-skill)
 
 ## Requirements
 
@@ -46,7 +47,13 @@ for the `MindMeld Library`.
 
 ### Installing the SDK
 
-We'll start by creating a `pyenv` environment:
+For this guide, we assume you are familiar and have installed:
+- [pyenv](https://github.com/pyenv/pyenv)
+- [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
+- [pip](https://pypi.org/project/pip/)
+- [Poetry](https://python-poetry.org/)
+
+We'll start by creating a virtual environment:
 
 ```bash
 pyenv install 3.8.6
@@ -60,7 +67,8 @@ We can now install the SDK using `pip`:
 pip install assistant-skills-sdk
 ```
 
-We should be all set, we'll use the SDK later in this guide.
+We should be all set, we'll use the SDK later in this guide. You will need to work inside the `webex-skills` virtual
+environment we just created.
 
 ## Simple Skills vs MindMeld Skills
 
@@ -804,3 +812,18 @@ Options:
   --name TEXT  The name of a particular skill to display.
   --help       Show this message and exit.
 ```
+
+## Further Development and Deployment of your Skill
+
+You might have noticed that when you create a new skill, there is a `pyproject.toml` file that gets added to the
+project. This file already contains the dependencies needed to run the skill independently (without using the SDK's
+`skills run` command.) 
+
+In order to run the skill independently, you can use [Poetry](https://python-poetry.org/) to manage your dependencies,
+or you can also replace the `pyproject.toml` with a `requirements.txt` file if you want to use 
+[pip](https://pypi.org/project/pip/) instead.
+
+For deployment, the SDK builds the skill based on [FastAPI](https://fastapi.tiangolo.com/), which offers multiple
+options for running an app in production. You can find more information in their 
+[Deployment Documentation](https://fastapi.tiangolo.com/deployment/).
+
