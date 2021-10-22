@@ -2,7 +2,7 @@ from functools import total_ordering
 import re
 from typing import Optional
 
-from webex_assistant_sdk.models.mindmeld import ProcessedQuery
+from ..models.mindmeld import ProcessedQuery
 
 
 @total_ordering

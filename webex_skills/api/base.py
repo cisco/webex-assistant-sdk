@@ -6,11 +6,10 @@ from pydantic import BaseSettings
 from starlette.middleware import Middleware
 from starlette.responses import JSONResponse
 
-from webex_assistant_sdk.crypto.messages import decrypt, load_private_key
-from webex_assistant_sdk.settings import SkillSettings
-
 from ..crypto import verify_signature
+from ..crypto.messages import decrypt, load_private_key
 from ..models.http import SkillInvokeRequest, SkillInvokeResponse
+from ..settings import SkillSettings
 from .middlewares import DecryptionMiddleware
 from .middlewares.signing import SignatureMiddleware
 

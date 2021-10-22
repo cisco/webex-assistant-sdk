@@ -3,8 +3,7 @@ from typing import Optional
 
 from cryptography.hazmat.primitives import serialization
 import typer
-
-from webex_assistant_sdk import crypto
+from webex_skills import crypto
 
 app = typer.Typer()
 

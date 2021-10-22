@@ -26,7 +26,7 @@ class ProcessedQuery(BaseModel):
     domain: Optional[str]
     intent: Optional[str]
     # TODO: Add proper typing for entities (dict with keys for entity types and values)
-    entities: Optional[List[Dict[Any, Any]]]
+    entities: Optional[List[Dict[str, Any]]] = []
 
 
 _DialogueState = ForwardRef('DialogueState')
