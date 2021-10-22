@@ -214,7 +214,7 @@ webex-skills skills check switch
 
 In your skill output, you should see something like this:
 ```bash
-INFO:     127.0.0.1:58112 - "GET /check?signature=KALwaYRD4x7qLZ%2B2ejlxPjtgOdwrTAm7eKT11dtOOGQ%3D&message=TXZVRdbgoOq9rZtL6q0ImEZMjVb5o2GUW%2FLF4bmD5%2BjumNCtzmZqV%2FvXSvz1lQRLcB7%2FpWJc7OxTC2nqvf68Thu%2FYWzlfd46TBNZgo%2BQtFI647mS22Yd6yEsKm8Xs4FDkaAkYGlKl8Y2xrZT7MIpOQC98dtVOOAucfnJlJTIZEMdB9luV%2BuZnuoxXvCHHo9gCm6xaRJsgUjdnXOOGwEzLUkF9C%2FB1GH1yTw5fh%2BTgeQraE6weQ0nFS9CPbHw2NZakH5sEwz2epHjLgJCEkYrX4IVt0pD2xXMmUAloc0ao8CVGad1w%2Bd6g9edpDswuPqLVKkehTZABElZfwnt8vFZ6nmv20R1G8MThml2RNEoAiDebnFZjgqGpE1%2BBbvzlksnpGteGfJ%2FM06V0GsB5aRummTROYw1B%2BV4OlFb%2B8sQRzxzhS2x3eQujEHQCSpzD6Jsl6wcx4O5PS39Hab317HmpUQnEdamdXflwmqSTt6eCGmihgF9KmkmEvXoIDB1itiiJfnxqpUQGnwi5El82WSKk0NKXpC1ch488Xz1Qg4vEQUNP7GkP3k94um6N5BG6btW5CHwcKFywoOjbdBshA7r%2F4bqI9lccPG9VbYQbw2xx%2F%2Bgt7Zixh9723EHtTDB4UMEBFx5l4d%2FY5u3G648UOJy21Az91Gr7LQOEEaW7tVN5X8%3D.Z0FBQUFBQmhjSTkzYW90ZkQxVXVfVEFkMUVyLVd5X19ZUmEyRUdwRTdUVFQ1TFJRU1llZlVOZjNIelh4TzZzeVlrS0xzakFUbUUzZjg2RTZ3WXhDX1VUYVZtUmJGRTdCYmRldE5fVkNNNnR1Uk9lUVAzS2VYTE9ZcVBiNjV0V3U4UlRrdGtHbkRxS1BZSWpTTWhtU2h2NHlneTNDc0ZTTnVIci1FdFJZcnd1T2cwLTRLNFh2V21JPQ%3D%3D HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58112 - "GET /check?signature=<SIGNATURE%3D&message=<MESSAGE>%3D HTTP/1.1" 200 OK
 ```
 
 In the SDK output you should see:
@@ -236,21 +236,33 @@ webex-skills skills invoke switch
 
 We can now enter a command and see a response:
 ```bash
+$ webex-skills skills invoke switch
 Enter commands below (Ctl+C to exit)
 >> hi
-{ 'challenge': 'dea3a23c39fcbf1f8649d17e95a65e9ba81b5bfdd58fe280454c7e77cc921c54',
+{ 'challenge': 'a129d633075c9c227cc4bdcd1653b063b6dfe613ca50355fa84e852dde4b198f',
   'directives': [ {'name': 'reply', 'payload': {'text': 'Hello I am a super simple skill'}, 'type': 'action'},
                   {'name': 'speak', 'payload': {'text': 'Hello I am a super simple skill'}, 'type': 'action'},
                   {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
   'frame': {},
-  'history': [],
+  'history': [ { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634881359},
+                 'text': 'hi'}],
   'params': { 'allowed_intents': [],
               'dynamic_resource': {},
               'language': 'en',
               'locale': None,
               'target_dialogue_state': None,
               'time_zone': 'UTC',
-              'timestamp': 1634847225}}
+              'timestamp': 1634881359}}
 ```
 
 We can see that we got all the directives back. The template skill will simply repeat or echo everything we send to it.
@@ -333,47 +345,116 @@ By using the `skill invoke` command we can run a few tests:
 
 ```bash
 >> turn on the lights
-{ 'challenge': '031b16ee32e49da80dfac93357febbb06f374f89dcb63ffe9b48e776e007e9e8',
+{ 'challenge': '56094568e18c66cb89eca8eb092cc3bbddcd64b4c0442300cfbe9af67183e260',
   'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
                   {'name': 'speak', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
                   {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
   'frame': {},
-  'history': [],
+  'history': [ { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634881502},
+                 'text': 'turn on the lights'}],
   'params': { 'allowed_intents': [],
               'dynamic_resource': {},
               'language': 'en',
               'locale': None,
               'target_dialogue_state': None,
               'time_zone': 'UTC',
-              'timestamp': 1634847972}}
+              'timestamp': 1634881502}}
 >> turn off the lights
-{ 'challenge': '316aa500f7525fc94e8ee43c8e693fe3a45fb1398ca277adff04458053e227d5',
+{ 'challenge': '2587110a9c97ebf9ce435412c0ea6154eaef80f384ac829cbdc679db483e5beb',
   'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning lights off.'}, 'type': 'action'},
                   {'name': 'speak', 'payload': {'text': 'Ok, turning lights off.'}, 'type': 'action'},
                   {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
   'frame': {},
-  'history': [],
+  'history': [ { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634881502},
+                 'text': 'turn on the lights'},
+               { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634881502},
+                 'text': 'turn off the lights'}],
   'params': { 'allowed_intents': [],
               'dynamic_resource': {},
               'language': 'en',
               'locale': None,
               'target_dialogue_state': None,
               'time_zone': 'UTC',
-              'timestamp': 1634847972}}
+              'timestamp': 1634881502}}
 >> turn the lights on
-{ 'challenge': '3365583d931965cbb8ca063fa4192b3e0b05b325fd1ab99f2b825922b4a57dfa',
+{ 'challenge': 'ce24a510f6a7025ac5e4cc51b082483bdbcda31836e2c3567780c231e5674c59',
   'directives': [ {'name': 'reply', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
                   {'name': 'speak', 'payload': {'text': 'Ok, turning lights on.'}, 'type': 'action'},
                   {'name': 'sleep', 'payload': {'delay': 10}, 'type': 'action'}],
   'frame': {},
-  'history': [],
+  'history': [ { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634881502},
+                 'text': 'turn on the lights'},
+               { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634881502},
+                 'text': 'turn off the lights'},
+               { 'context': {},
+                 'directives': [],
+                 'frame': {},
+                 'history': [],
+                 'params': { 'allowed_intents': [],
+                             'dynamic_resource': {},
+                             'language': 'en',
+                             'locale': None,
+                             'target_dialogue_state': None,
+                             'time_zone': 'UTC',
+                             'timestamp': 1634881502},
+                 'text': 'turn the lights on'}],
   'params': { 'allowed_intents': [],
               'dynamic_resource': {},
               'language': 'en',
               'locale': None,
               'target_dialogue_state': None,
               'time_zone': 'UTC',
-              'timestamp': 1634847972}}
+              'timestamp': 1634881502}}
 ```
 
 In the examples above, we can see the skill responding with the correct message. In a real skill, we would also call an
