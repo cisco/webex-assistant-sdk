@@ -702,11 +702,11 @@ With the following logic:
 
 ```python
     if len(processed_query.entities) > 0:
-        location = processed_query.entities[0]['text']
-        if location == 'all':
-            text = 'Ok, turning all lights on.'
+        entity = processed_query.entities[0]
+        if entity['type'] == 'location':
+            text = f'Ok, turning the {entity["text"]} lights on.'
         else:
-            text = f'Ok, turning the {location} lights on.'
+            text = 'Ok, turning all lights on.'
     else:
         text = 'Ok, turning all lights on.'
 ```
@@ -720,9 +720,9 @@ That's it! We now have NLP support in our skill.
 All in all your `main.py` should look like this:
 
 ```python
-from webex_assistant_sdk.api import MindmeldAPI
-from webex_assistant_sdk.dialogue import responses
-from webex_assistant_sdk.models.mindmeld import DialogueState, ProcessedQuery
+from webex_skills.api import MindmeldAPI
+from webex_skills.dialogue import responses
+from webex_skills.models.mindmeld import DialogueState, ProcessedQuery
 
 api = MindmeldAPI()
 
@@ -746,11 +746,11 @@ async def turn_on(current_state: DialogueState, processed_query: ProcessedQuery)
     new_state = current_state.copy()
 
     if len(processed_query.entities) > 0:
-        location = processed_query.entities[0]['text']
-        if location == 'all':
-            text = 'Ok, turning all lights on.'
+        entity = processed_query.entities[0]
+        if entity['type'] == 'location':
+            text = f'Ok, turning the {entity["text"]} lights on.'
         else:
-            text = f'Ok, turning the {location} lights on.'
+            text = 'Ok, turning all lights on.'
     else:
         text = 'Ok, turning all lights on.'
 
@@ -770,11 +770,11 @@ async def turn_off(current_state: DialogueState, processed_query: ProcessedQuery
     new_state = current_state.copy()
 
     if len(processed_query.entities) > 0:
-        location = processed_query.entities[0]['text']
-        if location == 'all':
-            text = 'Ok, turning all lights off.'
+        entity = processed_query.entities[0]
+        if entity['type'] == 'location':
+            text = f'Ok, turning the {entity["text"]} lights off.'
         else:
-            text = f'Ok, turning the {location} lights off.'
+            text = 'Ok, turning all lights off.'
     else:
         text = 'Ok, turning all lights off.'
 
