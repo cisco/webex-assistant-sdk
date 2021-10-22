@@ -1028,7 +1028,6 @@ Arguments:
 
 Options:
   --name TEXT  The name to use for the keys created.  [default: id_rsa]
-  -p           Use a password for the private key  [default: False]
   --help       Show this message and exit.
 ```
 
