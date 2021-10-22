@@ -22,10 +22,12 @@ In this documentation we are going to look at the following topics:
   - [Checking the Skill](#checking-the-skill)
   - [Invoking the Skill](#invoking-the-skill)
   - [Updating the Skill](#updating-the-skill)
+  - [More About the Simple Skill Handler Signature](#more-about-the-simple-skill-handler-signature)
 - [Building a MindMeld Skill](#building-a-mindmeld-skill)
   - [Invoking the MindMeld Skill](#invoking-the-mindMeld-skill)
   - [Building New Models](#building-new-models)
   - [Testing the Models](#testing-the-models)
+  - [More About the MindMelmd Skill Handler Signature](#more-about-the-mindmelmd-skill-handler-signature)
 - [Converting a Simple Skill into a MindMeld Skill](#converting-a-simple-skill-into-a-mindmeld-skill)
   - [Adding the Training Data](#adding-the-training-data)
   - [Updating the Handlers](#updating-the-handlers)
@@ -479,6 +481,23 @@ By using the `skill invoke` command we can run a few tests:
 In the examples above, we can see the skill responding with the correct message. In a real skill, we would also call an
 API to actually perform the action the user wants.
 
+### More About the Simple Skill Handler Signature
+
+When we created our `Simple Skill`, our handler had the following siganture:
+
+```python
+async def greet(current_state: DialogueState) -> DialogueState:
+```
+
+You can also update the handler to give you another parameter:
+
+```python
+async def greet(current_state: DialogueState, query: str) -> DialogueState:
+```
+
+The `query` string parameter will give you the query that was sent to the skill, this can be used in cases where you
+need to further analyze the text.
+
 ## Building a MindMeld Skill
 
 When a skill is very complex and needs to handle many commands, usually the best approach is to create a MindMeld 
@@ -594,6 +613,25 @@ Arguments:
 Options:
   --help  Show this message and exit.
 ```
+
+### More About the MindMeld Skill Handler Signature
+
+When we created our `Simple Skill`, our handler had the following siganture:
+
+```python
+async def greet(current_state: DialogueState) -> DialogueState:
+```
+
+You can also update the handler to give you another parameter:
+
+```python
+async def greet(current_state: DialogueState, , processed_query: ProcessedQuery) -> DialogueState:
+```
+
+The `processed_query` parameter will give you the `text` that was sent to the skill, the `domain` and `intent` identified
+as well as the `entities` extracted from the query. This can be useful in cases where you want to use the entities as
+part of the skill logic. We'll show an example of this in the 
+[Converting a Simple Skill into a MindMeld Skill](#converting-a-simple-skill-into-a-mindMeld-skill) section.
 
 ## Converting a Simple Skill into a MindMeld Skill
 
