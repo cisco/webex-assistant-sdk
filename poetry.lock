@@ -1179,7 +1179,7 @@ mindmeld = ["mindmeld"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a5f37896d4a28717e3e5ea4249cbaf4d43cc5d651cff1d5b04b2ed5ddfb261be"
+content-hash = "1bf8b6abc3c81bf550d3c89ad83f38bb26bd27b195d14ec9a7da9cd7a1aa92ae"
 
 [metadata.files]
 aiohttp = [
