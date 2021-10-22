@@ -27,7 +27,7 @@ In this documentation we are going to look at the following topics:
   - [Invoking the MindMeld Skill](#invoking-the-mindMeld-skill)
   - [Building New Models](#building-new-models)
   - [Testing the Models](#testing-the-models)
-  - [More About the MindMelmd Skill Handler Signature](#more-about-the-mindmelmd-skill-handler-signature)
+  - [More About the MindMelmd Skill Handler Signature](#more-about-the-mindmeld-skill-handler-signature)
 - [Converting a Simple Skill into a MindMeld Skill](#converting-a-simple-skill-into-a-mindmeld-skill)
   - [Adding the Training Data](#adding-the-training-data)
   - [Updating the Handlers](#updating-the-handlers)
