@@ -6,8 +6,8 @@ from typing import Optional
 
 import typer
 
+from ..crypto import generate_keys
 from .config import get_skill_config
-from .crypto import generate_keys
 from .helpers import create_nlp
 
 app = typer.Typer(name='project')
@@ -34,7 +34,6 @@ def init(
     ),
 ):
     """Create a new skill project from a template"""
-    # TODO: Support private key password
 
     if not secret:
         typer.secho('Generating secret...')
