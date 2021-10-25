@@ -131,13 +131,14 @@ def check(
     public_key_path: Optional[Path] = typer.Option(
         None, '-k', '--key', help="The path of the public key for the skill."
     ),
-    url: Optional[str] = typer.Option('http://localhost:8080/check', '-u', help="The check url for the skill."),
+    url: Optional[str] = typer.Option(None, '-u', help="The check url for the skill."),
 ):
     if name:
         # Load details from config
         config = get_skill_config(name)
         public_key_path = public_key_path or Path(config['public_key_path'])
         secret = secret or config['secret']
+        url = url or config['url']
 
     public_key_text = public_key_path.read_text(encoding='utf-8')
     challenge = os.urandom(32).hex()
