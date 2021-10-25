@@ -38,7 +38,7 @@ class BaseAPI(FastAPI):
 
         super().__init__(**kwargs, middleware=middleware)
         self.router.add_api_route('/parse', self.parse, methods=['POST'], response_model=SkillInvokeResponse)
-        self.router.add_api_route('/check', self.check, methods=['GET'])
+        self.router.add_api_route('/parse', self.check, methods=['GET'])
 
     async def parse(self, request: SkillInvokeRequest):
         pass
