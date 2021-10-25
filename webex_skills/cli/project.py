@@ -64,6 +64,10 @@ def create_mm_project(skill_name, output_dir, secret) -> None:
     # Copy sample domains into domain folder
     shutil.copytree(static_path / 'default_domains', domains_dir)
 
+    # Copy app config to avoid requirements
+    mm_config_path = static_path / 'mm_config.py'
+    shutil.copy(mm_config_path, app_dir / 'config.py')
+
     # Build models
     typer.secho('Initializing natural language processor', fg=typer.colors.GREEN)
     nlp = create_nlp(str(app_dir))
