@@ -29,6 +29,12 @@ Install using `pip`:
 pip install webex-skills
 ```
 
+In order to build `MindMeld Skills` you need the `mindmel` extra:
+
+```python
+pip install 'webex-skills[mindmeld]'
+```
+
 ### Install from Source
 
 You can install from source using `Poetry`. Set up python 3.7.5 locally:
@@ -43,6 +49,13 @@ Now you can run `Poetry`'s `install` command:
 ```python
 poetry install
 ```
+
+In order to build `MindMeld Skills` you need the `mindmel` extra:
+
+```python
+poetry install --extras "mindmeld"
+```
+
 
 ## Building Skills
 
