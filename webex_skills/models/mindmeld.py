@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, ForwardRef, List, Optional
 
-from pydantic import BaseModel, constr
+from pydantic import BaseModel, constr  # pylint:disable=no-name-in-module
 
 # Mindmeld's Request object is essentially just a ProcessedQuery object + the dialogue manager stuff
 
@@ -13,8 +13,8 @@ class Params(BaseModel):
     timestamp: int
     # We enforce length via min/max length in addition to the regex so we get a more
     # useful error message if the length is wrong.
-    language: constr(min_length=2, max_length=2, regex="^[a-zA-Z]{2}$")  # type: ignore
-    locale: Optional[constr(regex="^[a-z]{2}([-_][A-Z]{2})?$")]  # type: ignore
+    language: constr(min_length=2, max_length=2, regex="^[a-zA-Z]{2}$")  # type: ignore  # noqa
+    locale: Optional[constr(regex="^[a-z]{2}([-_][A-Z]{2})?$")]  # type: ignore  # noqa
     dynamic_resource: Optional[Dict[Any, Any]] = {}
     allowed_intents: Optional[List[str]] = []
 
@@ -25,7 +25,7 @@ class ProcessedQuery(BaseModel):
     text: str
     domain: Optional[str]
     intent: Optional[str]
-    # TODO: Add proper typing for entities (dict with keys for entity types and values)
+    # TODO: Add proper typing for entities (dict with keys for entity types and values)   # pylint:disable=fixme
     entities: Optional[List[Dict[str, Any]]] = []
 
 
@@ -38,7 +38,8 @@ class DialogueState(BaseModel):
     params: Params
     frame: Dict[Any, Any]
     history: Optional[List[_DialogueState]] = []
-    # TODO: Unsure if I should put this directly on the State object or if our method should just be required
+    # TODO: Unsure if I should put this directly on the State object or  # pylint:disable=fixme
+    #  if our method should just be required
     # to return a state and a list of directives
     directives: Optional[List[Dict[Any, Any]]] = []
 

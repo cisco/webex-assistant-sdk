@@ -45,11 +45,11 @@ class DecryptingReceiver(BaseReceiver):
         encrypted_message = json.loads(message_body)
         try:
             message["body"] = decrypt(self.private_key, encrypted_message['message'].encode('utf-8'))
-        except ValueError:
+        except ValueError as value_exc:
             # We log with error rather than exception here because the exception raised by cryptography
             # if decryption fails doesn't provide useful information, and the stack trace is largely unhelpful
             msg = 'Failed to decrypt payload'
             logger.error(msg)
-            raise DecryptionError(msg)
+            raise DecryptionError(msg) from value_exc
 
         return message

@@ -13,7 +13,7 @@ def get_skill_config(name=None):
         app_dir.mkdir(parents=True)
         config = {}
     else:
-        config = json.loads(config_file.read_text('utf-8')) or {}
+        config = json.loads(config_file.read_text(encoding='utf-8')) or {}
 
     remotes = config.get('remotes', {})
     if not name:

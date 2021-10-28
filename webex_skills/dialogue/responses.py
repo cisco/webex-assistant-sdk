@@ -2,7 +2,7 @@ from typing import Any, Dict
 from typing import List as _List
 from typing import Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint:disable=no-name-in-module
 
 PayloadDict = Dict[str, Any]
 Payload = Union[PayloadDict, _List[Any]]
@@ -13,7 +13,9 @@ class SkillDirective(BaseModel):
     type: str
     payload: Optional[Payload]
 
-    def dict(self, *args, exclude_none=True, **kwargs) -> PayloadDict:
+    def dict(  # pylint:disable=useless-super-delegation, unused-argument
+        self, *args, exclude_none=True, **kwargs
+    ) -> PayloadDict:
         return super().dict(*args, **kwargs, exclude_none=True)
 
 

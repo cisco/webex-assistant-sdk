@@ -1,7 +1,7 @@
 import warnings
 
 
-class suppress_warnings:
+class suppress_warnings:  # pylint:disable=invalid-name
     def __init__(self):
         self._showwarning = None
 
@@ -12,6 +12,6 @@ class suppress_warnings:
         self._showwarning = warnings.showwarning
         warnings.showwarning = self.showwarning
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb):  # pylint:disable=useless-return
         warnings.showwarning = self._showwarning
         return

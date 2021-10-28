@@ -1,0 +1,13 @@
+[MASTER]
+disable=
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+
+
+[DESIGN]
+max-args=6
+min-public-methods=0
+
+[FORMAT]
+max-line-length=120

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "webex-skills"
-version = "2.0.7"
+version = "2.0.8"
 homepage = "https://github.com/cisco/webex-assistant-sdk"
 description = "An SDK for skills for the Webex Assistant."
 readme = "README.md"
@@ -41,6 +41,7 @@ tox = "^3.14.0"
 autopep8 = "^1.5.7"
 mock = "^4.0.3"
 pytest-asyncio = "^0.15.1"
+flake8 = "^4.0.1"
 
 [tool.poetry.extras]
 mindmeld = ["mindmeld"]
