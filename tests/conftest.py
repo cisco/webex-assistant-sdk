@@ -2,8 +2,8 @@ import re
 
 import pytest
 
-from webex_assistant_sdk.dialogue.rules import SimpleDialogueStateRule
-from webex_assistant_sdk.models.mindmeld import DialogueState
+from webex_skills.dialogue.rules import SimpleDialogueStateRule
+from webex_skills.models.mindmeld import DialogueState
 
 pytestmark = pytest.mark.asyncio
 
@@ -20,4 +20,4 @@ def dialogue_state():
 
 @pytest.fixture
 def test_rule():
-    return SimpleDialogueStateRule(re.compile('.*test.*'))
+    return SimpleDialogueStateRule(re.compile('.*test.*'), 'test')

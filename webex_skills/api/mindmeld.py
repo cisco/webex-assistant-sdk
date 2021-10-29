@@ -13,7 +13,7 @@ class MindmeldAPI(BaseAPI):
 
         if not self.nlp:
             with suppress_warnings():
-                from mindmeld import NaturalLanguageProcessor
+                from mindmeld import NaturalLanguageProcessor  # pylint:disable=import-outside-toplevel
 
                 self.nlp = NaturalLanguageProcessor(self.settings.app_dir)
                 self.nlp.load()

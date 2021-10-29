@@ -41,6 +41,7 @@ tox = "^3.14.0"
 autopep8 = "^1.5.7"
 mock = "^4.0.3"
 pytest-asyncio = "^0.15.1"
+flake8 = "^4.0.1"
 
 [tool.poetry.extras]
 mindmeld = ["mindmeld"]
@@ -67,6 +68,23 @@ skip_glob = ['scripts', 'venv*']
 line-length = 120
 skip-string-normalization = true
 target-version = ['py37']
+
+[tool.flake8]
+max-line-length = 120
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+]
+
+[tool.pylint.DESIGN]
+max-args = 6
+min-public-methods = 0
+
+[tool.pylint.FORMAT]
+max-line-length = 120
 
 [build-system]
 requires = ["poetry>=1.0.0"]

@@ -38,4 +38,4 @@ jobs:
       run: |
         poetry run mindmeld num-parse
         mkdir ~/test-reports
-        poetry run pytest --junitxml=~/test-reports/junit.xml --cov-report html --cov=webex_assistant_sdk
+        poetry run pytest --junitxml=~/test-reports/junit.xml --cov-report html --cov=webex_skills

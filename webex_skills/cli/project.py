@@ -39,7 +39,7 @@ def init(
         typer.secho('Generating secret...')
         secret = secrets.token_urlsafe(16)
 
-    # TODO: Pass static path down
+    # TODO: Pass static path down  # pylint:disable=fixme
     typer.secho(f'Generating skill {skill_name} project at {skill_path/skill_name}...')
     if mindmeld:
         create_mm_project(skill_name, skill_path, secret)
@@ -77,7 +77,9 @@ def create_mm_project(skill_name, output_dir, secret) -> None:
     typer.secho('Success!')
 
 
-def _create_project(skill_name: str, output_dir: Path, app_file_name: str, secret: str):
+def _create_project(
+    skill_name: str, output_dir: Path, app_file_name: str, secret: str
+):  # pylint:disable=too-many-locals
     output_dir = output_dir / skill_name
     typer.echo(f'Creating project directory {output_dir}')
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -141,5 +143,5 @@ def _create_project(skill_name: str, output_dir: Path, app_file_name: str, secre
     config_dir = Path(typer.get_app_dir('skills-cli', force_posix=True))
     config_file = config_dir / 'config.json'
 
-    config_file.write_text(json.dumps({'remotes': remotes}, indent=2))
+    config_file.write_text(json.dumps({'remotes': remotes}, indent=2), encoding='utf-8')
     return app_dir

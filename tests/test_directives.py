@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from webex_assistant_sdk.dialogue import responses
+from webex_skills.dialogue import responses
 
 
 def assert_format(response: responses.SkillDirective, payload: Optional[Dict[str, Any]] = None):

@@ -18,7 +18,6 @@ def prompt_for_secret():
     return secret
 
 
-# TODO: Check that public key is actually a public key in the supported format
 def prompt_for_key():
     public_key_path = Path(typer.prompt('Public key path', Path('./id_rsa.pub')))
     if public_key_path.exists():
@@ -50,7 +49,7 @@ def create(
         app_dir.mkdir(parents=True)
 
     if config_file.exists():
-        config = json.loads(config_file.read_text('utf-8'))
+        config = json.loads(config_file.read_text(encoding='utf-8'))
     else:
         typer.secho(f'Config file {config_file} not found, creating...')
         config_file.touch()
@@ -74,11 +73,13 @@ def create(
 
     remotes[name] = {'name': name, 'url': url, 'secret': secret, 'public_key_path': str(public_key_path.absolute())}
     config['remotes'] = remotes
-    config_file.write_text(json.dumps(config, indent=2))
+    config_file.write_text(json.dumps(config, indent=2), encoding='utf-8')
 
 
 @remote.command('list')
-def ls(name: Optional[str] = typer.Option(None, help="The name of a particular skill to display.")):
+def ls(
+    name: Optional[str] = typer.Option(None, help="The name of a particular skill to display.")
+):  # pylint:disable=invalid-name
     """List configured remote skills"""
     remotes = get_skill_config()
     if not remotes:

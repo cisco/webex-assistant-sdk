@@ -1,6 +1,6 @@
 #!/bin/bash
 
-poetry run black --check . --exclude webex_assistant_sdk/templates
+poetry run black --check . --exclude .venv
 poetry run isort --check
-poetry run flake8 --exclude webex_assistant_sdk/templates -- webex_assistant_sdk tests
-poetry run pylint -- webex_assistant_sdk tests
+poetry run flake8 --exclude .venv/
+poetry run pylint -- webex_skills

@@ -30,10 +30,10 @@ class DialogueManager:
         handler = handler or self.default_handler
 
         if not handler:
-            # TODO: Different message
+            # TODO: Different message  # pylint:disable=fixme
             raise MissingHandler('No handler found')
 
-        # TODO: Use annotated types rather than length
+        # TODO: Use annotated types rather than length  # pylint:disable=fixme
         handler_args = inspect.signature(handler)
         if len(handler_args.parameters) == 2:
             new_state = await handler(current_state, query)
@@ -78,7 +78,7 @@ class SimpleDialogueManager(DialogueManager):
     ):
         """Wraps a function to behave as a dialogue handler"""
 
-        # TODO: Take a closer look at the setup here, I'd like to have type hinting
+        # TODO: Take a closer look at the setup here, I'd like to have type hinting  # pylint:disable=fixme
         # catch if a function doesn't meet what's expected as a DialogueHandler
         # Just checking if handler is a coroutine is also an option
         def decorator(handler: DialogueHandler) -> DialogueHandler:
