@@ -1,8 +1,10 @@
+# pylint:disable=no-name-in-module
+
 from __future__ import annotations
 
 from typing import Any, Dict, ForwardRef, List, Optional
 
-from pydantic import BaseModel, constr  # pylint:disable=no-name-in-module
+from pydantic import BaseModel, constr
 
 # Mindmeld's Request object is essentially just a ProcessedQuery object + the dialogue manager stuff
 

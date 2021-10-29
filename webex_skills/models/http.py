@@ -1,6 +1,8 @@
+# pylint:disable=no-name-in-module
+
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, constr  # pylint:disable=no-name-in-module
+from pydantic import BaseModel, constr
 
 from .mindmeld import DialogueState, Params
 

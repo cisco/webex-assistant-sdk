@@ -69,6 +69,23 @@ line-length = 120
 skip-string-normalization = true
 target-version = ['py37']
 
+[tool.flake8]
+max-line-length = 120
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+]
+
+[tool.pylint.DESIGN]
+max-args = 6
+min-public-methods = 0
+
+[tool.pylint.FORMAT]
+max-line-length = 120
+
 [build-system]
 requires = ["poetry>=1.0.0"]
 build-backend = "poetry.masonry.api"

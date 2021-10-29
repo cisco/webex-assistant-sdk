@@ -1,8 +1,10 @@
+# pylint:disable=no-name-in-module
+
 from typing import Any, Dict
 from typing import List as _List
 from typing import Optional, Union
 
-from pydantic import BaseModel  # pylint:disable=no-name-in-module
+from pydantic import BaseModel
 
 PayloadDict = Dict[str, Any]
 Payload = Union[PayloadDict, _List[Any]]

@@ -18,7 +18,6 @@ def prompt_for_secret():
     return secret
 
 
-# TODO: Check that public key is actually a public key in the supported format  # pylint:disable=fixme
 def prompt_for_key():
     public_key_path = Path(typer.prompt('Public key path', Path('./id_rsa.pub')))
     if public_key_path.exists():
