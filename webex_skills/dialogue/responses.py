@@ -63,7 +63,7 @@ class DisplayWebView(ActionDirective):
 
 
 class ClearWebView(ActionDirective):
-    name: str = 'display-web-view'
+    name: str = 'clear-web-view'
 
 
 class UIHint(ViewDirective):
