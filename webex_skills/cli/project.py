@@ -35,6 +35,13 @@ def init(
 ):
     """Create a new skill project from a template"""
 
+    # Check for an existing skill name and provide an option to overwrite
+    if get_skill_config(skill_name):
+        if not typer.confirm(
+            f'A skill named {skill_name} already exists in your configuration. Would you like to overwrite it?'
+        ):
+            return
+
     if not secret:
         typer.secho('Generating secret...')
         secret = secrets.token_urlsafe(16)
@@ -106,9 +113,7 @@ def _create_project(
 
     # Create pyproject.toml
     toml_template = static_path / 'pyproject.toml.tmpl'
-    toml_content = toml_template.read_text()
-
-    toml_content = toml_content.format(skill_name=skill_name)
+    toml_content = toml_template.read_text().format(skill_name=skill_name)
     toml_out_path = output_dir / 'pyproject.toml'
     toml_out_path.write_text(toml_content)
 
