@@ -17,17 +17,8 @@ def get_remotes():
     """Returns configuration for all named skills"""
     if not CONFIG_FILE.exists():
         return {}
-    config = load_config()
+    config = json.loads(CONFIG_FILE.read_text(encoding='utf-8'))
     return config.get('remotes', {})
-
-
-def load_config():
-    """Attempts to load the configuration file"""
-    try:
-        return json.loads(CONFIG_FILE.read_text(encoding='utf-8')) or {}
-    except json.JSONDecodeError:
-        typer.secho('Invalid JSON in configuration file', color=typer.colors.RED, err=True)
-        raise typer.Exit(1)
 
 
 def get_app_dir(name: str):
