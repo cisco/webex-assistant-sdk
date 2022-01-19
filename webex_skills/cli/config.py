@@ -3,25 +3,37 @@ from pathlib import Path
 
 import typer
 
+CONFIG_DIR = Path(typer.get_app_dir('skills-cli', force_posix=True))
+CONFIG_FILE = CONFIG_DIR / 'config.json'
 
-def get_skill_config(name=None):
-    app_dir = Path(typer.get_app_dir('skills-cli', force_posix=True))
-    config_file = app_dir / 'config.json'
 
-    if not app_dir.exists():
-        typer.echo('Creating default configuration')
-        app_dir.mkdir(parents=True)
-        config = {}
-    else:
-        config = json.loads(config_file.read_text(encoding='utf-8')) or {}
+def get_skill_config(name: str):
+    """Return the configuration for a named skill"""
+    remotes = get_remotes()
+    return remotes.get(name)
 
-    remotes = config.get('remotes', {})
-    if not name:
-        return remotes
 
-    remote_config = remotes.get(name)
-    if not remote_config:
-        typer.secho(f'No configured remote with the name {name} found', color=typer.colors.RED, err=True)
+def get_remotes():
+    """Returns configuration for all named skills"""
+    if not CONFIG_FILE.exists():
+        return {}
+    config = load_config()
+    return config.get('remotes', {})
+
+
+def load_config():
+    """Attempts to load the configuration file"""
+    try:
+        return json.loads(CONFIG_FILE.read_text(encoding='utf-8')) or {}
+    except json.JSONDecodeError:
+        typer.secho('Invalid JSON in configuration file', color=typer.colors.RED, err=True)
         raise typer.Exit(1)
 
-    return remote_config
+
+def get_app_dir(name: str):
+    """Returns the app directory path for a named skill"""
+    config = get_skill_config(name)
+    if not config:
+        typer.secho(f'No configured remote with the name {name} found', color=typer.colors.RED, err=True)
+        raise typer.Exit(1)
+    return config['app_dir']

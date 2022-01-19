@@ -7,7 +7,7 @@ from typing import Optional
 import typer
 
 from ..crypto import generate_keys
-from .config import get_skill_config
+from .config import CONFIG_DIR, CONFIG_FILE, get_remotes, get_skill_config
 from .helpers import create_nlp
 
 app = typer.Typer(name='project')
@@ -25,18 +25,20 @@ def init(
         resolve_path=True,
     ),
     secret: Optional[str] = typer.Option(
-        None, help="A secret for encryption. If not provided, one will be" " generated automatically."
+        None, help="A secret for encryption. If not provided, one will be generated automatically."
     ),
     mindmeld: Optional[bool] = typer.Option(
         False,
-        help="If flag set, a MindMeld app will be created, otherwise " "it defaults to a simple app",
+        help="If flag set, a MindMeld app will be created, otherwise it defaults to a simple app",
         is_flag=True,
     ),
 ):
     """Create a new skill project from a template"""
 
+    if not CONFIG_DIR.exists():
+        CONFIG_DIR.mkdir(parents=True)
     # Check for an existing skill name and provide an option to overwrite
-    if get_skill_config(skill_name):
+    if CONFIG_FILE.exists() and get_skill_config(skill_name):
         if not typer.confirm(
             f'A skill named {skill_name} already exists in your configuration. Would you like to overwrite it?'
         ):
@@ -134,7 +136,7 @@ def _create_project(
     env_file_path = output_dir / '.env'
     env_file_path.write_text(env_content)
 
-    remotes = get_skill_config()
+    remotes = get_remotes()
     remotes[skill_name] = {
         'name': skill_name,
         'url': "http://localhost:8080/parse",
@@ -145,8 +147,5 @@ def _create_project(
         'app_dir': str(app_dir),
     }
 
-    config_dir = Path(typer.get_app_dir('skills-cli', force_posix=True))
-    config_file = config_dir / 'config.json'
-
-    config_file.write_text(json.dumps({'remotes': remotes}, indent=2), encoding='utf-8')
+    CONFIG_FILE.write_text(json.dumps({'remotes': remotes}, indent=2), encoding='utf-8')
     return app_dir

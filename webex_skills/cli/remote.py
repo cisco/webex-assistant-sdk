@@ -5,7 +5,7 @@ from typing import Optional
 
 import typer
 
-from .config import get_skill_config
+from .config import get_remotes
 
 remote = typer.Typer(name='remote', help='Commands for interacting with running skills')
 
@@ -81,7 +81,7 @@ def ls(
     name: Optional[str] = typer.Option(None, help="The name of a particular skill to display.")
 ):  # pylint:disable=invalid-name
     """List configured remote skills"""
-    remotes = get_skill_config()
+    remotes = get_remotes()
     if not remotes:
         typer.secho('No configured remotes found', color=typer.colors.RED, err=True)
         raise typer.Exit(1)
