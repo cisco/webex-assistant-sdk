@@ -80,7 +80,7 @@ disable = [
 ]
 
 [tool.pylint.DESIGN]
-max-args = 6
+max-args = 10
 min-public-methods = 0
 
 [tool.pylint.FORMAT]

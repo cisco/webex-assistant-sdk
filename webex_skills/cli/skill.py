@@ -6,6 +6,7 @@ from pathlib import Path
 from pprint import pformat
 import sys
 from typing import Optional
+import uuid
 
 import requests
 import typer
@@ -17,6 +18,10 @@ from ..crypto.signatures import sign_token
 from .config import get_skill_config
 
 app = typer.Typer()
+
+
+def uuid_str():
+    return str(uuid.uuid4())
 
 
 @app.command()
@@ -39,6 +44,21 @@ def invoke(
     encrypted: Optional[bool] = typer.Option(
         True, '--encrypt/--no-encrypt', is_flag=True, help="Flag to specify if the skill is using encryption."
     ),
+    org_id: Optional[str] = typer.Option(
+        uuid_str,
+        help='The organization id to be passed via context, if not provided a UUID will be generated.',
+        show_default=False,
+    ),
+    user_id: Optional[str] = typer.Option(
+        uuid_str,
+        help='The user id to be passed via context, if not provided a UUID will be generated.',
+        show_default=False,
+    ),
+    device_id: Optional[str] = typer.Option(
+        uuid_str,
+        help='The device id to passed via context, if not provided a UUID will be generated.',
+        show_default=False,
+    ),
 ):
     """Invoke a skill running locally or remotely"""
     if name:
@@ -51,10 +71,20 @@ def invoke(
     public_key_text = public_key_path.read_text(encoding='utf-8')
     typer.echo('Enter commands below (Ctl+C to exit)')
     query = typer.prompt('>>', prompt_suffix=' ')
-    invoke_skill(query, url, encrypted, public_key_text, secret, verbose)
+    invoke_skill(query, url, encrypted, public_key_text, secret, org_id, user_id, device_id, verbose)
 
 
-def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
+def invoke_skill(
+    query: str,
+    url: str,
+    encrypted: bool,
+    public_key: str,
+    secret: str,
+    org_id: str,
+    user_id: str,
+    device_id: str,
+    verbose: bool = False,
+):
     challenge = os.urandom(32).hex()
     default_params = {
         'time_zone': 'UTC',
@@ -64,7 +94,11 @@ def invoke_skill(query, url, encrypted, public_key, secret, verbose=False):
     message = {
         'challenge': challenge,
         'text': query,
-        'context': {},
+        'context': {
+            'userId': user_id,
+            'orgId': org_id,
+            'developerDeviceId': device_id,
+        },
         'params': default_params,
         'frame': {},
         'history': [],
