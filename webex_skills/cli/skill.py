@@ -85,29 +85,30 @@ def invoke_skill(
     device_id: str,
     verbose: bool = False,
 ):
-    challenge = os.urandom(32).hex()
     default_params = {
         'time_zone': 'UTC',
         'timestamp': datetime.utcnow().timestamp(),
         'language': 'en',
     }
-    message = {
-        'challenge': challenge,
+
+    default_context = {
+        'userId': user_id,
+        'orgId': org_id,
+        'developerDeviceId': device_id,
+    }
+
+    req = {
+        'challenge': os.urandom(32).hex(),
         'text': query,
-        'context': {
-            'userId': user_id,
-            'orgId': org_id,
-            'developerDeviceId': device_id,
-        },
+        'context': default_context,
         'params': default_params,
         'frame': {},
         'history': [],
     }
 
     while True:
-        req = message
         if encrypted:
-            req = prepare_payload(json.dumps(message), public_key, secret)
+            req = prepare_payload(json.dumps(req), public_key, secret)
 
         resp = requests.post(url, json=req)
 
@@ -123,17 +124,16 @@ def invoke_skill(
             typer.secho('Unable to deserialize JSON response')
             json_resp = {}
 
-        if not json_resp.get('challenge') == challenge:
+        if not json_resp.get('challenge') == req['challenge']:
             typer.secho('Skill did not respond with expected challenge value', fg=typer.colors.RED, err=True)
 
         typer.secho(pformat(json_resp, indent=2, width=120), fg=typer.colors.GREEN)
         query = typer.prompt('>>', prompt_suffix=' ')
 
-        challenge = os.urandom(32).hex()
-        message = {
-            'challenge': challenge,
+        req = {
+            'challenge': os.urandom(32).hex(),
             'text': query,
-            'context': json_resp.get('context', {}),
+            'context': default_context,
             'params': json_resp.get('params', default_params),
             'frame': json_resp.get('frame', []),
             'history': json_resp.get('history', []),
