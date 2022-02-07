@@ -91,14 +91,17 @@ def invoke_skill(
         'timestamp': datetime.utcnow().timestamp(),
         'language': 'en',
     }
+
+    default_context = {
+        'userId': user_id,
+        'orgId': org_id,
+        'developerDeviceId': device_id,
+    }
+
     message = {
         'challenge': challenge,
         'text': query,
-        'context': {
-            'userId': user_id,
-            'orgId': org_id,
-            'developerDeviceId': device_id,
-        },
+        'context': default_context,
         'params': default_params,
         'frame': {},
         'history': [],
@@ -133,7 +136,7 @@ def invoke_skill(
         message = {
             'challenge': challenge,
             'text': query,
-            'context': json_resp.get('context', {}),
+            'context': default_context,
             'params': json_resp.get('params', default_params),
             'frame': json_resp.get('frame', []),
             'history': json_resp.get('history', []),
