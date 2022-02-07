@@ -98,7 +98,7 @@ def invoke_skill(
     }
 
     req = {
-        'challenge': (os.urandom(32).hex()),
+        'challenge': os.urandom(32).hex(),
         'text': query,
         'context': default_context,
         'params': default_params,
