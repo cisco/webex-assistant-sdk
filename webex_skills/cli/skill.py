@@ -97,8 +97,9 @@ def invoke_skill(
         'developerDeviceId': device_id,
     }
 
+    challenge = os.urandom(32).hex()
     req = {
-        'challenge': os.urandom(32).hex(),
+        'challenge': challenge,
         'text': query,
         'context': default_context,
         'params': default_params,
@@ -124,14 +125,15 @@ def invoke_skill(
             typer.secho('Unable to deserialize JSON response')
             json_resp = {}
 
-        if not json_resp.get('challenge') == req['challenge']:
+        if not json_resp.get('challenge') == challenge:
             typer.secho('Skill did not respond with expected challenge value', fg=typer.colors.RED, err=True)
 
         typer.secho(pformat(json_resp, indent=2, width=120), fg=typer.colors.GREEN)
         query = typer.prompt('>>', prompt_suffix=' ')
 
+        challenge = os.urandom(32).hex()
         req = {
-            'challenge': os.urandom(32).hex(),
+            'challenge': challenge,
             'text': query,
             'context': default_context,
             'params': json_resp.get('params', default_params),
