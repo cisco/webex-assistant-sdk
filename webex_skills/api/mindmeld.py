@@ -42,9 +42,10 @@ class MindmeldAPI(BaseAPI):
         response = SkillInvokeResponse(**new_state.dict(), challenge=request.challenge)
         return response
 
-    def handle(self, *, domain=None, intent=None, entities=None, default=False, targeted_only=False):
+    def handle(self, *, name=None, domain=None, intent=None, entities=None, default=False, targeted_only=False):
         """Wraps a function to behave as a dialogue handler"""
         return self.dialogue_manager.add_rule(
+            name=name,
             domain=domain,
             intent=intent,
             entities=entities,
