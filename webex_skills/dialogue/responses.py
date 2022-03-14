@@ -69,7 +69,7 @@ class ClearWebView(ActionDirective):
 class UIHint(ViewDirective):
     name: str = 'ui-hint'
 
-    def __init__(self, texts, prompt: str = None):
+    def __init__(self, texts, prompt: Optional[str] = None):
         super().__init__(payload={'text': texts, 'prompt': prompt})
 
 
