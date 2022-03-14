@@ -70,14 +70,14 @@ class UIHint(ViewDirective):
     name: str = 'ui-hint'
 
     def __init__(self, texts, prompt: str = None, display_immediately: bool = False):
-        super().__init__(payload={'texts': texts, 'prompt': prompt, 'display_immediately': display_immediately})
+        super().__init__(payload={'text': texts, 'prompt': prompt, 'display_immediately': display_immediately})
 
 
 class AsrHint(ActionDirective):
     name: str = 'asr-hint'
 
     def __init__(self, texts):
-        super().__init__(payload={'texts': texts})
+        super().__init__(payload={'text': texts})
 
 
 class AssistantEvent(ActionDirective):
