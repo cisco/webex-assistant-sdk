@@ -69,8 +69,8 @@ class ClearWebView(ActionDirective):
 class UIHint(ViewDirective):
     name: str = 'ui-hint'
 
-    def __init__(self, texts, prompt: str = None, display_immediately: bool = False):
-        super().__init__(payload={'text': texts, 'prompt': prompt, 'display_immediately': display_immediately})
+    def __init__(self, texts, prompt: str = None):
+        super().__init__(payload={'text': texts, 'prompt': prompt})
 
 
 class AsrHint(ActionDirective):
