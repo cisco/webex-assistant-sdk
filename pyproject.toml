@@ -47,7 +47,7 @@ flake8 = "^4.0.1"
 mindmeld = ["mindmeld"]
 
 [tool.poetry.scripts]
-webex-skills = 'webex_skills.cli:main'
+webex-skills = 'webex_skills.cli'
 
 [tool.autopep8]
 max_line_length = 120

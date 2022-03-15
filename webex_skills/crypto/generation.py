@@ -31,5 +31,5 @@ def generate_keys(priv_path: Path, pub_path: Path, encryption: Optional[Encrypti
     )
 
 
-def generate_secret():
+def generate_secret() -> str:
     return secrets.token_urlsafe(16)

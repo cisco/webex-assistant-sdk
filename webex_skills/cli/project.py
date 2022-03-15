@@ -10,7 +10,7 @@ from ..crypto import generate_keys
 from .config import CONFIG_DIR, CONFIG_FILE, get_remotes, get_skill_config
 from .helpers import create_nlp
 
-app = typer.Typer(name='project')
+app = typer.Typer()
 
 
 @app.command(name='init')
