@@ -48,7 +48,7 @@ def test_ui_hint():
 def test_ui_hint_no_prompt():
     hints = ['hint1', 'hint2']
 
-    expected = {'text': hints, 'prompt': None}
+    expected = {'text': hints}
     assert_format(responses.UIHint(texts=hints), expected)
 
 

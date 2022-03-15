@@ -70,7 +70,12 @@ class UIHint(ViewDirective):
     name: str = 'ui-hint'
 
     def __init__(self, texts, prompt: Optional[str] = None):
-        super().__init__(payload={'text': texts, 'prompt': prompt})
+        payload = {'text': texts}
+
+        if prompt:
+            payload['prompt'] = prompt
+
+        super().__init__(payload=payload)
 
 
 class AsrHint(ActionDirective):
