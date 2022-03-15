@@ -1,16 +1,16 @@
 [tool.poetry]
 name = "webex-skills"
-version = "2.0.14"
+version = "3.0.0"
 homepage = "https://github.com/cisco/webex-assistant-sdk"
-description = "An SDK for skills for the Webex Assistant."
+description = "An SDK for creating, managing, and testing Webex Assistant Skills"
 readme = "README.md"
 authors = [
-    "James Snow <jasnow@cisco.com>",
-    "Juan Rodriguez <juanrdz@cisco.com>",
+    "Brady Lenz <brlenz@cisco.com>",
     "Christian Mata <cmata@cisco.com>",
-    "Brady Lenz <brlenz@cisco.com>"
+    "Juan Rodriguez <juanrdz@cisco.com>",
+    "James Snow <jasnow@cisco.com>",
 ]
-license = "MIT"
+license = "Apache-2.0"
 keywords = ['webex', 'webex-assistant', 'webex-teams']
 classifiers = [
     'Development Status :: 5 - Production/Stable',

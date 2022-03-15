@@ -1,5 +1,6 @@
-from .middlewares import DecryptionMiddleware
-from .mindmeld import MindmeldAPI
-from .simple import SimpleAPI
+from webex_skills.api.middlewares import DecryptionMiddleware
+from webex_skills.api.mindmeld import MindmeldAPI
+from webex_skills.api.simple import SimpleAPI
+
 
 __all__ = ['DecryptionMiddleware', 'MindmeldAPI', 'SimpleAPI']
