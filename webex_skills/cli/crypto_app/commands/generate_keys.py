@@ -5,10 +5,10 @@ from cryptography.hazmat.primitives import serialization
 import typer
 
 from webex_skills import crypto
-from webex_skills.cli.crypto.app import crypto_app
+from webex_skills.cli.crypto_app.app import app
 
 
-@crypto_app.command()
+@app.command()
 def generate_keys(
     filepath: Optional[Path] = typer.Argument(
         None, help="The path where to save the keys created. By default, they get created in the current directory."

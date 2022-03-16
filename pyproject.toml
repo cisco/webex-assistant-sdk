@@ -30,6 +30,7 @@ typer = "^0.4.0"
 pydantic = {extras = ["dotenv"], version = "^1.8.2"}
 fastapi = "^0.68.1"
 uvicorn = "^0.15.0"
+dependency-injector = "^4.38.0"
 
 [tool.poetry.dev-dependencies]
 black = '^21.9b0'

@@ -3,12 +3,12 @@ from typing import Optional
 
 import typer
 
-from webex_skills.cli.nlp.app import nlp_app
+from webex_skills.cli.nlp_app.app import app
 from webex_skills.cli.helpers import create_nlp
 from webex_skills.cli.config import get_app_dir
 
 
-@nlp_app.command()
+@app.command()
 def process(name: Optional[str] = typer.Argument(None, help="The name of the skill to send the query to.")):
     """Run a query through NLP processing"""
     app_dir = '.'

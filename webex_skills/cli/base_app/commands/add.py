@@ -1,27 +1,23 @@
 from pathlib import Path
 
+from dependency_injector.wiring import Provide
 import typer
 
-from webex_skills.cli.base.app import base_app
-from webex_skills.cli.config_models import CliConfig, SkillConfig
+from webex_skills.cli.base_app.app import app
+from webex_skills.cli.base_app.helpers import validate_skill_name_not_exists
+from webex_skills.cli.models import SkillConfig
+from webex_skills.cli.services import CliConfigService
+from webex_skills.cli.types import Types
 
 
-def validate_skill_name(ctx: typer.Context, skill_name: str):
-    if ctx.resilient_parsing:
-        return
+cli_config_service: CliConfigService = Provide[Types.CLI_CONFIG_SERVICE]
 
-    cli_config = CliConfig.from_file()
-    if skill_name in cli_config.skill_configs.keys():
-        raise typer.BadParameter(f'A skill with name "{skill_name}" already exists')
-
-    return skill_name
-
-@base_app.command()
+@app.command()
 def add(
     name: str = typer.Argument(
         ...,
+        callback=validate_skill_name_not_exists,
         help='The name of the skill',
-        callback=validate_skill_name
     ),
     url: str = typer.Option(
         'http://localhost:8080/parse',
@@ -47,14 +43,13 @@ def add(
     ),
 ):
     '''Add the configuration for a skill'''
-    cli_config = CliConfig.from_file()
-
     skill_config = SkillConfig(
         name=name,
         url=url,
         secret=secret,
         public_key=public_key_path.read_text(),
     )
-    cli_config.set_skill_config(skill_config)
 
-    cli_config.save()
+    cli_config_service.set_skill_config(skill_config)
+
+    cli_config_service.save_config()

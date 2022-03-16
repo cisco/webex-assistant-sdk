@@ -1,4 +1,4 @@
-from webex_skills.cli.app import base_app as app
+from webex_skills.cli.app import app
 
 
 __all__ = ['app']
