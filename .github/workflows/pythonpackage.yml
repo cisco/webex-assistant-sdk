@@ -5,9 +5,9 @@ name: Python package
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [ main ]
   pull_request:
-    branches: [ master, main ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -17,20 +17,18 @@ jobs:
       matrix:
         python-version:
           - 3.7
-        mindmeld-version:
-          - 4.3.5rc11
+          - 3.8
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies (MindMeld ${{ matrix.mindmeld-version }})
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install poetry
-        poetry install
-        poetry run pip install mindmeld==${{ matrix.mindmeld-version }}
+        poetry install -E mindmeld
     - name: Lintme
       run: |
         ./lintme

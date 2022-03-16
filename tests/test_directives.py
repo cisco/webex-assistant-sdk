@@ -40,11 +40,17 @@ def test_clear_webview():
 def test_ui_hint():
     hints = ['hint1', 'hint2']
     prompt = 'try'
-    display_immediately = False
 
-    expected = {'texts': hints, 'prompt': prompt, 'display_immediately': display_immediately}
-    assert_format(responses.UIHint(texts=hints, prompt=prompt, display_immediately=display_immediately), expected)
+    expected = {'text': hints, 'prompt': prompt}
+    assert_format(responses.UIHint(texts=hints, prompt=prompt), expected)
+
+
+def test_ui_hint_no_prompt():
+    hints = ['hint1', 'hint2']
+
+    expected = {'text': hints}
+    assert_format(responses.UIHint(texts=hints), expected)
 
 
 def test_asr_hint():
-    assert_format(responses.AsrHint(texts=['hint1', 'hint2']), {'texts': ['hint1', 'hint2']})
+    assert_format(responses.AsrHint(texts=['hint1', 'hint2']), {'text': ['hint1', 'hint2']})
