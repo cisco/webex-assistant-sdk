@@ -1,5 +1,5 @@
 import pytest
-from webex_skills.dialogue.manager import SimpleDialogueManager
+from webex_assistant_skills_sdk.dialogue.manager import SimpleDialogueManager
 
 pytestmark = pytest.mark.asyncio
 

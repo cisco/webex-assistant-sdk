@@ -31,6 +31,7 @@ pydantic = {extras = ["dotenv"], version = "^1.8.2"}
 fastapi = "^0.68.1"
 uvicorn = "^0.15.0"
 dependency-injector = "^4.38.0"
+tqdm = "^4.63.0"
 
 [tool.poetry.dev-dependencies]
 black = '^21.9b0'
@@ -48,7 +49,7 @@ flake8 = "^4.0.1"
 mindmeld = ["mindmeld"]
 
 [tool.poetry.scripts]
-webex-assistant-skills = 'webex_skills.cli'
+webex-assistant-skills = 'webex_assistant_skills_sdk.cli:app'
 
 [tool.autopep8]
 max_line_length = 120

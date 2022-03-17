@@ -1,8 +1,8 @@
 import re
 
 import pytest
-from webex_skills.dialogue.rules import SimpleDialogueStateRule
-from webex_skills.models.mindmeld import DialogueState
+from webex_assistant_skills_sdk.dialogue.rules import SimpleDialogueStateRule
+from webex_assistant_skills_sdk.models.mindmeld import DialogueState
 
 pytestmark = pytest.mark.asyncio
 
