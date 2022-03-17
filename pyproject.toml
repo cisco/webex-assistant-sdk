@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "webex-skills"
+name = "webex-assistant-skills-sdk"
 version = "3.0.0"
 homepage = "https://github.com/cisco/webex-assistant-sdk"
 description = "An SDK for creating, managing, and testing Webex Assistant Skills"
@@ -48,7 +48,7 @@ flake8 = "^4.0.1"
 mindmeld = ["mindmeld"]
 
 [tool.poetry.scripts]
-webex-skills = 'webex_skills.cli'
+webex-assistant-skills = 'webex_skills.cli'
 
 [tool.autopep8]
 max_line_length = 120
