@@ -1,4 +1,4 @@
 import typer
 
 
-app = typer.Typer(name='nlp')
+app = typer.Typer(name='crypto')

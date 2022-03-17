@@ -5,6 +5,6 @@ from webex_skills.cli.crypto_app.app import app
 
 
 @app.command()
-def generate_secret():
+def generate_secret() -> None:
     """Generate a secret token for signing requests"""
     typer.echo(crypto.generate_secret())
