@@ -4,7 +4,7 @@ from typing import Optional
 import typer
 
 from webex_assistant_skills_sdk.cli.nlp_app.app import app
-from webex_assistant_skills_sdk.cli.helpers import init_mindmeld_nlp
+from webex_assistant_skills_sdk.cli.shared.helpers import init_mindmeld_nlp
 
 
 @app.command()

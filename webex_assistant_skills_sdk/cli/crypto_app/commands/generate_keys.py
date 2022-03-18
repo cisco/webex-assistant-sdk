@@ -1,11 +1,14 @@
 from pathlib import Path
 
-from cryptography.hazmat.primitives import serialization
+from dependency_injector.wiring import Provide
 import typer
 
-from webex_assistant_skills_sdk import crypto
 from webex_assistant_skills_sdk.cli.crypto_app.app import app
+from webex_assistant_skills_sdk.cli.shared.services import CliCryptoService
+from webex_assistant_skills_sdk.cli.types import Types
 
+
+__crypto_service: CliCryptoService = Provide[Types.CLI_CRYPTO_SERVICE]
 
 @app.command()
 def generate_keys(
@@ -26,8 +29,6 @@ def generate_keys(
     ),
 ) -> None:
     """Generate an RSA keypair"""
-    encryption = serialization.NoEncryption()
-
     private_key_name = f'{file_name}.pem'
     private_key_path = directory_path / private_key_name
 
@@ -46,7 +47,6 @@ def generate_keys(
 
     typer.echo('🔐 Generating new RSA keypair...')
 
-    ## TODO: replace with service call
-    crypto.generate_keys(private_key_path, public_key_path, encryption=encryption)
+    __crypto_service.generate_keys(private_key_path, public_key_path)
 
     typer.echo(f'Done! {private_key_name} and {public_key_name} written to {directory_path}')

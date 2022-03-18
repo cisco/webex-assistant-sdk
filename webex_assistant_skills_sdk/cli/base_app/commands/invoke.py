@@ -6,7 +6,7 @@ import typer
 
 from webex_assistant_skills_sdk.cli.base_app.app import app
 from webex_assistant_skills_sdk.cli.base_app.helpers import autocomplete_skill_name, validate_skill_name_exists
-from webex_assistant_skills_sdk.cli.services import CliConfigService
+from webex_assistant_skills_sdk.cli.shared.services import CliConfigService
 from webex_assistant_skills_sdk.cli.types import Types
 
 

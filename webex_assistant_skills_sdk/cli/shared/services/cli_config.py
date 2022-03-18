@@ -4,7 +4,7 @@ from typing import List, Optional
 
 import typer
 
-from webex_assistant_skills_sdk.cli.models import CliConfig, SkillConfig
+from webex_assistant_skills_sdk.cli.shared.models import CliConfig, SkillConfig
 
 
 class CliConfigService():

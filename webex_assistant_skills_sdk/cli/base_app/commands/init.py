@@ -1,11 +1,14 @@
 from pathlib import Path
+from typing import Optional
 
 from dependency_injector.wiring import Provide
 import typer
 
 from webex_assistant_skills_sdk.cli.base_app.app import app
 from webex_assistant_skills_sdk.cli.base_app.helpers import validate_skill_name_not_exists
-from webex_assistant_skills_sdk.cli.shared.models import SkillConfig
+from webex_assistant_skills_sdk.cli.crypto_app.commands.generate_secret import generate_secret
+from webex_assistant_skills_sdk.cli.shared.models.cli_config import SkillConfig
+from webex_assistant_skills_sdk.cli.shared.models.template_types import TemplateTypes
 from webex_assistant_skills_sdk.cli.shared.services import CliConfigService
 from webex_assistant_skills_sdk.cli.types import Types
 
@@ -13,7 +16,7 @@ from webex_assistant_skills_sdk.cli.types import Types
 __cli_config_service: CliConfigService = Provide[Types.CLI_CONFIG_SERVICE]
 
 @app.command()
-def add(
+def init(
     skill_name: str = typer.Argument(
         ...,
         callback=validate_skill_name_not_exists,
@@ -25,24 +28,37 @@ def add(
         help='The URL of the skill',
     ),
     secret: str = typer.Option(
-        None,
+        generate_secret,
         envvar='SKILLS_SECRET',
         show_envvar=False,
         prompt=True,
         help='The skill secret',
     ),
-    public_key_path: Path = typer.Option(
-        Path.cwd() / 'id_rsa.pub',
-        '--key-path',
+    directory_path: Path = typer.Option(
+        Path.cwd(),
+        '--path',
         prompt=True,
         exists=True,
-        file_okay=True,
-        dir_okay=False,
+        file_okay=False,
+        dir_okay=True,
         readable=True,
+        writable=True,
         help='The path to the public key',
     ),
-):
-    '''Add the configuration for a skill'''
+    template_type: Optional[TemplateTypes] = typer.Option(
+        None,
+        '--template',
+        case_sensitive=False,
+        prompt=True,
+        help='',
+    )
+) -> None:
+    if template_type is not None:
+        # TODO: template generation
+        pass
+
+    public_key_path = directory_path / 'id_rsa.pub'
+
     skill_config = SkillConfig(
         name=skill_name,
         url=url,

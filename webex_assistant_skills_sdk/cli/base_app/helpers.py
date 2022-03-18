@@ -3,7 +3,7 @@ from typing import Iterator, Optional
 from dependency_injector.wiring import Provide
 import typer
 
-from webex_assistant_skills_sdk.cli.services import CliConfigService
+from webex_assistant_skills_sdk.cli.shared.services import CliConfigService
 from webex_assistant_skills_sdk.cli.types import Types
 
 
