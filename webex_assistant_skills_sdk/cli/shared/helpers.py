@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from mindmeld.components.nlp import NaturalLanguageProcessor
 
 
-def init_mindmeld_nlp() -> NaturalLanguageProcessor:
+def init_mindmeld_nlp(app_path: str = '.') -> NaturalLanguageProcessor:
     try:
         with suppress_warnings():
             from mindmeld import configure_logs
@@ -23,6 +23,4 @@ def init_mindmeld_nlp() -> NaturalLanguageProcessor:
     configure_logs(level=logging.ERROR)
     progress_bar = tqdm(total=0, desc="NLP progress")
 
-    # TODO: get app path?
-
-    return NaturalLanguageProcessor(app_path='.', progress_bar=progress_bar)
+    return NaturalLanguageProcessor(app_path=app_path, progress_bar=progress_bar)

@@ -1,5 +1,5 @@
+from pathlib import Path
 from pprint import pformat
-from typing import Optional
 
 import typer
 
@@ -8,14 +8,27 @@ from webex_assistant_skills_sdk.cli.shared.helpers import init_mindmeld_nlp
 
 
 @app.command()
-def process(name: Optional[str] = typer.Argument(None, help="The name of the skill to send the query to.")):
+def process(
+    query: str = typer.Option(
+        ...,
+        help='',
+    ),
+    app_path: Path = typer.Option(
+        Path.cwd(),
+        '--path',
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        readable=True,
+        writable=True,
+        help='',
+    ),
+):
     """Run a query through NLP processing"""
-    nlp = init_mindmeld_nlp()
+    nlp = init_mindmeld_nlp(str(app_path))
     nlp.load()
 
-    typer.echo('Enter a query below (Ctl+C to exit)')
-    query = typer.prompt('>>', prompt_suffix=' ')
-    while True:
-        output = nlp.process(query)
-        typer.secho(pformat(output, indent=2, width=120), fg=typer.colors.GREEN)
-        query = typer.prompt('>>', prompt_suffix=' ')
+    result = nlp.process(query)
+
+    typer.echo(pformat(result, indent=2, width=120))
+ 

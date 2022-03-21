@@ -1,7 +1,6 @@
 from dependency_injector.wiring import Provide
 import typer
 
-from webex_assistant_skills_sdk import crypto
 from webex_assistant_skills_sdk.cli.crypto_app.app import app
 from webex_assistant_skills_sdk.cli.shared.services import CliCryptoService
 from webex_assistant_skills_sdk.cli.types import Types
