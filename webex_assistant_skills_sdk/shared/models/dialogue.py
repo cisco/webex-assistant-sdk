@@ -1,9 +1,8 @@
-
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, constr
 
-from webex_assistant_skills_sdk.shared.models import Directive
+from webex_assistant_skills_sdk.shared.models.directives import Directive
 
 
 class DialogueParams(BaseModel):

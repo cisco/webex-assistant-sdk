@@ -4,11 +4,11 @@ from dependency_injector.wiring import Provide
 import typer
 
 from webex_assistant_skills_sdk.cli.crypto_app.app import app
-from webex_assistant_skills_sdk.cli.shared.services import CliCryptoService
+from webex_assistant_skills_sdk.cli.shared.services import CryptoGenService
 from webex_assistant_skills_sdk.cli.types import Types
 
 
-__crypto_service: CliCryptoService = Provide[Types.CLI_CRYPTO_SERVICE]
+__crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_GEN_SERVICE]
 
 @app.command()
 def generate_keys(
@@ -47,6 +47,6 @@ def generate_keys(
 
     typer.echo('🔐 Generating new RSA keypair...')
 
-    __crypto_service.generate_keys(private_key_path, public_key_path)
+    __crypto_gen_service.generate_keys(private_key_path, public_key_path)
 
     typer.echo(f'Done! {private_key_name} and {public_key_name} written to {directory_path}')

@@ -7,7 +7,7 @@ import typer
 from webex_assistant_skills_sdk.cli.shared.models import CliConfig, SkillConfig
 
 
-class CliConfigService():
+class ConfigService():
     __config: CliConfig
 
     def __init__(self) -> None:

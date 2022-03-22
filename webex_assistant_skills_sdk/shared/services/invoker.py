@@ -1,2 +1,5 @@
+from dependency_injector.wiring import Provide
+
+
 class Invoker():
-    pass
+    crypto_service_: Provide[Types.CRYPTO_SERVICE]

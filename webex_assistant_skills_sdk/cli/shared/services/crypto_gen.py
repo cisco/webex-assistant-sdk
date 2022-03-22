@@ -8,7 +8,7 @@ import typer
 from webex_assistant_skills_sdk.shared.services import CryptoService
 
 
-class CliCryptoService(CryptoService):
+class CryptoGenService(CryptoService):
     def generate_keys(
         self,
         directory_path: Path = Path.cwd(),

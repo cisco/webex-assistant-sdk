@@ -1,11 +1,11 @@
 from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
+import warnings
 
 from tqdm import tqdm
 import typer
 
-from webex_assistant_skills_sdk.supress_warnings import suppress_warnings
 
 if TYPE_CHECKING:
     from mindmeld.components.nlp import NaturalLanguageProcessor
@@ -13,7 +13,8 @@ if TYPE_CHECKING:
 
 def init_mindmeld_nlp(app_path: str = '.') -> NaturalLanguageProcessor:
     try:
-        with suppress_warnings():
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
             from mindmeld import configure_logs
             from mindmeld.components.nlp import NaturalLanguageProcessor
     except ImportError:

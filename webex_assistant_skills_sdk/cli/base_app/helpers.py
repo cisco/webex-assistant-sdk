@@ -3,11 +3,11 @@ from typing import Iterator, Optional
 from dependency_injector.wiring import Provide
 import typer
 
-from webex_assistant_skills_sdk.cli.shared.services import CliConfigService
+from webex_assistant_skills_sdk.cli.shared.services import ConfigService
 from webex_assistant_skills_sdk.cli.types import Types
 
 
-__cli_config_service: CliConfigService = Provide[Types.CLI_CONFIG_SERVICE]
+__cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
 
 def validate_skill_name_not_exists(ctx: typer.Context, skill_name: str) -> Optional[str]:
     if ctx.resilient_parsing:

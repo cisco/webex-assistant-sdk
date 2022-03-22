@@ -1,8 +1,8 @@
-from webex_assistant_skills_sdk.cli.shared.services.cli_config import CliConfigService
-from webex_assistant_skills_sdk.cli.shared.services.cli_crypto import CliCryptoService
+from webex_assistant_skills_sdk.cli.shared.services.config import ConfigService
+from webex_assistant_skills_sdk.cli.shared.services.crypto_gen import CryptoGenService
 
 
 __all__ = [
-    'CliConfigService',
-    'CliCryptoService',
+    'ConfigService',
+    'CryptoGenService',
 ]
