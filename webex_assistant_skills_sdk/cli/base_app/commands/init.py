@@ -7,7 +7,7 @@ import typer
 from webex_assistant_skills_sdk.cli.base_app.app import app
 from webex_assistant_skills_sdk.cli.base_app.helpers import validate_skill_name_not_exists
 from webex_assistant_skills_sdk.cli.crypto_app.commands.generate_secret import generate_secret
-from webex_assistant_skills_sdk.cli.shared.models.cli_config import SkillConfig
+from webex_assistant_skills_sdk.cli.shared.models.config import SkillConfig
 from webex_assistant_skills_sdk.cli.shared.models.template_types import TemplateTypes
 from webex_assistant_skills_sdk.cli.shared.services import ConfigService
 from webex_assistant_skills_sdk.cli.types import Types
