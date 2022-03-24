@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, constr
 
 from webex_assistant_skills_sdk.shared.models.context import DeviceContext
-from webex_assistant_skills_sdk.shared.models.directives import Directive
+from webex_assistant_skills_sdk.shared.models.base_directive import Directive
 
 
 class DialogueParams(BaseModel):
