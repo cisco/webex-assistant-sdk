@@ -28,7 +28,7 @@ class DialogueTurn(BaseModel):
     params: DialogueParams
 
 class Dialogue(BaseModel):
-    turns: List[DialogueTurn] = Field(..., exclude={'history'})
+    turns: List[DialogueTurn] = []
     
     def add_turn(self, turn: DialogueTurn):
         self.turns.append(turn)
