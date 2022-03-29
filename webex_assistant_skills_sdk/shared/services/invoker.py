@@ -37,8 +37,8 @@ class Invoker():
         url: str,
         device_context: DeviceContext,
         use_encryption: bool,
-        public_key: Optional[str],
-        secret: Optional[str],
+        public_key: Optional[str] = None,
+        secret: Optional[str] = None,
     ) -> None:
         self.url = url
         self.device_context = device_context
