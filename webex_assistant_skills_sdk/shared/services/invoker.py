@@ -63,7 +63,7 @@ class Invoker():
             context=self.device_context,
             params=params,
             frame=dialogue.get_last_frame(),
-            history=dialogue.get_history,
+            history=dialogue.get_history(),
         )
 
         request_json = request.json()
