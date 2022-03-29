@@ -21,7 +21,7 @@ class DialogueParams(BaseModel):
 class DialogueTurn(BaseModel):
     challenge: str
     query_text: str
-    context: DeviceContext
+    context: Optional[DeviceContext] = None
     directives: List[Directive]
     frame: Dict[str, Any]
     # history: List[DialogueTurn]

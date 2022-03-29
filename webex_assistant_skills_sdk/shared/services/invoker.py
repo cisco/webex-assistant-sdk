@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+import json
 import os
 from typing import Any, Dict, List, Optional
 
@@ -68,13 +69,13 @@ class Invoker():
         request_json = request.json()
 
         if self.use_encryption:
-            request_json = self.__crypto_service.prepare_payload(
+            request_json = json.dumps(self.__crypto_service.prepare_payload(
                 request_json,
                 self.public_key,
                 self.secret,
-            )
+            ))
 
-        response = httpx.post(self.url, json=request_json)
+        response = httpx.post(self.url, data=request_json)
 
         response.raise_for_status()
 
