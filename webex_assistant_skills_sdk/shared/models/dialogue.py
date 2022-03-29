@@ -1,7 +1,7 @@
-from __future__ import annotations
+# from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, constr
+from pydantic import BaseModel, Field, constr
 
 from webex_assistant_skills_sdk.shared.models.context import DeviceContext
 from webex_assistant_skills_sdk.shared.models.base_directive import Directive
@@ -24,11 +24,11 @@ class DialogueTurn(BaseModel):
     context: DeviceContext
     directives: List[Directive]
     frame: Dict[str, Any]
-    history: List[DialogueTurn]
+    # history: List[DialogueTurn]
     params: DialogueParams
 
 class Dialogue(BaseModel):
-    turns: List[DialogueTurn]
+    turns: List[DialogueTurn] = Field(..., exclude={'history'})
     
     def add_turn(self, turn: DialogueTurn):
         self.turns.append(turn)
