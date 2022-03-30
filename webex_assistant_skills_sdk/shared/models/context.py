@@ -2,6 +2,6 @@ from pydantic import BaseModel, Field
 
 
 class DeviceContext(BaseModel):
-    user_id: str = Field(..., alias='userId')
-    org_id: str = Field(..., alias='orgId')
-    device_developer_id: str = Field(..., alias='deviceDeveloperId')
+    userId: str = Field(..., alias='user_id')
+    orgId: str = Field(..., alias='org_id')
+    deviceDeveloperId: str = Field(..., alias='device_developer_id')

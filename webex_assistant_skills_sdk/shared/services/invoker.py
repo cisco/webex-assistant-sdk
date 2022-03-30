@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-import json
 import os
 from typing import Any, Dict, List, Optional
 
@@ -11,6 +10,7 @@ from pydantic import BaseModel
 
 from webex_assistant_skills_sdk.shared.models import DeviceContext, Dialogue
 from webex_assistant_skills_sdk.shared.models.dialogue import DialogueParams, DialogueTurn
+from webex_assistant_skills_sdk.shared.models.invoke import InvokeResponse
 from webex_assistant_skills_sdk.shared.services import CryptoService
 from webex_assistant_skills_sdk.types import Types
 
@@ -52,10 +52,10 @@ class Invoker():
         query: str,
         params: Optional[DialogueParams] = None,
     ) -> Invoker:
-        challenge = self.__generate_challenge_string()
-
         if params is None:
             params = self.__get_default_dialogue_params()
+
+        challenge = self.__generate_challenge_string()
 
         request = InvokeRequest(
             challenge=challenge,
@@ -69,28 +69,28 @@ class Invoker():
         request_json = request.json()
 
         if self.use_encryption:
-            request_json = json.dumps(self.__crypto_service.prepare_payload(
+            request_json = self.__crypto_service.prepare_payload(
                 request_json,
                 self.public_key,
                 self.secret,
-            ))
+            ).json()
 
         response = httpx.post(self.url, data=request_json)
 
         response.raise_for_status()
 
-        dialogue_turn = DialogueTurn(
-            query_text=query,
-            **response.json(),
-        )
+        invoke_response = InvokeResponse(**response.json)
 
-        if dialogue_turn.challenge != challenge:
+        if invoke_response.challenge != challenge:
             # TODO: raise challenge exception
             raise Exception()
 
-        dialogue.add_turn(dialogue_turn)
+        dialogue.add_turn(DialogueTurn(
+            text=query,
+            **invoke_response,
+        ))
 
-        return self
+        return self # allow chaining
 
     def __generate_challenge_string(self) -> str:
         return os.urandom(32).hex()

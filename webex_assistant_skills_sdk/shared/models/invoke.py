@@ -1,16 +1,16 @@
-from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, constr
 
-from pydantic import BaseModel
+from webex_assistant_skills_sdk.shared.models.dialogue import DialogueEventBase, DialogueTurn
 
 
-class InvokePayloadEncrypted(BaseModel):
+class EncryptedInvokeRequest(BaseModel):
     signature: str
-    message: str
+    token: str
 
 
-class InvokeResponse(BaseModel):
-    challenge: str
-    directives: List[Dict[Any, Any]]
-    frame: Optional[Dict[Any, Any]] = []
-    params: Optional[Params] = {}
-    history: Optional[List[Dict[Any, Any]]] = []
+class InvokeRequest(DialogueTurn):
+    challenge: constr(min_length=64, max_length=64)
+
+
+class InvokeResponse(DialogueEventBase):
+    challenge: constr(min_length=64, max_length=64)

@@ -26,7 +26,7 @@ class DecryptionMiddleware:
 
         receiver = DecryptingReceiver(self.private_key, self.app, receive, send)
         response = receiver(scope, receive, send)
-        await response
+        await response 
 
 
 class DecryptingReceiver(BaseReceiver):
