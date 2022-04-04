@@ -3,6 +3,7 @@ from typing import Optional
 
 from dependency_injector.wiring import Provide
 from fastapi import FastAPI
+from starlette import status
 from starlette.middleware import Middleware
 from starlette.responses import JSONResponse
 
@@ -43,6 +44,7 @@ class BaseAPI(FastAPI):
 
 
     async def parse(self, _: InvokeRequest):
+        '''Override in subclass'''
         pass
 
     # This essentially only works because there's no body and thus no call to receive()
@@ -56,7 +58,7 @@ class BaseAPI(FastAPI):
                 {
                     'message': 'Failed to verify signature'
                 },
-                status_code=400,
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
             
         try:
@@ -66,7 +68,7 @@ class BaseAPI(FastAPI):
                 {
                     'message': 'Failed to decrypt message'
                 },
-                status_code=400,
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
 
         return {
