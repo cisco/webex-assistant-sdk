@@ -1,10 +1,3 @@
-from functools import total_ordering
-import re
-from typing import Optional
-
-from ..models.mindmeld import ProcessedQuery
-
-
 @total_ordering
 class MMDialogueStateRule:
     def __init__(self, domain, intent, entities, dialogue_state, targeted_only):
@@ -50,14 +43,4 @@ class MMDialogueStateRule:
         if self.entities:
             value += len(self.entities)
         return value
-
-
-class SimpleDialogueStateRule:
-    def __init__(self, regex: Optional[re.Pattern], dialogue_state: str):
-        self.regex = regex
-        self.dialogue_state = dialogue_state
-
-    def match(self, text) -> Optional[re.Match]:
-        if not self.regex:
-            return None
-        return self.regex.match(text)
+    
