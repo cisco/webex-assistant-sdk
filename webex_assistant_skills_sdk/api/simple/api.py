@@ -3,7 +3,7 @@ from typing import Any, Optional
 from ..dialogue.manager import SimpleDialogueManager
 from ..models.http import SkillInvokeRequest, SkillInvokeResponse
 from ..models.mindmeld import DialogueState
-from .base import BaseAPI
+from .api import BaseAPI
 
 
 class SimpleAPI(BaseAPI):

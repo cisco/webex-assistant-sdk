@@ -4,7 +4,7 @@ from ..dialogue.manager import MMDialogueManager
 from ..models.http import SkillInvokeRequest, SkillInvokeResponse
 from ..models.mindmeld import DialogueState, ProcessedQuery
 from ..supress_warnings import suppress_warnings
-from .base import BaseAPI
+from .api import BaseAPI
 
 
 class MindmeldAPI(BaseAPI):
