@@ -20,15 +20,19 @@ class DialogueParams(BaseModel):
 
 
 class DialogueEventBase(BaseModel):
-    directives: List[Directive]
+    directives: Optional[List[Directive]]
     frame: Dict[str, Any] = []
     params: DialogueParams = {}
     history: List[DialogueTurn] = []
 
-
 class DialogueTurn(DialogueEventBase):
     text: str
     context: Optional[DeviceContext] = None
+
+    def update_history(self, last_turn: DialogueTurn):
+        self.history.append(DialogueTurn(
+            **last_turn.dict(exclude='history'),
+        ))
 
 
 class Dialogue(BaseModel):
@@ -37,14 +41,19 @@ class Dialogue(BaseModel):
     def add_turn(self, turn: DialogueTurn):
         self.turns.append(turn)
 
-    def get_history(self) -> List[DialogueTurn]:
-        return self.turns
-
     def get_last_turn(self) -> Optional[DialogueTurn]:
         if len(self.turns) == 0:
             return None
 
         return self.turns[-1]
+
+    def get_last_history(self) -> List[DialogueTurn]:
+        last_turn = self.get_last_turn()
+
+        if last_turn is None:
+            return []
+
+        return last_turn.history
 
     def get_last_frame(self) -> Dict[str, Any]:
         last_turn = self.get_last_turn()

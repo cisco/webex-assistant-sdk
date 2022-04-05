@@ -1,30 +1,68 @@
-class DialogueManager:
-    def __init__(self, rules: Optional[RuleMap] = None, default_handler: Optional[DialogueHandler] = None):
-        self.rules = rules or {}
-        self.default_handler = default_handler
+import inspect
+from typing import Any, Awaitable, Callable, Dict, Generic, Optional, TypeVar
 
-    def get_handler(self, query: DialogueQuery, target_state: Optional[str] = None) -> Optional[DialogueHandler]:
+from webex_assistant_skills_sdk.api.shared.dialogue.rules import DialogueRule
+from webex_assistant_skills_sdk.shared.models import DialogueTurn
+
+
+T = TypeVar('T')
+
+DialogueHandler = Callable[..., Awaitable[DialogueTurn]]
+RuleMap = Dict[DialogueRule[T], DialogueHandler]
+
+class DialogueManager(Generic[T]):
+    default_handler: Optional[DialogueHandler] = None
+    rules: RuleMap[T] = {}
+
+    def __init__(
+        self,
+        rules: Optional[RuleMap[T]] = None,
+        default_handler: Optional[DialogueHandler] = None
+    ) -> None:
+        if rules is not None:
+            self.rules = rules
+
+        if default_handler is not None:
+            self.default_handler = default_handler
+
+    def get_handler(
+        self,
+        query: T,
+        target_state: Optional[str] = None,
+        default_handler: Optional[Any] = None,
+    ) -> Optional[DialogueHandler]:
         for rule, handler in self.rules.items():
-            if target_state and rule.dialogue_state == target_state:
+            if target_state is not None and rule.dialogue_state == target_state:
                 return handler
-            if not target_state and rule.match(query):
-                return handler
-        return None
 
-    async def handle(self, query: DialogueQuery, current_state: DialogueState):
+            if target_state is None and rule.match(query):
+                return handler
+
+        return default_handler
+
+    async def handle(
+        self,
+        query: T,
+        turn: DialogueTurn,
+    ) -> DialogueTurn:
         # Iterate over our rules, taking the first match
-        handler = self.get_handler(query, current_state.params.target_dialogue_state)
-        handler = handler or self.default_handler
+        handler = self.get_handler(
+            query,
+            turn.params.target_dialogue_state,
+            self.default_handler,
+        )
 
-        if not handler:
-            # TODO: Different message  # pylint:disable=fixme
-            raise MissingHandler('No handler found')
+        if handler is None:
+            # TODO: custom exception
+            raise Exception('No handler found')
 
         # TODO: Use annotated types rather than length  # pylint:disable=fixme
         handler_args = inspect.signature(handler)
         if len(handler_args.parameters) == 2:
-            new_state = await handler(current_state, query)
+            next_turn = await handler(turn, query)
         else:
-            new_state = await handler(current_state)
-        new_state.update_history(old_state=current_state)
-        return new_state
+            next_turn = await handler(turn)
+
+        next_turn.update_history(last_turn=turn)
+
+        return next_turn

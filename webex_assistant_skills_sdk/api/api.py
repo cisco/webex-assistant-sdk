@@ -14,7 +14,6 @@ from webex_assistant_skills_sdk.shared.models import InvokeRequest, InvokeRespon
 from webex_assistant_skills_sdk.shared.services import Settings
 
 
-
 class BaseAPI(FastAPI):
     __crypto_service: CryptoService = Provide[Types.CRYPTO_SERVICE]
     __settings: Settings = Provide[Types.SETTINGS]
