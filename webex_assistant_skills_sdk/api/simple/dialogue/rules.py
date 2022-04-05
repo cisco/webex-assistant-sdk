@@ -1,9 +1,14 @@
-class SimpleDialogueStateRule:
-    def __init__(self, regex: Optional[re.Pattern], dialogue_state: str):
-        self.regex = regex
-        self.dialogue_state = dialogue_state
+import re
+from typing import Optional
 
-    def match(self, text) -> Optional[re.Match]:
-        if not self.regex:
-            return None
-        return self.regex.match(text)
+from webex_assistant_skills_sdk.api.shared.dialogue import DialogueRule
+
+
+class SimpleDialogueRule(DialogueRule[str]):
+    regex: Optional[re.Pattern] = None
+
+    def match(self, text: str) -> bool:
+        if self.regex is None:
+            return False
+
+        return bool(self.regex.match(text))

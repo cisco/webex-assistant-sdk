@@ -1,17 +1,20 @@
+from __future__ import annotations
+
+from functools import total_ordering
+from typing import Optional, Set
+
+from webex_assistant_skills_sdk.api.mindmeld.models import ProcessedQuery
+from webex_assistant_skills_sdk.api.shared.dialogue import DialogueRule
+
+
 @total_ordering
-class MMDialogueStateRule:
-    def __init__(self, domain, intent, entities, dialogue_state, targeted_only):
-        self.domain = domain
-        self.intent = intent
+class MindmeldDialogueRule(DialogueRule[ProcessedQuery]):
+    domain: Optional[str] = None
+    intent: Optional[str] = None
+    entities: Optional[Set[str]] = None
+    targeted_only: bool = False
 
-        if entities:
-            entities = set(entities)
-
-        self.entities = entities
-        self.targeted_only = targeted_only
-        self.dialogue_state = dialogue_state
-
-    def match(self, processed_query: ProcessedQuery):
+    def match(self, processed_query: ProcessedQuery) -> bool:
         if self.targeted_only:
             return False
 
@@ -30,17 +33,20 @@ class MMDialogueStateRule:
 
         return True
 
-    def __gt__(self, other: "MMDialogueStateRule"):
-        return self.specificity > other.specificity
-
     @property
     def specificity(self):
-        value = 0
-        if self.domain:
-            value += 1
-        if self.intent:
-            value += 1
-        if self.entities:
-            value += len(self.entities)
-        return value
+        specificity = 0
+        if self.domain is not None:
+            specificity += 1
+
+        if self.intent is not None:
+            specificity += 1
+
+        if self.entities is not None:
+            specificity += len(self.entities)
+
+        return specificity
+
+    def __gt__(self, other: MindmeldDialogueRule):
+        return self.specificity > other.specificity
     
