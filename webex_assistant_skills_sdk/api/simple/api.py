@@ -1,16 +1,11 @@
 from typing import Any, Optional
 
-from ..dialogue.manager import SimpleDialogueManager
-from ..models.http import SkillInvokeRequest, SkillInvokeResponse
-from ..models.mindmeld import DialogueState
-from .api import BaseAPI
+from webex_assistant_skills_sdk.api import BaseAPI
+from webex_assistant_skills_sdk.api.simple.dialogue import SimpleDialogueManager
 
 
 class SimpleAPI(BaseAPI):
-    def __init__(self, **extra: Any) -> None:
-        super().__init__(**extra)
-        if not self.dialogue_manager:
-            self.dialogue_manager = SimpleDialogueManager()
+    dialogue_manager = SimpleDialogueManager()
 
     async def parse(self, request: SkillInvokeRequest) -> SkillInvokeResponse:
         current_state = DialogueState(**request.dict())
