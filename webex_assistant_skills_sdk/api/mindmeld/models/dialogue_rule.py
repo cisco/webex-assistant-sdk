@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import total_ordering
 from typing import Optional, Set
 
-from webex_assistant_skills_sdk.api.mindmeld.models import ProcessedQuery
+from webex_assistant_skills_sdk.api.mindmeld.models.processed_query import ProcessedQuery
 from webex_assistant_skills_sdk.api.shared.models import DialogueRule
 
 

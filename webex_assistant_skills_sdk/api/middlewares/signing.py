@@ -2,10 +2,13 @@ import base64
 import json
 import logging
 
+from dependency_injector.wiring import Provide
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from ...crypto import verify_signature
-from .base import BaseReceiver
+from webex_assistant_skills_sdk.api.middlewares.base import BaseReceiver
+from webex_assistant_skills_sdk.api.shared.services import CryptoService
+from webex_assistant_skills_sdk.api.types import Types
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +33,8 @@ class SignatureMiddleware:
 
 
 class SignatureReceiver(BaseReceiver):
+    __crypto_service: CryptoService = Provide[Types.CRYPTO_SERVICE]
+
     def __init__(self, secret: bytes, app: ASGIApp, receive: Receive, send: Send):
         super().__init__(app, receive, send)
         self.secret = secret
@@ -48,7 +53,7 @@ class SignatureReceiver(BaseReceiver):
 
         signature: bytes = base64.b64decode(signature)
 
-        if not verify_signature(self.secret, encrypted_message.encode('utf-8'), signature):
+        if not self.__crypto_service.verify_signature(self.secret, encrypted_message.encode('utf-8'), signature):
             msg = 'Failed to validate signature'
             logger.error(msg)
             raise SignatureVerificationError(msg)

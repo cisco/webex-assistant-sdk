@@ -12,3 +12,6 @@ class SimpleDialogueRule(DialogueRule[str]):
             return False
 
         return bool(self.regex.match(text))
+
+    class Config:
+        arbitrary_types_allowed = True

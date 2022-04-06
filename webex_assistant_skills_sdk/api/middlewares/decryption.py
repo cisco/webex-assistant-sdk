@@ -2,10 +2,12 @@ import json
 import logging
 
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
+from dependency_injector.wiring import Provide
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from ...crypto import decrypt
-from .base import BaseReceiver
+from webex_assistant_skills_sdk.api.middlewares.base import BaseReceiver
+from webex_assistant_skills_sdk.api.shared.services import CryptoService
+from webex_assistant_skills_sdk.api.types import Types
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,9 @@ class DecryptionMiddleware:
 
 
 class DecryptingReceiver(BaseReceiver):
+    __crypto_service: CryptoService = Provide[Types.CRYPTO_SERVICE]
+
+
     def __init__(self, private_key: RSAPrivateKey, app: ASGIApp, receive: Receive, send: Send):
         super().__init__(app=app, receive=receive, send=send)
         self.private_key = private_key
@@ -44,7 +49,7 @@ class DecryptingReceiver(BaseReceiver):
         message_body = await self.message_body(message)
         encrypted_message = json.loads(message_body)
         try:
-            message["body"] = decrypt(self.private_key, encrypted_message['message'].encode('utf-8'))
+            message["body"] = self.__crypto_service.decrypt(self.private_key, encrypted_message['message'].encode('utf-8'))
         except ValueError as value_exc:
             # We log with error rather than exception here because the exception raised by cryptography
             # if decryption fails doesn't provide useful information, and the stack trace is largely unhelpful

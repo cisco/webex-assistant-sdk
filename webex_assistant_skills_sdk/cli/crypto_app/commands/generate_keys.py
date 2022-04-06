@@ -8,7 +8,7 @@ from webex_assistant_skills_sdk.cli.shared.services import CryptoGenService
 from webex_assistant_skills_sdk.cli.types import Types
 
 
-__crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_GEN_SERVICE]
+__crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_SERVICE]
 
 @app.command()
 def generate_keys(
