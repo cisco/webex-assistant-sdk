@@ -1,34 +1,35 @@
-from typing import cast
+from typing import Callable
+import warnings
 
 
+from webex_assistant_skills_sdk.api import BaseAPI
+from webex_assistant_skills_sdk.api.mindmeld.models import ProcessedQuery
+from webex_assistant_skills_sdk.api.mindmeld.services import MindmeldDialogueHandler, MindmeldDialogueManager
+from webex_assistant_skills_sdk.shared.models import DialogueTurn, InvokeRequest, InvokeResponse
 
-
-from ..dialogue.manager import MMDialogueManager
-from ..models.http import SkillInvokeRequest, SkillInvokeResponse
-from ..models.mindmeld import DialogueState, ProcessedQuery
-from ..supress_warnings import suppress_warnings
-from .api import BaseAPI
+try:
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        from mindmeld import NaturalLanguageProcessor
+except ImportError:
+    # TODO: custom exception
+    raise Exception('You must install the extras package webex-assistant-sdk[mindmeld] to use MindmeldAPI')
 
 
 class MindmeldAPI(BaseAPI):
+    dialogue_manager = MindmeldDialogueManager()
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        if not self.nlp:
-            with suppress_warnings():
-                from mindmeld import NaturalLanguageProcessor  # pylint:disable=import-outside-toplevel
+        self.nlp = NaturalLanguageProcessor(self.__settings.app_dir)
+        self.nlp.load()
 
-                self.nlp = NaturalLanguageProcessor(self.settings.app_dir)
-                self.nlp.load()
-
-        if not self.dialogue_manager:
-            self.dialogue_manager = MMDialogueManager()
-
-    async def parse(self, request: SkillInvokeRequest):
+    async def parse(self, request: InvokeRequest) -> InvokeResponse:
         """A default parse method for mindmeld apps so the user only has to handle dialogue stuff"""
 
-        current_state = DialogueState(**request.dict())
-        processed_query = self.nlp.process(
+        turn = DialogueTurn(**request.dict())
+        processed_query_dict: dict = self.nlp.process(
             query_text=request.text,
             locale=request.params.locale,
             language=request.params.language,
@@ -37,15 +38,27 @@ class MindmeldAPI(BaseAPI):
             dynamic_resource=request.params.dynamic_resource,
         )
 
-        # Just here to make type checking happy because NLP.process incorrectly defines it's return type
-        processed_query = cast(dict, processed_query)
+        processed_query = ProcessedQuery(**processed_query_dict)
 
-        processed_query = ProcessedQuery(**processed_query)
-        new_state = await self.dialogue_manager.handle(processed_query, current_state)
-        response = SkillInvokeResponse(**new_state.dict(), challenge=request.challenge)
-        return response
+        next_turn = await self.dialogue_manager.handle(
+            query=processed_query,
+            turn=turn
+        )
 
-    def handle(self, *, domain=None, intent=None, entities=None, default=False, targeted_only=False):
+        return InvokeResponse(
+            **next_turn.dict(),
+            challenge=request.challenge
+        )
+
+    def handle(
+        self,
+        *,
+        domain=None,
+        intent=None,
+        entities=None,
+        default=False,
+        targeted_only=False
+    ) -> Callable[[MindmeldDialogueHandler], MindmeldDialogueHandler]:
         """Wraps a function to behave as a dialogue handler"""
         return self.dialogue_manager.add_rule(
             domain=domain,
