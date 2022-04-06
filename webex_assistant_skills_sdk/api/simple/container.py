@@ -8,7 +8,7 @@ from webex_assistant_skills_sdk.api.types import Types
 
 
 def populate_container(container: containers.DynamicContainer) -> None:
-    setattr(container, Types.DIALOGUE_MANAGER, providers.Factory(SimpleDialogueManager))
+    setattr(container, Types.DIALOGUE_MANAGER, providers.Singleton(SimpleDialogueManager))
 
 
 def create_container(parent_container: containers.Container) -> containers.Container:
