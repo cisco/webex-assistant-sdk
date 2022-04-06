@@ -1,11 +1,13 @@
 from typing import Callable
 import warnings
 
+from dependency_injector.wiring import Provide
 
 from webex_assistant_skills_sdk.api import BaseAPI
 from webex_assistant_skills_sdk.api.mindmeld.models import ProcessedQuery
 from webex_assistant_skills_sdk.api.mindmeld.services import MindmeldDialogueHandler, MindmeldDialogueManager
 from webex_assistant_skills_sdk.shared.models import DialogueTurn, InvokeRequest, InvokeResponse
+from webex_assistant_skills_sdk.api.types import Types
 
 try:
     with warnings.catch_warnings():
@@ -17,7 +19,7 @@ except ImportError:
 
 
 class MindmeldAPI(BaseAPI):
-    dialogue_manager = MindmeldDialogueManager()
+    __dialogue_manager: MindmeldDialogueManager = Provide[Types.DIALOGUE_MANAGER]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -40,7 +42,7 @@ class MindmeldAPI(BaseAPI):
 
         processed_query = ProcessedQuery(**processed_query_dict)
 
-        next_turn = await self.dialogue_manager.handle(
+        next_turn = await self.__dialogue_manager.handle(
             query=processed_query,
             turn=turn
         )
@@ -60,7 +62,7 @@ class MindmeldAPI(BaseAPI):
         targeted_only=False
     ) -> Callable[[MindmeldDialogueHandler], MindmeldDialogueHandler]:
         """Wraps a function to behave as a dialogue handler"""
-        return self.dialogue_manager.add_rule(
+        return self.__dialogue_manager.add_rule(
             domain=domain,
             intent=intent,
             entities=entities,
