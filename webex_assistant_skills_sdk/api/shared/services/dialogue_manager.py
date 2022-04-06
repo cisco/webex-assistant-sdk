@@ -1,7 +1,7 @@
 import inspect
 from typing import Any, Awaitable, Callable, Dict, Generic, Optional, TypeVar
 
-from webex_assistant_skills_sdk.api.shared.dialogue.rules import DialogueRule
+from webex_assistant_skills_sdk.api.shared.models import DialogueRule
 from webex_assistant_skills_sdk.shared.models import DialogueTurn
 
 
