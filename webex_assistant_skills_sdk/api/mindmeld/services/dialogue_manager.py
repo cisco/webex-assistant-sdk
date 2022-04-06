@@ -1,4 +1,4 @@
-class MMDialogueManager(DialogueManager):
+class MindmeldDialogueManager(DialogueManager):
     def add_rule(
         self,
         *,

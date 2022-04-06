@@ -4,7 +4,7 @@ from functools import total_ordering
 from typing import Optional, Set
 
 from webex_assistant_skills_sdk.api.mindmeld.models import ProcessedQuery
-from webex_assistant_skills_sdk.api.shared.dialogue import DialogueRule
+from webex_assistant_skills_sdk.api.shared.models import DialogueRule
 
 
 @total_ordering

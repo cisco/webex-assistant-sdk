@@ -2,7 +2,7 @@ import re
 from typing import Awaitable, Callable, Optional
 
 from webex_assistant_skills_sdk.api.shared.dialogue import DialogueManager
-from webex_assistant_skills_sdk.api.simple.models.rule import SimpleDialogueRule
+from webex_assistant_skills_sdk.api.simple.models.dialogue_rule import SimpleDialogueRule
 from webex_assistant_skills_sdk.shared.models import DialogueTurn
 
 

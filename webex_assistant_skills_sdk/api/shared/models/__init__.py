@@ -1,4 +1,4 @@
-from webex_assistant_skills_sdk.api.shared.models.rule import DialogueRule
+from webex_assistant_skills_sdk.api.shared.models.dialogue_rule import DialogueRule
 
 
 __all__ = [
