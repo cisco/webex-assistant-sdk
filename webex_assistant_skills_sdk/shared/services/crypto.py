@@ -16,7 +16,7 @@ class CryptoService():
 
         return EncryptedInvokeRequest(
             signature=signature,
-            token=token,
+            message=token,
         )
 
     def __encrypt_fernet_key(fernet_key: bytes, public_key: bytes) -> bytes:

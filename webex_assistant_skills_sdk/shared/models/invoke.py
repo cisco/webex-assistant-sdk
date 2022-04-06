@@ -5,7 +5,7 @@ from webex_assistant_skills_sdk.shared.models.dialogue import DialogueEventBase,
 
 class EncryptedInvokeRequest(BaseModel):
     signature: str
-    token: str
+    message: str
 
 
 class InvokeRequest(DialogueTurn):

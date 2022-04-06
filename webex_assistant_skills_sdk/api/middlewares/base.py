@@ -5,27 +5,32 @@ from starlette.types import ASGIApp, Message, Receive, Send
 
 
 class BaseReceiver:
-    def __init__(self, app: ASGIApp, receive: Receive, send: Send) -> None:
+    def __init__(
+        self, app: ASGIApp,
+        receive: Receive,
+        send: Send
+    ) -> None:
         self.app = app
         self.receive = receive
         self.send = send
 
     async def stream_body(self, message: Message) -> typing.AsyncGenerator[bytes, None]:
         while True:
-            if message["type"] == "http.disconnect":
+            if message['type'] == 'http.disconnect':
                 raise ClientDisconnect()
 
-            body = message.get("body", b"")
-            if body:
+            body = message.get('body', None)
+            if body is not None:
                 yield body
 
-            if not message.get("more_body", False):
+            more_body = message.get('more_body', False)
+            if not more_body:
                 break
 
             message = await self.receive()
 
-        yield b""
+        yield b''
 
     async def message_body(self, message: Message) -> bytes:
         chunks = [chunk async for chunk in self.stream_body(message)]
-        return b"".join(chunks)
+        return b''.join(chunks)

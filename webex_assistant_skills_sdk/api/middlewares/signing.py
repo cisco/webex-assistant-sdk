@@ -8,6 +8,7 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from webex_assistant_skills_sdk.api.middlewares.base import BaseReceiver
 from webex_assistant_skills_sdk.api.shared.services import CryptoService
 from webex_assistant_skills_sdk.api.types import Types
+from webex_assistant_skills_sdk.shared.models.invoke import EncryptedInvokeRequest
 
 
 logger = logging.getLogger(__name__)
@@ -18,11 +19,20 @@ class SignatureVerificationError(Exception):
 
 
 class SignatureMiddleware:
-    def __init__(self, app: ASGIApp, secret: bytes):
+    def __init__(
+        self,
+        app: ASGIApp,
+        secret: bytes,
+    ):
         self.app = app
         self.secret = secret
 
-    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+    async def __call__(
+        self,
+        scope: Scope, 
+        receive: Receive,
+        send: Send,
+    ):
         if scope['type'] != 'http':
             await self.app(scope, receive, send)
             return
@@ -35,26 +45,40 @@ class SignatureMiddleware:
 class SignatureReceiver(BaseReceiver):
     __crypto_service: CryptoService = Provide[Types.CRYPTO_SERVICE]
 
-    def __init__(self, secret: bytes, app: ASGIApp, receive: Receive, send: Send):
+    def __init__(
+        self, 
+        secret: bytes,
+        app: ASGIApp,
+        receive: Receive,
+        send: Send,
+    ):
         super().__init__(app, receive, send)
         self.secret = secret
 
-    async def __call__(self, scope, receive: Receive, send: Send):
+    async def __call__(self, scope, _: Receive, send: Send):
         await self.app(scope, self.verify_signature, send)
 
     async def verify_signature(self) -> Message:
         message = await self.receive()
 
         assert message["type"] == "http.request"
+
         message_body = await self.message_body(message)
-        encrypted_body = json.loads(message_body)
-        encrypted_message = encrypted_body['message']
-        signature = encrypted_body['signature']
+        encrypted_body = EncryptedInvokeRequest(
+            **json.loads(message_body),
+        )
 
-        signature: bytes = base64.b64decode(signature)
+        signature: bytes = base64.b64decode(encrypted_body.signature)
 
-        if not self.__crypto_service.verify_signature(self.secret, encrypted_message.encode('utf-8'), signature):
+        signature_vaid = self.__crypto_service.verify_signature(
+            self.secret,
+            encrypted_body.message.encode('utf-8'),
+            signature,
+        )
+
+        if not signature_vaid:
             msg = 'Failed to validate signature'
             logger.error(msg)
             raise SignatureVerificationError(msg)
+
         return message
