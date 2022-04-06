@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import Callable, Optional
 
 from webex_assistant_skills_sdk.api import BaseAPI
-from webex_assistant_skills_sdk.api.simple.services import SimpleDialogueManager
+from webex_assistant_skills_sdk.api.simple.services import SimpleDialogueHandler, SimpleDialogueManager
 from webex_assistant_skills_sdk.shared.models import DialogueTurn, InvokeRequest, InvokeResponse
 
 
@@ -27,7 +27,7 @@ class SimpleAPI(BaseAPI):
         pattern: Optional[str] = None,
         default=False,
         targeted_only=False,
-    ):
+    ) -> Callable[[SimpleDialogueHandler], SimpleDialogueHandler]:
         """Wraps a function to behave as a dialogue handler"""
         return self.dialogue_manager.add_rule(
             pattern=pattern,
