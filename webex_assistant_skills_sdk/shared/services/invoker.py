@@ -2,26 +2,22 @@ from __future__ import annotations
 
 from datetime import datetime
 import os
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 from dependency_injector.wiring import Provide
 import httpx
-from pydantic import BaseModel
 
-from webex_assistant_skills_sdk.shared.models import DeviceContext, Dialogue
-from webex_assistant_skills_sdk.shared.models.dialogue import DialogueParams, DialogueTurn
-from webex_assistant_skills_sdk.shared.models.invoke import InvokeResponse
-from webex_assistant_skills_sdk.shared.services import CryptoService
+from webex_assistant_skills_sdk.shared.models import (
+    DeviceContext,
+    Dialogue,
+    DialogueParams,
+    DialogueTurn,
+    InvokeRequest,
+    InvokeResponse,
+)
+from webex_assistant_skills_sdk.shared.services.crypto import CryptoService
 from webex_assistant_skills_sdk.types import Types
 
-
-class InvokeRequest(BaseModel):
-    challenge: str
-    text: str
-    context: DeviceContext
-    params: DialogueParams
-    frame: Dict[str, Any]
-    history: List[DialogueTurn]
 
 class Invoker():
     __crypto_service: CryptoService =  Provide[Types.CRYPTO_SERVICE]
