@@ -9,11 +9,15 @@ from webex_assistant_skills_sdk.cli.base_app.helpers import validate_skill_name_
 from webex_assistant_skills_sdk.cli.crypto_app.commands.generate_secret import generate_secret
 from webex_assistant_skills_sdk.cli.shared.models.config import SkillConfig
 from webex_assistant_skills_sdk.cli.shared.models.template_types import TemplateTypes
-from webex_assistant_skills_sdk.cli.shared.services import ConfigService
+from webex_assistant_skills_sdk.cli.shared.services import ConfigService, CryptoGenService
 from webex_assistant_skills_sdk.cli.types import Types
 
 
 __cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
+__crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_SERVICE]
+
+def generate_secret() -> str:
+    return __crypto_gen_service.generate_secret()
 
 @app.command()
 def init(
@@ -34,7 +38,7 @@ def init(
         prompt=True,
         help='The skill secret',
     ),
-    directory_path: Path = typer.Option(
+    key_path: Path = typer.Option(
         Path.cwd(),
         '--path',
         prompt=True,
@@ -56,7 +60,13 @@ def init(
         # TODO: template generation
         pass
 
-    public_key_path = directory_path / 'id_rsa.pub'
+    __crypto_gen_service.generate_keys(
+        directory_path=key_path,
+        file_name='id_rsa',
+        confirm=True,
+    )
+
+    public_key_path = key_path / 'id_rsa.pub'
 
     skill_config = SkillConfig(
         name=skill_name,

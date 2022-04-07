@@ -12,7 +12,7 @@ __crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_SERVICE]
 
 @app.command()
 def generate_keys(
-    directory_path: Path = typer.Option(
+    key_path: Path = typer.Option(
         Path.cwd(),
         '--path',
         exists=True,
@@ -30,7 +30,7 @@ def generate_keys(
 ) -> None:
     """Generate an RSA keypair"""
     __crypto_gen_service.generate_keys(
-        directory_path,
+        key_path,
         file_name,
         confirm=True,
     )
