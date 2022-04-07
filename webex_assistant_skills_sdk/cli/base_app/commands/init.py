@@ -48,8 +48,8 @@ def init(
         writable=True,
         help='The path to the public key',
     ),
-    template_type: Optional[TemplateTypes] = typer.Option(
-        None,
+    template_type: TemplateTypes = typer.Option(
+        TemplateTypes.NONE,
         '--template',
         case_sensitive=False,
         prompt=True,

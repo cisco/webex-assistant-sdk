@@ -4,7 +4,7 @@ from webex_assistant_skills_sdk.cli.shared.services.invoker import CliInvoker
 
 
 __all__ = [
-    ConfigService,
-    CryptoGenService,
-    CliInvoker,
+    'ConfigService',
+    'CryptoGenService',
+    'CliInvoker',
 ]
