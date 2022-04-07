@@ -19,7 +19,7 @@ class CryptoService():
             message=token,
         )
 
-    def __encrypt_fernet_key(fernet_key: bytes, public_key: bytes) -> bytes:
+    def __encrypt_fernet_key(self, fernet_key: bytes, public_key: bytes) -> bytes:
         """Encrypts a fernet key with an RSA private key"""
         padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)
 

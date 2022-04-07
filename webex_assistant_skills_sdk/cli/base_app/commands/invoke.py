@@ -1,16 +1,32 @@
+from pprint import pformat
 from typing import Optional
 from uuid import UUID, uuid4
 
-from dependency_injector.wiring import Provide
+from dependency_injector.providers import Factory
+from dependency_injector.wiring import Provider
+from httpx import HTTPStatusError
 import typer
 
 from webex_assistant_skills_sdk.cli.base_app.app import app
 from webex_assistant_skills_sdk.cli.base_app.helpers import autocomplete_skill_name, validate_skill_name_exists
-from webex_assistant_skills_sdk.cli.shared.services import ConfigService
+from webex_assistant_skills_sdk.cli.shared.services import CliInvoker
 from webex_assistant_skills_sdk.cli.types import Types
+from webex_assistant_skills_sdk.shared.models import Dialogue
 
 
-__cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
+__invoker_factory: Factory[CliInvoker] = Provider[Types.INVOKER]
+
+def should_end_dialogue(dialogue: Dialogue):
+    turn = dialogue.get_last_turn()
+
+    if turn is None:
+        return False
+
+    for directive in turn.directives:
+        if directive.name == 'sleep':
+            return True
+
+    return False
 
 @app.command()
 def invoke(
@@ -24,22 +40,48 @@ def invoke(
         True,
         help=''
     ),
-    org_id: Optional[UUID] = typer.Option(
+    org_id: Optional[str] = typer.Option(
         uuid4,
         show_default=False,
         help='',
     ),
-    user_id: Optional[UUID] = typer.Option(
+    user_id: Optional[str] = typer.Option(
         uuid4,
         show_default=False,
         help='',
     ),
-    device_id: Optional[UUID] = typer.Option(
+    device_id: Optional[str] = typer.Option(
         uuid4,
         show_default=False,
         help='',
     ),
 ) -> None:
-    skill_config = __cli_config_service.get_skill_config()
+    invoker = __invoker_factory(
+        skill_name,
+        encrypted,
+        org_id,
+        user_id,
+        device_id,
+    )
 
-    ## TODO: dialog factory, skill invoker, cryptography service
+    dialogue = Dialogue()
+
+    while not should_end_dialogue(dialogue):
+        query = typer.prompt('query')
+
+        try:
+            invoker.do_turn(dialogue, query)
+        except HTTPStatusError as e:
+            typer.echo(f'Skill responded with status code {e.response.status_code}')
+            raise typer.Exit(1)
+
+        last_turn = dialogue.get_last_turn()
+        if last_turn is None:
+            # TODO: custom exception
+            raise Exception()
+
+        typer.echo(pformat(
+            last_turn.json(),
+            indent=2,
+            width=120,
+        ))

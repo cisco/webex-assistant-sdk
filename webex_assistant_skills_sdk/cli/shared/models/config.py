@@ -1,6 +1,6 @@
 from typing import Dict
 
-from pydantic import AnyHttpUrl, BaseModel, validator
+from pydantic import AnyHttpUrl, BaseModel
 
 
 class SkillConfig(BaseModel):
@@ -8,13 +8,6 @@ class SkillConfig(BaseModel):
     url: AnyHttpUrl
     secret: str 
     public_key: str
-
-    @validator('url')
-    def validate_url(cls, url: str):
-        if not url.endswith('/parse'):
-            return url + '/parse'
-
-        return url
 
 
 class CliConfig(BaseModel):
