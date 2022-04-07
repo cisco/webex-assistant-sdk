@@ -12,7 +12,7 @@ from webex_assistant_skills_sdk.shared.services import CryptoService as BaseCryp
 
 
 class CryptoService(BaseCryptoService):
-    def decrypt(private_key: RSAPrivateKey, message: bytes) -> bytes:
+    def decrypt(self, private_key: RSAPrivateKey, message: bytes) -> bytes:
         padding = OAEP(
             mgf=MGF1(algorithm=hashes.SHA256()),
             algorithm=hashes.SHA256(),
@@ -37,7 +37,7 @@ class CryptoService(BaseCryptoService):
             # TODO: raise custom exception
             raise Exception('Unable to load private key') from e
 
-    def verify_signature(secret: bytes, message: bytes, signature: bytes) -> bool:
+    def verify_signature(self, secret: bytes, message: bytes, signature: bytes) -> bool:
         sig = hmac.HMAC(secret, hashes.SHA256())
         sig.update(message)
 
