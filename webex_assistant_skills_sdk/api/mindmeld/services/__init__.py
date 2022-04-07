@@ -2,6 +2,6 @@ from webex_assistant_skills_sdk.api.mindmeld.services.dialogue_manager import Mi
 
 
 __all__ = [
-    MindmeldDialogueHandler,
-    MindmeldDialogueManager,
+    'MindmeldDialogueHandler',
+    'MindmeldDialogueManager',
 ]

@@ -3,6 +3,6 @@ from webex_assistant_skills_sdk.api.shared.services.dialogue_manager import Dial
 
 
 __all__ = [
-    CryptoService,
-    DialogueManager,
+    'CryptoService',
+    'DialogueManager',
 ]

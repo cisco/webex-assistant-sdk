@@ -3,6 +3,6 @@ from webex_assistant_skills_sdk.api.mindmeld.models.processed_query import Proce
 
 
 __all__ = [
-    MindmeldDialogueRule,
-    ProcessedQuery,
+    'MindmeldDialogueRule',
+    'ProcessedQuery',
 ]
