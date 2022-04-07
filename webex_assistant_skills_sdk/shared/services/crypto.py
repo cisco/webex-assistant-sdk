@@ -6,15 +6,15 @@ from cryptography.hazmat.primitives import hashes, hmac, serialization
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 
-from webex_assistant_skills_sdk.shared.models import EncryptedInvokeRequest
+from webex_assistant_skills_sdk.shared.models import EncryptedPayload
 
 
 class CryptoService():
-    def prepare_payload(self, payload: str, public_key: str, secret: str) -> EncryptedInvokeRequest:
+    def prepare_payload(self, payload: str, public_key: str, secret: str) -> EncryptedPayload:
         token = self.__generate_token(payload, public_key)
         signature = self.__sign_token(token, secret)
 
-        return EncryptedInvokeRequest(
+        return EncryptedPayload(
             signature=signature,
             message=token,
         )

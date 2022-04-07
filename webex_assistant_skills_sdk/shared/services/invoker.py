@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 import os
-from typing import Optional
+from typing import Optional, Tuple
 
 from dependency_injector.wiring import Provide
 import httpx
@@ -15,6 +15,7 @@ from webex_assistant_skills_sdk.shared.models import (
     InvokeRequest,
     InvokeResponse,
 )
+from webex_assistant_skills_sdk.shared.models.invoke import CheckResponse
 from webex_assistant_skills_sdk.shared.services.crypto import CryptoService
 from webex_assistant_skills_sdk.types import Types
 
@@ -41,6 +42,28 @@ class Invoker():
         self.use_encryption = use_encryption
         self.public_key = public_key
         self.secret = secret
+
+    def check(self) -> Tuple[CheckResponse, bool]:
+        challenge = self.__generate_challenge_string()
+
+        params_dict = self.__crypto_service.prepare_payload(
+            payload=challenge,
+            public_key=self.public_key,
+            secret=self.secret,
+        ).dict()
+
+        response = httpx.get(self.url, params=params_dict)
+
+        response.raise_for_status()
+
+        check_response = CheckResponse(**response.json())
+
+        challenge_successful = True
+
+        if check_response.challenge != challenge:
+            challenge_successful = False
+
+        return (check_response, challenge_successful)
 
     def do_turn(
         self,
@@ -75,7 +98,7 @@ class Invoker():
 
         response.raise_for_status()
 
-        invoke_response = InvokeResponse(**response.json)
+        invoke_response = InvokeResponse(**response.json())
 
         if invoke_response.challenge != challenge:
             # TODO: raise challenge exception

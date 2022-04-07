@@ -8,7 +8,7 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from webex_assistant_skills_sdk.api.middlewares.base import BaseReceiver
 from webex_assistant_skills_sdk.api.shared.services import CryptoService
 from webex_assistant_skills_sdk.api.types import Types
-from webex_assistant_skills_sdk.shared.models.invoke import EncryptedInvokeRequest
+from webex_assistant_skills_sdk.shared.models.invoke import EncryptedPayload
 
 
 logger = logging.getLogger(__name__)
@@ -64,7 +64,7 @@ class SignatureReceiver(BaseReceiver):
         assert message["type"] == "http.request"
 
         message_body = await self.message_body(message)
-        encrypted_body = EncryptedInvokeRequest(
+        encrypted_body = EncryptedPayload(
             **json.loads(message_body),
         )
 

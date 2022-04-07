@@ -50,9 +50,15 @@ class BaseAPI(FastAPI):
     # we should revisit this after seeing if the middlewares can be replaced with custom request types
     async def check(self, signature: str, message: str):
         message_bytes = message.encode('utf-8')
-        signature: bytes = base64.b64decode(signature.encode('utf-8'))
+        signature = base64.b64decode(signature.encode('utf-8'))
 
-        if not self.__crypto_service.verify_signature(secret=self.secret, message=message_bytes, signature=signature):
+        signature_valid = self.__crypto_service.verify_signature(
+            secret=self.secret,
+            message=message_bytes,
+            signature=signature,
+        )
+
+        if not signature_valid:
             return JSONResponse(
                 {
                     'message': 'Failed to verify signature'
@@ -61,7 +67,10 @@ class BaseAPI(FastAPI):
             )
             
         try:
-            challenge = self.__crypto_service.decrypt(private_key=self.private_key, message=message_bytes)
+            challenge = self.__crypto_service.decrypt(
+                private_key=self.private_key,
+                message=message_bytes,
+            )
         except ValueError:
             return JSONResponse(
                 {

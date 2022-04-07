@@ -1,4 +1,4 @@
-from uuid import UUID
+from uuid import UUID, uuid4
 from dependency_injector.wiring import Provide
 
 from webex_assistant_skills_sdk.cli.shared.services.config import ConfigService
@@ -14,9 +14,9 @@ class CliInvoker(Invoker):
         self,
         skill_name: str,
         use_encryption: bool,
-        org_id: UUID,
-        user_id: UUID,
-        device_id: UUID,
+        org_id: UUID = uuid4(),
+        user_id: UUID = uuid4(),
+        device_id: UUID = uuid4(),
     ):
         skill_config = self.__cli_config_service.get_skill_config(skill_name)
 

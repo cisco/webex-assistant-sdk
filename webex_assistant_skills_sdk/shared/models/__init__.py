@@ -7,20 +7,22 @@ from webex_assistant_skills_sdk.shared.models.dialogue import (
     DialogueTurn,
 )
 from webex_assistant_skills_sdk.shared.models.invoke import (
-    EncryptedInvokeRequest,
+    CheckResponse,
+    EncryptedPayload,
     InvokeRequest,
     InvokeResponse,
 )
 
 
 __all__ = [
+    'CheckResponse',
     'DeviceContext',
     'Dialogue',
     'DialogueEventBase',
     'DialogueParams',
     'DialogueTurn',
     'Directive',
-    'EncryptedInvokeRequest',
+    'EncryptedPayload',
     'InvokeRequest',
     'InvokeResponse',
 ]
