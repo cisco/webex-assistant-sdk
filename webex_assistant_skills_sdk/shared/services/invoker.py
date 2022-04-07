@@ -8,15 +8,16 @@ from dependency_injector.wiring import Provide
 import httpx
 
 from webex_assistant_skills_sdk.shared.models import (
+    CheckResponse,
     DeviceContext,
     Dialogue,
     DialogueParams,
     DialogueTurn,
+    EncryptedPayload,
     InvokeRequest,
     InvokeResponse,
 )
-from webex_assistant_skills_sdk.shared.models.invoke import CheckResponse
-from webex_assistant_skills_sdk.shared.services.crypto import CryptoService
+from webex_assistant_skills_sdk.shared.services import CryptoService
 from webex_assistant_skills_sdk.types import Types
 
 
@@ -46,11 +47,18 @@ class Invoker():
     def check(self) -> Tuple[CheckResponse, bool]:
         challenge = self.__generate_challenge_string()
 
-        params_dict = self.__crypto_service.prepare_payload(
-            payload=challenge,
-            public_key=self.public_key,
-            secret=self.secret,
-        ).dict()
+        if not self.use_encryption:
+            # fake encrypted payload
+            params_dict = EncryptedPayload(
+                signature='',
+                message='challenge',
+            ).dict()
+        else:
+            params_dict = self.__crypto_service.prepare_payload(
+                payload=challenge,
+                public_key=self.public_key,
+                secret=self.secret,
+            ).dict()
 
         response = httpx.get(self.url, params=params_dict)
 
@@ -58,12 +66,9 @@ class Invoker():
 
         check_response = CheckResponse(**response.json())
 
-        challenge_successful = True
+        success = check_response.challenge == challenge
 
-        if check_response.challenge != challenge:
-            challenge_successful = False
-
-        return (check_response, challenge_successful)
+        return (check_response, success)
 
     def do_turn(
         self,
