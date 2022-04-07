@@ -10,7 +10,7 @@ from webex_assistant_skills_sdk.cli.types import Types
 __cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
 
 @app.command()
-def view(
+def inspect(
     name: str = typer.Argument(
         ...,
         autocompletion=autocomplete_skill_name,

@@ -29,24 +29,8 @@ def generate_keys(
     ),
 ) -> None:
     """Generate an RSA keypair"""
-    private_key_name = f'{file_name}.pem'
-    private_key_path = directory_path / private_key_name
-
-    public_key_name = f'{file_name}.pub'
-    public_key_path = directory_path / public_key_name
-
-    if private_key_path.exists() or public_key_path.exists():
-        typer.confirm(
-            (
-                'RSA keypair already exists, would you like to overwrite '
-                f'{private_key_name} and {public_key_name} in {directory_path}?'
-            ),
-            default=False,
-            abort=True,
-        )
-
-    typer.echo('🔐 Generating new RSA keypair...')
-
-    __crypto_gen_service.generate_keys(private_key_path, public_key_path)
-
-    typer.echo(f'Done! {private_key_name} and {public_key_name} written to {directory_path}')
+    __crypto_gen_service.generate_keys(
+        directory_path,
+        file_name,
+        confirm=True,
+    )

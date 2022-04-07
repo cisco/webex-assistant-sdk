@@ -16,12 +16,11 @@ class CryptoGenService(CryptoService):
         confirm: bool = True,
     ) -> None:
         """Generate an RSA keypair"""
-        file_name.removesuffix('.pem').removesuffix('pub')
         
-        private_key_name = f'{file_name}.pem'
+        private_key_name = f'{Path(file_name).stem}.pem'
         private_key_path = directory_path / private_key_name
 
-        public_key_name = f'{file_name}.pub'
+        public_key_name = f'{Path(file_name).stem}.pub'
         public_key_path = directory_path / public_key_name
 
         should_prompt = confirm and (private_key_path.exists() or public_key_path.exists())

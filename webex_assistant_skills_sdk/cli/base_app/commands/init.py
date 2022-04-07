@@ -38,7 +38,6 @@ def init(
         Path.cwd(),
         '--path',
         prompt=True,
-        exists=True,
         file_okay=False,
         dir_okay=True,
         readable=True,

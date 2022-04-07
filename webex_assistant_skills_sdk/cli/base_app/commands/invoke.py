@@ -28,6 +28,7 @@ def should_end_dialogue(dialogue: Dialogue):
 
     return False
 
+
 @app.command()
 def invoke(
     skill_name: str = typer.Argument(
@@ -40,18 +41,18 @@ def invoke(
         True,
         help=''
     ),
-    org_id: Optional[str] = typer.Option(
-        uuid4,
+    org_id: Optional[UUID] = typer.Option(
+        str(uuid4()),
         show_default=False,
         help='',
     ),
-    user_id: Optional[str] = typer.Option(
-        uuid4,
+    user_id: Optional[UUID] = typer.Option(
+        str(uuid4()),
         show_default=False,
         help='',
     ),
-    device_id: Optional[str] = typer.Option(
-        uuid4,
+    device_id: Optional[UUID] = typer.Option(
+        str(uuid4()),
         show_default=False,
         help='',
     ),
