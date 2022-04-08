@@ -17,6 +17,7 @@ class CliInvoker(Invoker):
         org_id: UUID = uuid4(),
         user_id: UUID = uuid4(),
         device_id: UUID = uuid4(),
+        user_type: str = 'user',
     ):
         skill_config = self.__cli_config_service.get_skill_config(skill_name)
 
@@ -29,6 +30,7 @@ class CliInvoker(Invoker):
             device_context=DeviceContext(
                 org_id=org_id,
                 user_id=user_id,
+                user_type=user_type,
                 device_developer_id=device_id,
                 supported_directives=[],    # TODO: add default supported directives
             ),
