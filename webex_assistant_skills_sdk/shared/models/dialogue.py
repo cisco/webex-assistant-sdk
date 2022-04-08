@@ -31,7 +31,7 @@ class DialogueTurn(DialogueEventBase):
 
     def update_history(self, last_turn: DialogueTurn):
         self.history.append(DialogueTurn(
-            **last_turn.dict(exclude='history'),
+            **last_turn.dict(exclude={'history'}),
         ))
 
 
