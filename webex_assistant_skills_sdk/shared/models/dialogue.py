@@ -62,3 +62,5 @@ class Dialogue(BaseModel):
             return {}
 
         return last_turn.frame
+
+DialogueEventBase.update_forward_refs()
