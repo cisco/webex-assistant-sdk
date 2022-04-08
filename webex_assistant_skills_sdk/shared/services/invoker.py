@@ -111,7 +111,7 @@ class Invoker():
 
         dialogue.add_turn(DialogueTurn(
             text=query,
-            **invoke_response,
+            **invoke_response.dict(),
         ))
 
         return self # allow chaining
