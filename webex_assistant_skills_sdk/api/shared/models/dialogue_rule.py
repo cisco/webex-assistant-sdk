@@ -10,3 +10,6 @@ class DialogueRule(BaseModel, Generic[T]):
 
     def match(self, _: T) -> bool:
         '''Override in subclass'''
+
+    class Config:
+        frozen = True
