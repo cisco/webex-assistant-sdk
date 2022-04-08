@@ -1,4 +1,3 @@
-from pprint import pformat
 from typing import Optional
 from uuid import UUID, uuid4
 
@@ -81,8 +80,4 @@ def invoke(
             # TODO: custom exception
             raise Exception()
 
-        typer.echo(pformat(
-            last_turn.json(),
-            indent=2,
-            width=120,
-        ))
+        typer.echo(last_turn.json(indent=2))
