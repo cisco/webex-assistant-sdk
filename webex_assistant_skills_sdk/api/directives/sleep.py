@@ -13,7 +13,6 @@ class Sleep(Directive):
 
     def __init__(
         self,
-        *,
         delay: int,
     ) -> None:
         super().__init__(payload=SleepPayload(

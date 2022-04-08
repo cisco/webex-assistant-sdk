@@ -16,7 +16,6 @@ class UIHint(Directive):
 
     def __init__(
         self,
-        *,
         texts: Optional[List[str]],
         prompt: Optional[str],
     ):

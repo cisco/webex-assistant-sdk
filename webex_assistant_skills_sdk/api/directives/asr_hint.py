@@ -15,7 +15,6 @@ class ASRHint(Directive):
 
     def __init__(
         self,
-        *,
         texts: Optional[List[str]]
     ) -> None:
         super().__init__(payload=ASRHintPayload(

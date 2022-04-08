@@ -16,7 +16,6 @@ class DisplayWebView(Directive):
 
     def __init__(
         self,
-        *,
         url: str,
         title: Optional[str],
     ) -> None:

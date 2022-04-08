@@ -13,9 +13,8 @@ class Speak(Directive):
 
     def __init__(
         self,
-        *,
         text: str
     ):
-        super.__init__(payload=SpeakPayload(
+        super().__init__(payload=SpeakPayload(
             text=text,
         ))
