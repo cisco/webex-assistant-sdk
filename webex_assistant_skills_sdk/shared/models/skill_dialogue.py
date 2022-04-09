@@ -19,7 +19,7 @@ class SkillRequest(BaseModel):
 
 class SkillResponse(BaseModel):
     directives: List[Directive]
-    frame: Dict[str, Any]
+    frame: Dict[str, Any] = {}
 
 
 class AugmentedSkillResponse(SkillResponse):
