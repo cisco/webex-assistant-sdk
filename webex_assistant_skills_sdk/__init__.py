@@ -1,3 +1,4 @@
+from webex_assistant_skills_sdk.api import directives
 from webex_assistant_skills_sdk.shared.models import *
 from webex_assistant_skills_sdk.shared.services import *
 
@@ -13,6 +14,7 @@ __all__ = [
     'DialogueParams',
     'DialogueTurn',
     'Directive',
+    'directives',
     'EncryptedPayload',
     'Invoker',
     'InvokeRequest',
