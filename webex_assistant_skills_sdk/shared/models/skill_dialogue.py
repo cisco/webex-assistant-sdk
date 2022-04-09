@@ -14,7 +14,7 @@ class SkillRequest(BaseModel):
     context: DeviceContext
     frame: Dict[str, Any]
     params: DialogueParams
-    history: List[SkillRequest]
+    history: List[SkillRequest] = []
 
 
 class SkillResponse(BaseModel):

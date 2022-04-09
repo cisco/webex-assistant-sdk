@@ -78,9 +78,9 @@ class DialogueManager(Generic[T]):
         history: List[SkillRequest],
         request: SkillRequest,
     ):
-        history.append(
+        history.append(SkillRequest(
             **request.dict(exclude={'history'}),
-        )
+        ))
 
         return history
 
