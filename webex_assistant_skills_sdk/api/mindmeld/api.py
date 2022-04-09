@@ -6,7 +6,7 @@ from dependency_injector.wiring import Provide
 from webex_assistant_skills_sdk.api import BaseAPI
 from webex_assistant_skills_sdk.api.mindmeld.models import ProcessedQuery
 from webex_assistant_skills_sdk.api.mindmeld.services import MindmeldDialogueHandler, MindmeldDialogueManager
-from webex_assistant_skills_sdk.shared.models import DialogueTurn, InvokeRequest, InvokeResponse
+from webex_assistant_skills_sdk.shared.models import InvokeRequest, InvokeResponse, SkillRequest
 from webex_assistant_skills_sdk.api.types import Types
 
 try:
@@ -29,8 +29,6 @@ class MindmeldAPI(BaseAPI):
 
     async def parse(self, request: InvokeRequest) -> InvokeResponse:
         """A default parse method for mindmeld apps so the user only has to handle dialogue stuff"""
-
-        turn = DialogueTurn(**request.dict())
         processed_query_dict: dict = self.nlp.process(
             query_text=request.text,
             locale=request.params.locale,
@@ -42,13 +40,15 @@ class MindmeldAPI(BaseAPI):
 
         processed_query = ProcessedQuery(**processed_query_dict)
 
-        next_turn = await self.__dialogue_manager.handle(
+        skill_request = SkillRequest(**request.dict())
+
+        response = await self.__dialogue_manager.handle(
             query=processed_query,
-            turn=turn
+            request=skill_request,
         )
 
         return InvokeResponse(
-            **next_turn.dict(),
+            **response.dict(),
             challenge=request.challenge
         )
 

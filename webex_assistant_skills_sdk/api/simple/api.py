@@ -4,7 +4,7 @@ from dependency_injector.wiring import Provide
 
 from webex_assistant_skills_sdk.api import BaseAPI
 from webex_assistant_skills_sdk.api.simple.services import SimpleDialogueHandler, SimpleDialogueManager
-from webex_assistant_skills_sdk.shared.models import DialogueTurn, InvokeRequest, InvokeResponse
+from webex_assistant_skills_sdk.shared.models import InvokeRequest, InvokeResponse, SkillRequest
 from webex_assistant_skills_sdk.api.types import Types
 
 
@@ -12,15 +12,15 @@ class SimpleAPI(BaseAPI):
     __dialogue_manager: SimpleDialogueManager = Provide[Types.DIALOGUE_MANAGER]
 
     async def parse(self, request: InvokeRequest) -> InvokeResponse:
-        turn = DialogueTurn(**request.dict())
+        skill_request = SkillRequest(**request.dict())
 
-        next_turn = await self.__dialogue_manager.handle(
-            query=turn.text,
-            turn=turn,
+        response = await self.__dialogue_manager.handle(
+            query=skill_request.text,
+            request=skill_request,
         )
 
         return InvokeResponse(
-            **next_turn.dict(),
+            **response.dict(),
             challenge=request.challenge,
         )
 

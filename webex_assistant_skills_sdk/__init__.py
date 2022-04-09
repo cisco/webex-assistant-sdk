@@ -5,11 +5,11 @@ from webex_assistant_skills_sdk.shared.services import *
 __version__ = '3.0.0'
 
 __all__ = [
+    'AugmentedSkillResponse',
     'CheckResponse',
     'CryptoService',
     'DeviceContext',
     'Dialogue',
-    'DialogueEventBase',
     'DialogueParams',
     'DialogueTurn',
     'Directive',
@@ -18,4 +18,6 @@ __all__ = [
     'InvokeRequest',
     'InvokeResponse',
     'Settings',
+    'SkillRequest',
+    'SkillResponse',
 ]

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, constr
 
-from webex_assistant_skills_sdk.shared.models.dialogue import DialogueEventBase, DialogueTurn
+from webex_assistant_skills_sdk.shared.models.skill_dialogue import AugmentedSkillResponse, SkillRequest
 
 
 class EncryptedPayload(BaseModel):
@@ -8,11 +8,11 @@ class EncryptedPayload(BaseModel):
     message: str
 
 
-class InvokeRequest(DialogueTurn):
+class InvokeRequest(SkillRequest):
     challenge: constr(min_length=64, max_length=64)
 
 
-class InvokeResponse(DialogueEventBase):
+class InvokeResponse(AugmentedSkillResponse):
     challenge: constr(min_length=64, max_length=64)
 
 

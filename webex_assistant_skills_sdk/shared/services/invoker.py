@@ -8,6 +8,7 @@ from dependency_injector.wiring import Provide
 import httpx
 
 from webex_assistant_skills_sdk.shared.models import (
+    AugmentedSkillResponse,
     CheckResponse,
     DeviceContext,
     Dialogue,
@@ -109,9 +110,11 @@ class Invoker():
             # TODO: raise challenge exception
             raise Exception()
 
+        skill_response = AugmentedSkillResponse(**invoke_response.dict())
+
         dialogue.add_turn(DialogueTurn(
-            text=query,
-            **invoke_response.dict(),
+            request=request,
+            response=skill_response,
         ))
 
         return self # allow chaining

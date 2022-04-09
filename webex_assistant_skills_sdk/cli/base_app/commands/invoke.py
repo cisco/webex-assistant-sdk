@@ -21,7 +21,7 @@ def should_end_dialogue(dialogue: Dialogue):
     if turn is None:
         return False
 
-    for directive in turn.directives:
+    for directive in turn.response.directives:
         if directive.name == 'sleep':
             return True
 
@@ -67,7 +67,7 @@ def invoke(
     dialogue = Dialogue()
 
     while not should_end_dialogue(dialogue):
-        query = typer.prompt('query')
+        query = typer.prompt('>>', prompt_suffix=' ')
 
         try:
             invoker.do_turn(dialogue, query)
@@ -75,9 +75,9 @@ def invoke(
             typer.echo(f'Skill responded with status code {e.response.status_code}')
             raise typer.Exit(1)
 
-        last_turn = dialogue.get_last_turn()
-        if last_turn is None:
+        turn = dialogue.get_last_turn()
+        if turn is None:
             # TODO: custom exception
             raise Exception()
 
-        typer.echo(last_turn.json(indent=2))
+        typer.echo(turn.response.json(indent=2))

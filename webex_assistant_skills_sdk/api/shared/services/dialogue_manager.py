@@ -1,13 +1,17 @@
 import inspect
-from typing import Any, Awaitable, Callable, Dict, Generic, Optional, TypeVar
+from typing import Any, Awaitable, Callable, Dict, Generic, List, Optional, TypeVar
 
 from webex_assistant_skills_sdk.api.shared.models import DialogueRule
-from webex_assistant_skills_sdk.shared.models import DialogueTurn
+from webex_assistant_skills_sdk.shared.models import (
+    AugmentedSkillResponse,
+    SkillRequest,
+    SkillResponse,
+)
 
 
 T = TypeVar('T')
 
-DialogueHandler = Callable[..., Awaitable[DialogueTurn]]
+DialogueHandler = Callable[..., Awaitable[SkillResponse]]
 RuleMap = Dict[DialogueRule[T], DialogueHandler]
 
 class DialogueManager(Generic[T]):
@@ -43,12 +47,12 @@ class DialogueManager(Generic[T]):
     async def handle(
         self,
         query: T,
-        turn: DialogueTurn,
-    ) -> DialogueTurn:
+        request: SkillRequest,
+    ) -> AugmentedSkillResponse:
         # Iterate over our rules, taking the first match
         handler = self.get_handler(
             query,
-            turn.params.target_dialogue_state,
+            request.params.target_dialogue_state,
             self.default_handler,
         )
 
@@ -59,10 +63,24 @@ class DialogueManager(Generic[T]):
         # TODO: Use annotated types rather than length  # pylint:disable=fixme
         handler_args = inspect.signature(handler)
         if len(handler_args.parameters) == 2:
-            next_turn = await handler(turn, query)
+            response = await handler(request, query)
         else:
-            next_turn = await handler(turn)
+            response = await handler(request)
 
-        next_turn.update_history(last_turn=turn)
+        return AugmentedSkillResponse(
+            **response.dict(),
+            history=self.__update_history(request.history, request),
+            params=request.params,
+        )
 
-        return next_turn
+    def __update_history(
+        self,
+        history: List[SkillRequest],
+        request: SkillRequest,
+    ):
+        history.append(
+            **request.dict(exclude={'history'}),
+        )
+
+        return history
+
