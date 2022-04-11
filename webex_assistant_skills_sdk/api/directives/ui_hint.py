@@ -16,8 +16,8 @@ class UIHint(Directive):
 
     def __init__(
         self,
-        texts: Optional[List[str]],
-        prompt: Optional[str],
+        texts: Optional[List[str]] = None,
+        prompt: Optional[str] = None,
     ):
         super().__init__(payload=UIHintPayload(
             texts=texts,

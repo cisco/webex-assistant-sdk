@@ -17,7 +17,7 @@ class AssistantEvent(Directive):
     def __init__(
         self,
         name: str,
-        payload: Dict[str, Any],
+        payload: Dict[str, Any] = {},
     ) -> None:
         super().__init__(payload=AssistantEventPayload(
             name=name,

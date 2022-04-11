@@ -1,10 +1,12 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from webex_assistant_skills_sdk.shared.models import Directive
 
 
 class SleepPayload(BaseModel):
-    delay: int
+    delay: Optional[int]
 
 
 class Sleep(Directive):
@@ -13,7 +15,7 @@ class Sleep(Directive):
 
     def __init__(
         self,
-        delay: int,
+        delay: Optional[int] = None,
     ) -> None:
         super().__init__(payload=SleepPayload(
             delay=delay,
