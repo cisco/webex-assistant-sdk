@@ -83,4 +83,3 @@ class DialogueManager(Generic[T]):
         ))
 
         return history
-

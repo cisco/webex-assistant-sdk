@@ -23,6 +23,7 @@ def should_end_dialogue(dialogue: Dialogue):
 
     for directive in turn.response.directives:
         if directive.name == 'sleep':
+            typer.echo('Encountered sleep directive, exiting dialogue...')
             return True
 
     return False
