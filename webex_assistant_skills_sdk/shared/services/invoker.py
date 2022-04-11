@@ -23,7 +23,7 @@ from webex_assistant_skills_sdk.types import Types
 
 
 class Invoker():
-    __crypto_service: CryptoService =  Provide[Types.CRYPTO_SERVICE]
+    _crypto_service: CryptoService =  Provide[Types.CRYPTO_SERVICE]
 
     url: str
     device_context: DeviceContext
@@ -46,7 +46,7 @@ class Invoker():
         self.secret = secret
 
     def check(self) -> Tuple[CheckResponse, bool]:
-        challenge = self.__generate_challenge_string()
+        challenge = self._generate_challenge_string()
 
         if not self.use_encryption:
             # fake encrypted payload
@@ -55,7 +55,7 @@ class Invoker():
                 message='challenge',
             ).dict()
         else:
-            params_dict = self.__crypto_service.prepare_payload(
+            params_dict = self._crypto_service.prepare_payload(
                 payload=challenge,
                 public_key=self.public_key,
                 secret=self.secret,
@@ -78,9 +78,9 @@ class Invoker():
         params: Optional[DialogueParams] = None,
     ) -> Invoker:
         if params is None:
-            params = self.__get_default_dialogue_params()
+            params = self._get_default_dialogue_params()
 
-        challenge = self.__generate_challenge_string()
+        challenge = self._generate_challenge_string()
 
         request = InvokeRequest(
             challenge=challenge,
@@ -94,7 +94,7 @@ class Invoker():
         request_json = request.json()
 
         if self.use_encryption:
-            request_json = self.__crypto_service.prepare_payload(
+            request_json = self._crypto_service.prepare_payload(
                 request_json,
                 self.public_key,
                 self.secret,
@@ -119,10 +119,10 @@ class Invoker():
 
         return self # allow chaining
 
-    def __generate_challenge_string(self) -> str:
+    def _generate_challenge_string(self) -> str:
         return os.urandom(32).hex()
 
-    def __get_default_dialogue_params(self) -> DialogueParams:
+    def _get_default_dialogue_params(self) -> DialogueParams:
         return DialogueParams(
             time_zone='UTC',
             timestamp=datetime.utcnow().timestamp(),

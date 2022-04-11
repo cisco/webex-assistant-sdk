@@ -13,11 +13,11 @@ from webex_assistant_skills_sdk.cli.shared.services import ConfigService, Crypto
 from webex_assistant_skills_sdk.cli.types import Types
 
 
-__cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
-__crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_SERVICE]
+_cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
+_crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_SERVICE]
 
 def generate_secret() -> str:
-    return __crypto_gen_service.generate_secret()
+    return _crypto_gen_service.generate_secret()
 
 @app.command()
 def init(
@@ -60,7 +60,7 @@ def init(
         # TODO: template generation
         pass
 
-    __crypto_gen_service.generate_keys(
+    _crypto_gen_service.generate_keys(
         directory_path=key_path,
         file_name='id_rsa',
         confirm=True,
@@ -75,6 +75,6 @@ def init(
         public_key=public_key_path.read_text(encoding='utf-8'),
     )
 
-    __cli_config_service.set_skill_config(skill_config)
+    _cli_config_service.set_skill_config(skill_config)
 
-    __cli_config_service.save_config()
+    _cli_config_service.save_config()

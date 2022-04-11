@@ -42,7 +42,7 @@ class DecryptionMiddleware:
 
 
 class DecryptingReceiver(BaseReceiver):
-    __crypto_service: CryptoService = Provide[Types.CRYPTO_SERVICE]
+    _crypto_service: CryptoService = Provide[Types.CRYPTO_SERVICE]
 
     def __init__(
         self,
@@ -69,7 +69,7 @@ class DecryptingReceiver(BaseReceiver):
         )
 
         try:
-            message["body"] = self.__crypto_service.decrypt(
+            message["body"] = self._crypto_service.decrypt(
                 self.private_key,
                 encrypted_message.message.encode('utf-8'),
             )

@@ -11,15 +11,15 @@ from webex_assistant_skills_sdk.shared.models import EncryptedPayload
 
 class CryptoService():
     def prepare_payload(self, payload: str, public_key: str, secret: str) -> EncryptedPayload:
-        token = self.__generate_token(payload, public_key)
-        signature = self.__sign_token(token, secret)
+        token = self._generate_token(payload, public_key)
+        signature = self._sign_token(token, secret)
 
         return EncryptedPayload(
             signature=signature,
             message=token,
         )
 
-    def __encrypt_fernet_key(self, fernet_key: bytes, public_key: bytes) -> bytes:
+    def _encrypt_fernet_key(self, fernet_key: bytes, public_key: bytes) -> bytes:
         """Encrypts a fernet key with an RSA private key"""
         padding = OAEP(mgf=MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None)
 
@@ -27,7 +27,7 @@ class CryptoService():
 
         return public_key.encrypt(fernet_key, padding)
 
-    def __generate_token(self, payload: str, public_key: str) -> str:
+    def _generate_token(self, payload: str, public_key: str) -> str:
          # Encode our message and keys to bytes up front so it's clear what we're working with
         pub_key_bytes = public_key.encode('utf-8')
         message_bytes = payload.encode('utf-8')
@@ -36,7 +36,7 @@ class CryptoService():
         fernet_key = Fernet.generate_key()
 
         # Encrypt our fernet key with our RSA public key
-        encrypted_fernet_key = self.__encrypt_fernet_key(fernet_key, pub_key_bytes)
+        encrypted_fernet_key = self._encrypt_fernet_key(fernet_key, pub_key_bytes)
 
         # Encrypt our message using the temporary encryption key
         encrypted_message = Fernet(fernet_key).encrypt(message_bytes)
@@ -50,7 +50,7 @@ class CryptoService():
         # our key/message, delineated by a '.'
         return f'{encoded_fernet_key}.{encoded_message}'
 
-    def __sign_token(self, token: str, secret: str) -> str:
+    def _sign_token(self, token: str, secret: str) -> str:
         secret_bytes = secret.encode('utf-8')
         message_bytes = token.encode('utf-8')
 

@@ -7,7 +7,7 @@ from webex_assistant_skills_sdk.cli.shared.services import ConfigService
 from webex_assistant_skills_sdk.cli.types import Types
 
 
-__cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
+_cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
 
 @app.command()
 def inspect(
@@ -18,6 +18,6 @@ def inspect(
         help=''
     )
 ) -> None:
-    skill_config = __cli_config_service.get_skill_config(name)
+    skill_config = _cli_config_service.get_skill_config(name)
 
     typer.echo(skill_config.json(indent=2))

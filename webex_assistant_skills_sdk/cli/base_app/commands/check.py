@@ -14,7 +14,7 @@ from webex_assistant_skills_sdk.cli.types import Types
 from webex_assistant_skills_sdk.shared.models import Dialogue
 
 
-__invoker_factory: Factory[CliInvoker] = Provider[Types.INVOKER]
+_invoker_factory: Factory[CliInvoker] = Provider[Types.INVOKER]
 
 @app.command()
 def check(
@@ -29,7 +29,7 @@ def check(
         help=''
     ),
 ) -> None:
-    invoker = __invoker_factory(
+    invoker = _invoker_factory(
         skill_name,
         encrypted,
     )

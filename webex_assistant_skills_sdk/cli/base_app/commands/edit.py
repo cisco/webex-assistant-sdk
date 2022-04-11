@@ -10,7 +10,7 @@ from webex_assistant_skills_sdk.cli.shared.services import ConfigService
 from webex_assistant_skills_sdk.cli.types import Types
 
 
-__cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
+_cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
 
 @app.command()
 def edit(
@@ -40,7 +40,7 @@ def edit(
         help='The path to the public key',
     ),
 ) -> None:
-    skill_config = __cli_config_service.get_skill_config(skill_name)
+    skill_config = _cli_config_service.get_skill_config(skill_name)
 
     if url is not None:
         skill_config.url = url
@@ -51,6 +51,6 @@ def edit(
     if public_key_path is not None:
         skill_config.public_key = public_key_path.read_text(encoding='utf-8')
 
-    __cli_config_service.save_config()
+    _cli_config_service.save_config()
 
     # TODO: print config

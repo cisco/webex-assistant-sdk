@@ -43,7 +43,7 @@ class SignatureMiddleware:
 
 
 class SignatureReceiver(BaseReceiver):
-    __crypto_service: CryptoService = Provide[Types.CRYPTO_SERVICE]
+    _crypto_service: CryptoService = Provide[Types.CRYPTO_SERVICE]
 
     def __init__(
         self, 
@@ -70,7 +70,7 @@ class SignatureReceiver(BaseReceiver):
 
         signature: bytes = base64.b64decode(encrypted_body.signature)
 
-        signature_vaid = self.__crypto_service.verify_signature(
+        signature_vaid = self._crypto_service.verify_signature(
             self.secret,
             encrypted_body.message.encode('utf-8'),
             signature,

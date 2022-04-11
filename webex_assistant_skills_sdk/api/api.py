@@ -13,24 +13,24 @@ from webex_assistant_skills_sdk.shared.services import Settings
 
 
 class BaseAPI(FastAPI):
-    __crypto_service: CryptoService = Provide[Types.CRYPTO_SERVICE]
-    __settings: Settings = Provide[Types.SETTINGS]
+    _crypto_service: CryptoService = Provide[Types.CRYPTO_SERVICE]
+    _settings: Settings = Provide[Types.SETTINGS]
 
-    __private_key: Optional[str] = None
-    __secret: Optional[str] = None
+    _private_key: Optional[str] = None
+    _secret: Optional[str] = None
 
     def __init__(self, **kwargs) -> None:
         middleware = kwargs.pop('middlewares', [])
 
-        if self.__settings.use_encryption:
-            self.__private_key = self.__crypto_service.load_private_key(self.__settings.private_key_path.read_bytes())
-            self.__secret = self.__settings.secret.encode('utf-8')
+        if self._settings.use_encryption:
+            self._private_key = self._crypto_service.load_private_key(self._settings.private_key_path.read_bytes())
+            self._secret = self._settings.secret.encode('utf-8')
             # NOTE: The order here is significant. We sign the encrypted message so we want our signature
             # verification to run _before_ the decryption middleware which will alter the message to the
             # decrypted version.
             middleware = [
-                Middleware(SignatureMiddleware, secret=self.__secret),
-                Middleware(DecryptionMiddleware, private_key=self.__private_key),
+                Middleware(SignatureMiddleware, secret=self._secret),
+                Middleware(DecryptionMiddleware, private_key=self._private_key),
                 *middleware,
             ]
 
@@ -47,7 +47,7 @@ class BaseAPI(FastAPI):
     # This essentially only works because there's no body and thus no call to receive()
     # we should revisit this after seeing if the middlewares can be replaced with custom request types
     async def check(self, signature: str, message: str):
-        if not self.__settings.use_encryption:
+        if not self._settings.use_encryption:
             return CheckResponse(
                 challenge=message,
             )
@@ -55,8 +55,8 @@ class BaseAPI(FastAPI):
         message_bytes = message.encode('utf-8')
         signature = base64.b64decode(signature.encode('utf-8'))
 
-        signature_valid = self.__crypto_service.verify_signature(
-            secret=self.__secret,
+        signature_valid = self._crypto_service.verify_signature(
+            secret=self._secret,
             message=message_bytes,
             signature=signature,
         )
@@ -68,8 +68,8 @@ class BaseAPI(FastAPI):
             )
             
         try:
-            challenge = self.__crypto_service.decrypt(
-                private_key=self.__private_key,
+            challenge = self._crypto_service.decrypt(
+                private_key=self._private_key,
                 message=message_bytes,
             )
         except ValueError:

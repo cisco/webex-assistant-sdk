@@ -8,7 +8,7 @@ from webex_assistant_skills_sdk.shared.services import Invoker
 
 
 class CliInvoker(Invoker):
-    __cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
+    _cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
 
     def __init__(
         self,
@@ -19,7 +19,7 @@ class CliInvoker(Invoker):
         device_id: UUID = uuid4(),
         user_type: str = 'user',
     ):
-        skill_config = self.__cli_config_service.get_skill_config(skill_name)
+        skill_config = self._cli_config_service.get_skill_config(skill_name)
 
         if skill_config is None:
             # TODO: custom exception

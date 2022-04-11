@@ -69,11 +69,11 @@ class DialogueManager(Generic[T]):
 
         return AugmentedSkillResponse(
             **response.dict(),
-            history=self.__update_history(request.history, request),
+            history=self._update_history(request.history, request),
             params=request.params,
         )
 
-    def __update_history(
+    def _update_history(
         self,
         history: List[SkillRequest],
         request: SkillRequest,

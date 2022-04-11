@@ -19,12 +19,12 @@ except ImportError:
 
 
 class MindmeldAPI(BaseAPI):
-    __dialogue_manager: MindmeldDialogueManager = Provide[Types.DIALOGUE_MANAGER]
+    _dialogue_manager: MindmeldDialogueManager = Provide[Types.DIALOGUE_MANAGER]
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.nlp = NaturalLanguageProcessor(self.__settings.app_dir)
+        self.nlp = NaturalLanguageProcessor(self._settings.app_dir)
         self.nlp.load()
 
     async def parse(self, request: InvokeRequest) -> InvokeResponse:
@@ -42,7 +42,7 @@ class MindmeldAPI(BaseAPI):
 
         skill_request = SkillRequest(**request.dict())
 
-        response = await self.__dialogue_manager.handle(
+        response = await self._dialogue_manager.handle(
             query=processed_query,
             request=skill_request,
         )
@@ -62,7 +62,7 @@ class MindmeldAPI(BaseAPI):
         targeted_only=False
     ) -> Callable[[MindmeldDialogueHandler], MindmeldDialogueHandler]:
         """Wraps a function to behave as a dialogue handler"""
-        return self.__dialogue_manager.add_rule(
+        return self._dialogue_manager.add_rule(
             domain=domain,
             intent=intent,
             entities=entities,

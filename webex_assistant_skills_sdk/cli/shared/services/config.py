@@ -8,28 +8,28 @@ from webex_assistant_skills_sdk.cli.shared.models import CliConfig, SkillConfig
 
 
 class ConfigService():
-    __config: CliConfig
+    _config: CliConfig
 
     def __init__(self) -> None:
-        self.__config = self.__load_config()
+        self._config = self._load_config()
 
     def set_skill_config(self, skill_config: SkillConfig) -> None:
-        self.__config.skill_configs[skill_config.name] = skill_config
+        self._config.skill_configs[skill_config.name] = skill_config
 
     def delete_skill_config(self, skill_name: str) -> None:
-        del self.__config.skill_configs[skill_name]
+        del self._config.skill_configs[skill_name]
 
     def get_skill_names(self) -> List[str]:
-        return self.__config.skill_configs.keys()
+        return self._config.skill_configs.keys()
 
     def get_skill_config(self, skill_name: str) -> Optional[SkillConfig]:
-        return self.__config.skill_configs.get(skill_name, None)
+        return self._config.skill_configs.get(skill_name, None)
 
     def save_config(self) -> None:
-        config_path = self.__get_default_config_path()
-        config_path.write_text(self.__config.json(indent=2))
+        config_path = self._get_default_config_path()
+        config_path.write_text(self._config.json(indent=2))
 
-    def __get_default_config_path(self) -> Path:
+    def _get_default_config_path(self) -> Path:
         app_dir = Path(typer.get_app_dir('webex-assistant-skills', force_posix=True))
         config_path = app_dir / 'config.json'
 
@@ -41,8 +41,8 @@ class ConfigService():
 
         return config_path
 
-    def __load_config(self) -> None:
-        config_path = self.__get_default_config_path()
+    def _load_config(self) -> None:
+        config_path = self._get_default_config_path()
 
         try:
             return CliConfig.parse_file(

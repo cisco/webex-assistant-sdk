@@ -8,7 +8,7 @@ from webex_assistant_skills_sdk.cli.shared.services import CryptoGenService
 from webex_assistant_skills_sdk.cli.types import Types
 
 
-__crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_SERVICE]
+_crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_SERVICE]
 
 @app.command()
 def generate_keys(
@@ -29,7 +29,7 @@ def generate_keys(
     ),
 ) -> None:
     """Generate an RSA keypair"""
-    __crypto_gen_service.generate_keys(
+    _crypto_gen_service.generate_keys(
         key_path,
         file_name,
         confirm=True,

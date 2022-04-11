@@ -9,12 +9,12 @@ from webex_assistant_skills_sdk.api.types import Types
 
 
 class SimpleAPI(BaseAPI):
-    __dialogue_manager: SimpleDialogueManager = Provide[Types.DIALOGUE_MANAGER]
+    _dialogue_manager: SimpleDialogueManager = Provide[Types.DIALOGUE_MANAGER]
 
     async def parse(self, request: InvokeRequest) -> InvokeResponse:
         skill_request = SkillRequest(**request.dict())
 
-        response = await self.__dialogue_manager.handle(
+        response = await self._dialogue_manager.handle(
             query=skill_request.text,
             request=skill_request,
         )
@@ -32,7 +32,7 @@ class SimpleAPI(BaseAPI):
         targeted_only=False,
     ) -> Callable[[SimpleDialogueHandler], SimpleDialogueHandler]:
         """Wraps a function to behave as a dialogue handler"""
-        return self.__dialogue_manager.add_rule(
+        return self._dialogue_manager.add_rule(
             pattern=pattern,
             default=default,
             targeted_only=targeted_only,

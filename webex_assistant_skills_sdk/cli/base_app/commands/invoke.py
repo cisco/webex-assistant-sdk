@@ -13,7 +13,7 @@ from webex_assistant_skills_sdk.cli.types import Types
 from webex_assistant_skills_sdk.shared.models import Dialogue
 
 
-__invoker_factory: Factory[CliInvoker] = Provider[Types.INVOKER]
+_invoker_factory: Factory[CliInvoker] = Provider[Types.INVOKER]
 
 def should_end_dialogue(dialogue: Dialogue):
     turn = dialogue.get_last_turn()
@@ -57,7 +57,7 @@ def invoke(
         help='',
     ),
 ) -> None:
-    invoker = __invoker_factory(
+    invoker = _invoker_factory(
         skill_name,
         encrypted,
         org_id,

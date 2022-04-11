@@ -7,9 +7,9 @@ from webex_assistant_skills_sdk.cli.shared.services import CryptoGenService
 from webex_assistant_skills_sdk.cli.types import Types
 
 
-__crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_SERVICE]
+_crypto_gen_service: CryptoGenService = Provide[Types.CRYPTO_SERVICE]
 
 @app.command()
 def generate_secret() -> None:
     """Generate a secret token for signing requests"""
-    typer.echo(__crypto_gen_service.generate_secret())
+    typer.echo(_crypto_gen_service.generate_secret())

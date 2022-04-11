@@ -36,14 +36,14 @@ class CryptoGenService(CryptoService):
 
         typer.echo('🔐 Generating new RSA keypair...')
 
-        self.__generate_keys(private_key_path, public_key_path)
+        self._generate_keys(private_key_path, public_key_path)
 
         typer.echo(f'Done! {private_key_name} and {public_key_name} written to {directory_path}')
 
     def generate_secret(self) -> str:
         return secrets.token_urlsafe()
 
-    def __generate_keys(
+    def _generate_keys(
         self,
         private_key_path: Path,
         public_key_path: Path,

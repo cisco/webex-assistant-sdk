@@ -7,7 +7,7 @@ from webex_assistant_skills_sdk.cli.shared.services import ConfigService
 from webex_assistant_skills_sdk.cli.types import Types
 
 
-__cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
+_cli_config_service: ConfigService = Provide[Types.CONFIG_SERVICE]
 
 @app.command()
 def delete(
@@ -18,6 +18,6 @@ def delete(
         help=''
     )
 ) -> None:
-    __cli_config_service.delete_skill_config(skill_name)
+    _cli_config_service.delete_skill_config(skill_name)
 
-    __cli_config_service.save_config()
+    _cli_config_service.save_config()
