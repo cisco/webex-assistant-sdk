@@ -32,7 +32,7 @@ class MindmeldDialogueManager(DialogueManager[ProcessedQuery]):
                 domain=domain,
                 intent=intent,
                 entities=entities,
-                rule_name=rule_name,
+                dialogue_state=rule_name,
                 targeted_only=targeted_only,
             )
             self.rules[skill_rule] = handler
