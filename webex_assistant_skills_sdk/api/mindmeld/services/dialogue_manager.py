@@ -1,12 +1,15 @@
-from typing import Awaitable, Callable, Optional
+from typing import Awaitable, Callable, Optional, Union
 
 from webex_assistant_skills_sdk.api.mindmeld.models import MindmeldDialogueRule, ProcessedQuery
 from webex_assistant_skills_sdk.api.shared.services import DialogueManager
-from webex_assistant_skills_sdk.shared.models import DialogueTurn
+from webex_assistant_skills_sdk.shared.models import SkillRequest, SkillResponse
 
 
 
-MindmeldDialogueHandler = Callable[[DialogueTurn, ProcessedQuery], Awaitable[DialogueTurn]]
+MindmeldDialogueHandler = Union[
+    Callable[[SkillRequest], Awaitable[SkillResponse]],
+    Callable[[SkillRequest, ProcessedQuery], Awaitable[SkillResponse]],
+]
 
 class MindmeldDialogueManager(DialogueManager[ProcessedQuery]):
     def add_rule(

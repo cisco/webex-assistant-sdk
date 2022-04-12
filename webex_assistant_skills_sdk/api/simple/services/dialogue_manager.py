@@ -1,12 +1,15 @@
 import re
-from typing import Awaitable, Callable, Optional
+from typing import Awaitable, Callable, Optional, Union
 
 from webex_assistant_skills_sdk.api.shared.services import DialogueManager
 from webex_assistant_skills_sdk.api.simple.models import SimpleDialogueRule
-from webex_assistant_skills_sdk.shared.models import DialogueTurn
+from webex_assistant_skills_sdk.shared.models import SkillRequest, SkillResponse
 
 
-SimpleDialogueHandler = Callable[[str], Awaitable[DialogueTurn]]
+SimpleDialogueHandler = Union[
+    Callable[[SkillRequest], Awaitable[SkillResponse]],
+    Callable[[SkillRequest, str], Awaitable[SkillResponse]]
+]
 
 class SimpleDialogueManager(DialogueManager[str]):
     def add_rule(
