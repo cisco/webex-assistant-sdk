@@ -5,7 +5,7 @@ from dependency_injector.wiring import Provide
 from fastapi.testclient import TestClient
 from fastapi import FastAPI, Response
 
-from webex_assistant_skills_sdk.container import container
+# from webex_assistant_skills_sdk.container import container
 from webex_assistant_skills_sdk.shared.models import DeviceContext
 from webex_assistant_skills_sdk.shared.services.base_invoker import BaseInvoker
 from webex_assistant_skills_sdk.shared.services.settings import Settings
@@ -28,7 +28,7 @@ class TestInvoker(BaseInvoker):
             url='/parse',
         )
 
-        container.settings.override(providers.Singleton(settings_override))
+        # container.settings.override(providers.Singleton(settings_override))
         self._client = TestClient(app=app)
 
     def post_request(self, request_json: str) -> Response:
