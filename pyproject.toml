@@ -32,6 +32,7 @@ uvicorn = "^0.15.0"
 dependency-injector = "^4.38.0"
 tqdm = "^4.63.0"
 httpx = "^0.22.0"
+requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
 black = '^21.9b0'
