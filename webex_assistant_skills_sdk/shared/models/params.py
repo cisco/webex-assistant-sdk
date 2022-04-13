@@ -1,7 +1,10 @@
+from __future__ import annotations
+
+from datetime import datetime
+
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, constr
-
 
 class DialogueParams(BaseModel):
     time_zone: str
@@ -13,3 +16,11 @@ class DialogueParams(BaseModel):
     locale: Optional[constr(regex="^[a-z]{2}([-_][A-Z]{2})?$")]  # type: ignore  # noqa
     dynamic_resource: Optional[Dict[Any, Any]] = {}
     allowed_intents: Optional[List[str]] = []
+
+    @staticmethod
+    def construct_default_params() -> DialogueParams:
+        return DialogueParams(
+            time_zone='UTC',
+            timestamp=datetime.utcnow().timestamp(),
+            language='en'
+        )

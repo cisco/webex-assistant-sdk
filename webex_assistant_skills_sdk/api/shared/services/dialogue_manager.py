@@ -1,5 +1,5 @@
 import inspect
-from typing import Any, Awaitable, Callable, Dict, Generic, List, Optional, TypeVar
+from typing import Any, Awaitable, Callable, Dict, Generic, Optional, TypeVar
 
 from webex_assistant_skills_sdk.api.shared.models import DialogueRule
 from webex_assistant_skills_sdk.shared.models import (
@@ -67,19 +67,4 @@ class DialogueManager(Generic[T]):
         else:
             response = await handler(request)
 
-        return AugmentedSkillResponse(
-            **response.dict(),
-            history=self._update_history(request.history, request),
-            params=request.params,
-        )
-
-    def _update_history(
-        self,
-        history: List[SkillRequest],
-        request: SkillRequest,
-    ):
-        history.append(SkillRequest(
-            **request.dict(exclude={'history'}),
-        ))
-
-        return history
+        return AugmentedSkillResponse.augment_response(request, response)

@@ -25,3 +25,25 @@ class SkillResponse(BaseModel):
 class AugmentedSkillResponse(SkillResponse):
     params: DialogueParams
     history: List[SkillRequest]
+
+    @staticmethod
+    def augment_response(
+        request: SkillRequest,
+        response: SkillResponse,
+    ) -> AugmentedSkillResponse:
+        return AugmentedSkillResponse(
+            **response.dict(),
+            params=request.params,
+            history=AugmentedSkillResponse.update_history(request.history, request)
+        )
+
+    @staticmethod
+    def update_history(
+        history: List[SkillRequest],
+        request: SkillRequest,
+    ) -> List[SkillRequest]:
+        history.append(SkillRequest(
+            **request.dict(exclude={'history'}),
+        ))
+
+        return history
