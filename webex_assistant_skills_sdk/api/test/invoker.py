@@ -23,15 +23,15 @@ class FakeInvoker(BaseInvoker):
         self,
         app: FastAPI,
         device_context: DeviceContext = DeviceContext.construct_default_context(),
-        settings: Settings = MockSettings(),
+        # settings: Settings = MockSettings(),
     ) -> None:
         super().__init__(
             device_context=device_context,
-            use_encryption=settings.use_encryption,
+            use_encryption=False,
             url='/parse',
         )
 
-        container.settings.override(providers.Singleton(settings))
+        # container.settings.override(providers.Singleton(settings))
     
         self._client = TestClient(app=app)
 
