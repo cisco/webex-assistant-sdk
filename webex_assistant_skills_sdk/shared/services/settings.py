@@ -15,7 +15,14 @@ class BaseSettings:
     app_dir: Optional[str] = None
 
 
-class Settings(PydanticBaseSettings, BaseSettings):
+class Settings(PydanticBaseSettings):
+    skill_name: Optional[str] = None
+    private_key_path: Path = 'id_rsa.pem'
+    secret: Optional[str] = None
+    use_encryption: bool = True
+    log_level: str = 'INFO'
+    app_dir: Optional[str] = None
+
     class Config:
         env_prefix = 'SKILLS_'
         env_file = '.env'
