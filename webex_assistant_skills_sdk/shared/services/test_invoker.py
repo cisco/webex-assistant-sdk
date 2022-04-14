@@ -13,6 +13,8 @@ from webex_assistant_skills_sdk.types import Types
 
 
 class TestInvoker(BaseInvoker):
+    __test__ = False
+
     _client: TestClient
     _settings: Settings =  Provide[Types.SETTINGS]
 
