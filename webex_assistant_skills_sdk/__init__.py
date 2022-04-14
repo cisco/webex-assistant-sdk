@@ -22,5 +22,4 @@ __all__ = [
     'Settings',
     'SkillRequest',
     'SkillResponse',
-    'TestInvoker',
 ]

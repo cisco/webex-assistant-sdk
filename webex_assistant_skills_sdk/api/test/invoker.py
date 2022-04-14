@@ -5,14 +5,15 @@ from dependency_injector.wiring import Provide
 from fastapi.testclient import TestClient
 from fastapi import FastAPI, Response
 
-# from webex_assistant_skills_sdk.container import container
+from webex_assistant_skills_sdk.api.test.settings import MockSettings
+from webex_assistant_skills_sdk.container import container
 from webex_assistant_skills_sdk.shared.models import DeviceContext
 from webex_assistant_skills_sdk.shared.services.base_invoker import BaseInvoker
 from webex_assistant_skills_sdk.shared.services.settings import Settings
 from webex_assistant_skills_sdk.types import Types
 
 
-class TestInvoker(BaseInvoker):
+class FakeInvoker(BaseInvoker):
     __test__ = False
 
     _client: TestClient
@@ -22,15 +23,16 @@ class TestInvoker(BaseInvoker):
         self,
         app: FastAPI,
         device_context: DeviceContext = DeviceContext.construct_default_context(),
-        settings_override: Settings = Settings.construct_default_test_settings(),
+        settings: Settings = MockSettings(),
     ) -> None:
         super().__init__(
             device_context=device_context,
-            use_encryption=False,
+            use_encryption=settings.use_encryption,
             url='/parse',
         )
 
-        # container.settings.override(providers.Singleton(settings_override))
+        container.settings.override(providers.Singleton(settings))
+    
         self._client = TestClient(app=app)
 
     def post_request(self, request_json: str) -> Response:
