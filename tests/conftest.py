@@ -1,6 +1,7 @@
 import re
 
 import pytest
+
 from webex_skills.dialogue.rules import SimpleDialogueStateRule
 from webex_skills.models.mindmeld import DialogueState
 

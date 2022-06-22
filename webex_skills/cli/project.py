@@ -115,7 +115,7 @@ def _create_project(
 
     # Create pyproject.toml
     toml_template = static_path / 'pyproject.toml.tmpl'
-    toml_content = toml_template.read_text().format(skill_name=skill_name)
+    toml_content = toml_template.read_text(encoding='utf-8').format(skill_name=skill_name)
     toml_out_path = output_dir / 'pyproject.toml'
     toml_out_path.write_text(toml_content)
 
@@ -128,7 +128,7 @@ def _create_project(
     # Create env file with default values
 
     env_template = static_path / 'env.tmpl'
-    env_content = env_template.read_text()
+    env_content = env_template.read_text(encoding='utf-8')
     env_content = env_content.format(
         skill_name=skill_name, skill_secret=secret, app_dir=app_dir, private_key_path=priv_path
     )

@@ -1,7 +1,6 @@
 import pytest
-from webex_skills.dialogue.manager import SimpleDialogueManager
 
-pytestmark = pytest.mark.asyncio
+from webex_skills.dialogue.manager import SimpleDialogueManager
 
 
 def test_add_rule():

@@ -23,25 +23,24 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.7"
-cryptography = "^35.0.0"
+cryptography = ">= 35.0.0"
 mindmeld = {version= "^4.4.2", optional=true}
 requests = "^2.22.0"
-typer = "^0.4.0"
+typer = ">= 0.4.0, < 1"
 pydantic = {extras = ["dotenv"], version = "^1.8.2"}
-fastapi = "^0.68.1"
-uvicorn = "^0.15.0"
+fastapi = ">= 0.68.1, < 1"
+uvicorn = ">= 0.15.0, < 1"
 
 [tool.poetry.dev-dependencies]
-black = '^21.9b0'
-isort = {version = '^4.3', extras = ['toml']}
+black = '>= 21.9b0'
+isort = '^5.10.1'
 pylint = '^2.3.1'
-pytest = '^5.1'
-pytest-cov = "^2.8.1"
+pytest = '^7.1.2'
+pytest-cov = "^3.0.0"
 tox = "^3.14.0"
 autopep8 = "^1.5.7"
 mock = "^4.0.3"
-pytest-asyncio = "^0.15.1"
-flake8 = "^4.0.1"
+pytest-asyncio = ">= 0.15.1, < 1"
 
 [tool.poetry.extras]
 mindmeld = ["mindmeld"]
@@ -58,9 +57,8 @@ force_sort_within_sections = true
 include_trailing_comma = true
 line_length = 120
 multi_line_output = 3
-sections = ['FUTURE', 'STDLIB', 'TRANSITIONAL', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']
+sections = ['FUTURE', 'STDLIB', 'THIRDPARTY', 'FIRSTPARTY', 'LOCALFOLDER']
 default_section = 'THIRDPARTY'
-known_first_party = ['webex_assistant_sdk']
 skip_glob = ['scripts', 'venv*']
 
 
@@ -68,9 +66,6 @@ skip_glob = ['scripts', 'venv*']
 line-length = 120
 skip-string-normalization = true
 target-version = ['py37']
-
-[tool.flake8]
-max-line-length = 120
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = [
@@ -85,6 +80,9 @@ min-public-methods = 0
 
 [tool.pylint.FORMAT]
 max-line-length = 120
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [build-system]
 requires = ["poetry>=1.0.0"]
