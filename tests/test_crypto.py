@@ -2,6 +2,7 @@ import base64
 import json
 
 import pytest
+
 from webex_skills.crypto import sign_token, verify_signature
 
 
