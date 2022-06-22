@@ -81,6 +81,9 @@ min-public-methods = 0
 [tool.pylint.FORMAT]
 max-line-length = 120
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
 [build-system]
 requires = ["poetry>=1.0.0"]
 build-backend = "poetry.masonry.api"
