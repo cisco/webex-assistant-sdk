@@ -1,3 +1,9 @@
+# READ THIS FIRST
+
+The Webex Assistant SKills SDK is **no longer maintained**. The assistant skills feature which this was meant to aid in the development of has been retired. The SDK has not had a release since June of 2022, and will not have any future releases.
+
+Thank you to all our users and contributors.
+
 # Webex Assistant Skills SDK
 
 The Webex Skills SDK is designed to simplify the process of creating a Webex Assistant Skill. It provides some
