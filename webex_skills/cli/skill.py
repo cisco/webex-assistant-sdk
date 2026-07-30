@@ -143,13 +143,17 @@ def invoke_skill(
 
 
 @app.command()
-def run(skill_name: str = typer.Argument(..., help="The name of the skill to run.")):
+def run(
+    skill_name: str = typer.Argument(..., help="The name of the skill to run."),
+    host: str = typer.Option("127.0.0.1", "--host", "-h", help="The host interface to bind the server to."),
+    port: int = typer.Option(8080, "--port", "-p", help="The port to bind the server to."),
+):
     config = get_skill_config(skill_name)
     sys.path.insert(0, config['project_path'])
     os.environ['SKILLS_PRIVATE_KEY_PATH'] = config['private_key_path']
     os.environ['SKILLS_SECRET'] = config['secret']
     os.environ['SKILLS_APP_DIR'] = config['app_dir']
-    uvicorn.run(f'{skill_name}.main:api', host="127.0.0.1", port=8080, log_level="info")
+    uvicorn.run(f'{skill_name}.main:api', host=host, port=port, log_level="info")
 
 
 @app.command()
